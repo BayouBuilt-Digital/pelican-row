@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="8" fill="#faf5ea"/>
+  <rect x="3.5" y="3.5" width="57" height="57" rx="5.5" fill="none" stroke="#9a4e30" stroke-width="2"/>
+  <!-- Pelican on a piling, echoing the sign out front -->
+  <g fill="none" stroke="#33271f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M25 20c4.6 0 8 3.3 8 7.6 0 5.4-3.6 9.2-3.6 13.6"/>
+    <path d="M25 20c-3.4 0-5.8 2.2-5.8 5 0 3.4 3 4.6 3 7.8"/>
+    <path d="M19.2 25c-1.6 2.6-1.4 6 .9 8.4l2.1 2.2"/>
+  </g>
+  <circle cx="22.4" cy="22.6" r="1.7" fill="#33271f"/>
+  <path d="M33 27.6c3.4-1.2 7.6-1.4 11.4-.2" fill="none" stroke="#9a4e30" stroke-width="2.6" stroke-linecap="round"/>
+  <path d="M20 44h24" fill="none" stroke="#9a4e30" stroke-width="3" stroke-linecap="round"/>
+  <path d="M24 44v9M32 44v9M40 44v9" fill="none" stroke="#33271f" stroke-width="2.6" stroke-linecap="round"/>
+</svg>
