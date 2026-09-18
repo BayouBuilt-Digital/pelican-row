@@ -36,11 +36,11 @@ the old `/home` and `/contact-3` URLs can redirect to `/`.
 Bump the version number on both tags in `index.html`:
 
 ```html
-<link rel="stylesheet" href="styles.css?v=4">
-<script src="script.js?v=4"></script>
+<link rel="stylesheet" href="styles.css?v=5">
+<script src="script.js?v=5"></script>
 ```
 
-Change `4` to `5` (and so on), same number on both. Without this, a returning
+Change `5` to `6` (and so on), same number on both. Without this, a returning
 visitor's browser can reload the page's HTML but keep an old copy of the script
 or stylesheet from its cache, so the new page runs with old code. That is what
 made the Facebook feed show up as a blank white box during development.
