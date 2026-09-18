@@ -35,6 +35,55 @@
     });
   }
 
+  /* ── Facebook feed ───────────────────────────────────────
+     The feed's full URL lives in index.html, so it loads with or
+     without this script. Facebook draws it at the URL's width
+     (180-500px) and never reflows it; that URL is sized for the
+     desktop frame, so on narrower screens it would be cut off.
+     This only rewrites the width to fit, and again if the width
+     changes a lot (e.g. rotating a phone). */
+  var feed = document.getElementById("fbFeed");
+  var feedFrame = feed && feed.querySelector("iframe");
+  if (feedFrame && feedFrame.getAttribute("src")) {
+    var feedUrl = new URL(feedFrame.src);
+    var feedWidth = Number(feedUrl.searchParams.get("width"));
+
+    var fitFeed = function (minChange) {
+      var w = Math.max(180, Math.min(500, feed.clientWidth));
+      // Setting src always reloads the feed, even to the same URL,
+      // so leave it alone unless the width is really off.
+      if (Math.abs(w - feedWidth) <= minChange) return;
+      feedWidth = w;
+      feedUrl.searchParams.set("width", w);
+      feedFrame.src = feedUrl.toString();
+    };
+
+    fitFeed(1);
+
+    var feedResize;
+    window.addEventListener("resize", function () {
+      if (feed.classList.contains("is-blocked")) return;
+      clearTimeout(feedResize);
+      feedResize = setTimeout(function () { fitFeed(40); }, 250);
+    });
+
+    // Browsers and extensions that block trackers (Edge, Firefox and Brave
+    // settings, uBlock Origin, Privacy Badger) leave a blocked iframe in
+    // place but empty. It's invisible yet still sits over the fallback and
+    // catches its clicks. The page can't look inside the iframe, so ask the
+    // network directly: if a request to the same Facebook path is refused,
+    // the feed is blocked here. no-cors only fails on a blocked or broken
+    // request, never because of what Facebook sends back.
+    if (window.fetch) {
+      fetch("https://www.facebook.com/plugins/page.php", { mode: "no-cors", credentials: "omit" })
+        .catch(function () {
+          feed.classList.add("is-blocked");
+          var msg = feed.querySelector(".feed-fallback p");
+          if (msg) msg.textContent = "Our Facebook posts can’t load in this browser.";
+        });
+    }
+  }
+
   /* ── Contact form ────────────────────────────────────────
      Hands the message to the visitor's own email app, pre-filled.
      Deliberate: no form service to depend on, and the reply

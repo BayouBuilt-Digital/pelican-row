@@ -19,7 +19,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<!-- ?v= forces browsers to fetch a fresh copy. A normal refresh re-fetches
+     this HTML but can keep an old styles.css / script.js from cache, leaving
+     new HTML running with an old script. Bump the number whenever either
+     file changes (both tags, same number). -->
+<link rel="stylesheet" href="styles.css?v=4">
 
 <!-- Local business structured data, so Google shows the right info -->
 <script type="application/ld+json">
@@ -157,6 +161,41 @@
           <p>Tell us what you&rsquo;re after and we&rsquo;ll watch for it as new pieces come in.</p>
         </li>
       </ul>
+
+      <!-- Live Facebook feed. The src is written here (not built by the
+           script) so the feed loads even if script.js is stale or blocked.
+           Facebook draws it at the width in the URL (500px max) and never
+           reflows it, so script.js narrows that width on smaller screens.
+           The fallback sits BEHIND the iframe: a loaded feed is opaque and
+           covers it, but if a browser or blocker stops the feed, the frame
+           stays empty and the fallback shows through instead of a white box. -->
+      <div class="feed">
+        <div class="feed-copy">
+          <p class="eyebrow">On Facebook</p>
+          <h3>Recent posts from the market</h3>
+          <p>
+            We share new arrivals and booth updates from our vendors on
+            Facebook as they come in.
+          </p>
+          <a class="fb-button" href="https://www.facebook.com/p/The-Bayou-Dollar-100091994943430/" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.25-1.5 1.55-1.5h1.65V3.6A22 22 0 0 0 14.3 3.5c-2.4 0-4 1.45-4 4.1v2.3H7.6V13h2.7v8z"/></svg>
+            <span>Follow on Facebook</span>
+          </a>
+        </div>
+        <div class="feed-frame" id="fbFeed">
+          <div class="feed-fallback">
+            <p>Recent posts from our Facebook page show here.</p>
+            <a class="link-arrow" href="https://www.facebook.com/p/The-Bayou-Dollar-100091994943430/" target="_blank" rel="noopener">View them on Facebook</a>
+          </div>
+          <iframe
+            title="Recent Facebook posts from Pelican Row Estate &amp; Market"
+            src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fp%2FThe-Bayou-Dollar-100091994943430%2F&amp;tabs=timeline&amp;width=500&amp;height=620&amp;small_header=true&amp;hide_cover=true&amp;show_facepile=false"
+            loading="lazy"
+            scrolling="no"
+            allowfullscreen
+            allow="clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -303,6 +342,6 @@
   </div>
 </footer>
 
-<script src="script.js"></script>
+<script src="script.js?v=4"></script>
 </body>
 </html>

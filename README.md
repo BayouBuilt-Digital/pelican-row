@@ -7,7 +7,7 @@ monthly platform fee.
 ```
 index.html          the whole page
 styles.css          all styling
-script.js           mobile menu + contact form
+script.js           mobile menu, Facebook feed sizing, contact form
 assets/building.jpg storefront photo (pulled from the Wix site)
 assets/favicon.svg  browser-tab icon
 ```
@@ -30,6 +30,43 @@ Pages are free and take about a minute.
 
 When the domain moves off Wix, point `pelicanrowmarket.com` at the new host and
 the old `/home` and `/contact-3` URLs can redirect to `/`.
+
+### After editing `styles.css` or `script.js`
+
+Bump the version number on both tags in `index.html`:
+
+```html
+<link rel="stylesheet" href="styles.css?v=4">
+<script src="script.js?v=4"></script>
+```
+
+Change `4` to `5` (and so on), same number on both. Without this, a returning
+visitor's browser can reload the page's HTML but keep an old copy of the script
+or stylesheet from its cache, so the new page runs with old code. That is what
+made the Facebook feed show up as a blank white box during development.
+
+---
+
+## Facebook feed
+
+The Market section shows the page's live Facebook posts using Facebook's own
+page plugin. It updates itself; there is nothing to maintain.
+
+Things to know:
+
+- **Nothing inside it can be restyled.** It's Facebook's content in a frame,
+  so their fonts, colors and layout stay as they are. Only the frame around it
+  matches the site.
+- **Some visitors won't see it.** Browsers and extensions that block trackers
+  (Edge, Firefox and Brave privacy settings, uBlock Origin, Privacy Badger) often
+  block Facebook embeds. The page detects this and swaps the panel for a short
+  card: "Our Facebook posts can't load in this browser" with a working link to
+  the page. That is expected, not a fault.
+- **It depends on Facebook.** If Facebook changes or retires the plugin, the
+  panel shows that same fallback message.
+- **Changing its height** means changing it in two places, which must match:
+  `height=620` in the iframe URL in `index.html`, and `height: 620px` on
+  `.feed-frame` in `styles.css`. The width adjusts itself.
 
 ---
 
@@ -116,9 +153,10 @@ The Facebook link points at the working page from `/home`
 Instagram icons on the old contact page were Wix placeholders pointing at Wix's
 own accounts, so they were left off.
 
-**Written fresh** (not from Wix — reword freely): the hero line "Estate finds,
-secondhand treasure…", the "A whole row worth browsing" section and its three
-cards, and the short intros above the Visit and Contact sections. These describe
+**Written fresh** (not from Wix — reword freely): the hero line "Estate pieces,
+secondhand furniture…", the "What you'll find inside" section and its three
+cards, the Facebook feed copy, and the short intros above the Visit and Contact
+sections. These describe
 the business in general terms only; nothing there claims a specific fact.
 
 Hours came from you directly, not from either Wix page.
