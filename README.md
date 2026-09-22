@@ -149,7 +149,10 @@ section, since that's where it sends people anyway. The "Vendor booths" card up
 in The Market section covers the same ground for browsers.
 
 The Facebook link points at the working page from `/home`
-(`facebook.com/p/The-Bayou-Dollar-100091994943430`). The Twitter, LinkedIn, and
+(`facebook.com/p/Pelican-Row-Estate-Market-100091994943430/`, the address Facebook
+itself lists as canonical). The page was renamed from "The Bayou Dollar", so the
+older `/p/The-Bayou-Dollar-...`, `profile.php?id=...` and bare-numeric forms all
+still resolve to the same page if you meet them somewhere. The Twitter, LinkedIn, and
 Instagram icons on the old contact page were Wix placeholders pointing at Wix's
 own accounts, so they were left off.
 
