@@ -205,7 +205,11 @@ h3 { font-size: 1.22rem; letter-spacing: .005em; }
 .hero-text { display: flex; align-items: center; }
 .hero-card { width: 100%; }
 
-/* Same panel treatment as the map and the cards further down the page. */
+/* Same panel treatment as the map and the cards further down the page.
+   The photo is nearly square (1371x1261), which made the panel taller than
+   the text beside it. 4:3 trims that back. The trim is taken entirely off
+   the TOP, which is sky: the image is anchored to the bottom of the panel,
+   so the storefront, sign and forecourt are all kept. */
 .hero-media {
   position: relative;
   aspect-ratio: 4 / 3;
@@ -215,9 +219,11 @@ h3 { font-size: 1.22rem; letter-spacing: .005em; }
   box-shadow: var(--shadow);
 }
 .hero-media img {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover; object-position: 50% 58%;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 100%;   /* bottom-anchored: crop comes off the top */
 }
 
 h1 { display: grid; gap: .5rem; margin-bottom: 1.5rem; }
@@ -565,7 +571,7 @@ h1 { display: grid; gap: .5rem; margin-bottom: 1.5rem; }
 
   /* Below this the two columns get too narrow — stack them, photo underneath. */
   .hero-split { grid-template-columns: minmax(0, 1fr); gap: 2.25rem; }
-  .hero-media { aspect-ratio: 16 / 10; }
+  /* Same 4:3 crop on phones — taken off the top, same as desktop. */
 }
 
 @media (max-width: 760px) {
