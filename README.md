@@ -27,8 +27,9 @@ print/              printable sign for the register (not part of the site)
 
 ## Pages and navigation
 
-- **Top menu (every page):** About Us, Return Policy, Become a Vendor,
-  Our Vendors.
+- **Top menu (every page):** News & Events, About Us, Our Vendors,
+  Become a Vendor, Return Policy. Ordered by what a visitor is most
+  likely to want, with the policy page last.
 - **Footer (every page):** address, phone, email, Facebook, and
   Terms & Conditions.
 - **Facebook moved from the menu to the footer** when Our Vendors took
@@ -44,7 +45,7 @@ print/              printable sign for the register (not part of the site)
 ### The header and footer are copied into each page
 
 There's no build step and no templating, so the header and footer markup is
-duplicated across all six HTML files. **Changing a menu link, the address, or
+duplicated across all seven HTML files. **Changing a menu link, the address, or
 anything else in the header or footer means editing all five.** That is the
 cost of keeping the site buildless; the alternative would be a build step or
 rendering the header in JavaScript, which would hurt search engines.
@@ -121,6 +122,34 @@ Change `20` to `21` (and so on), same number on both. Without this, a returning
 visitor's browser can reload the page's HTML but keep an old copy of the script
 or stylesheet from its cache, so the new page runs with old code. That is what
 made the Facebook feed show up as a blank white box during development.
+
+---
+
+## News & Events page
+
+`events.html`. A dated list, newest first, for sales, seasonal markets and
+news. **It is a placeholder**: the three entries are examples showing the
+layout. The first card on the home page points here too.
+
+Entries with no `<time>` lay out the same way, because "upstairs is open now"
+belongs in this list as much as a dated sale does. When there is a date, the
+`datetime` attribute must be a real ISO date and must say the same thing as
+the human-readable text beside it; one is for machines, the other for people.
+
+**A stale events page is worse than no events page.** A visitor who sees a
+newest entry from eight months ago concludes the shop has closed. If nobody
+will keep it current, delete the page along with its menu link and the home
+page card, and let the Facebook feed do this job instead.
+
+### The menu breakpoint moved for this
+
+Adding a fifth link pushed the nav past the width it had available. With five
+links it needs roughly 840px beside the wordmark, so between 760px and about
+920px it wrapped onto a second row while the menu button was still hidden.
+The nav-collapse rules now live in their own `@media (max-width: 920px)`
+block, separate from the phone rules at 760px, so the button appears before
+the nav can wrap. **Adding a sixth link means re-measuring and raising that
+920.**
 
 ---
 
@@ -226,6 +255,38 @@ Two details worth keeping if you touch it:
 ## Become a Vendor page
 
 The booth enquiry form first, then vendor hours and terms.
+
+### Repeatable rows
+
+The "Website or social media" field grows extra rows, capped at three.
+The placeholders cycle Facebook, Instagram, then a plain website, so the
+third hint makes clear the field is not only for social accounts. Whatever
+a vendor puts here is what ends up on the Our Vendors page, so the label
+matches the wording used there. It is generic, driven entirely by
+attributes in the markup, so another form can reuse it without touching
+`script.js`:
+
+| attribute | what it does |
+| --- | --- |
+| `data-repeat` | the container holding `.repeat-row` elements |
+| `data-repeat-max` | how many rows are allowed (default 5) |
+| `data-repeat-examples` | pipe-separated placeholders, cycled per row |
+| `data-repeat-add` | the button, a sibling of the container |
+
+Cloned rows **drop the `id`** (ids have to stay unique, and the visible
+`<label for>` belongs to the first row only) and **keep `data-label`**,
+which is what the mailto block reads to caption each line in the email.
+They also gain an `aria-label` like "Website or social media 3" so it still
+announces itself without a label.
+
+`.add-row[hidden] { display: none }` is load-bearing on mobile, where
+`.add-row` is `display: inline-flex`. Without it the button stays on screen
+after the row limit is reached. See the note on the same trap under the
+vendor search.
+
+**This block was once lost entirely** and had to be rewritten from the
+markup contract, because it had never been committed. It is worth keeping
+`data-repeat` in a commit.
 
 **The form is the same mailto mechanism as the contact form**, so there is
 still no form service anywhere on the site. Both forms are now driven by one
@@ -414,6 +475,26 @@ four-colour mark, not text. Two things keep it honest:
 - The glyphs carry their own words. Each icon span is `role="img"` with an
   `aria-label`, and every `<svg>` inside is `aria-hidden`, so it announces as
   "Rated 5 out of 5 stars on Google" instead of "Rated on".
+
+### The review link
+
+After the rating, a hairline divider and a **Leave a review** link that opens
+Google's review form for this place directly:
+
+    https://search.google.com/local/writereview?placeid=ChIJq0lNZMefJIYRsoi2TTsf4Y0
+
+That endpoint needs a **Place ID** (`ChIJ...`), not the CID the rest of the
+site uses. There was no Place ID published anywhere for this listing, so it
+was derived: a Place ID is base64url of a small protobuf holding the two
+64-bit halves of the listing's feature id, which Google Maps exposes in the
+URL as `!1s0x86249fc7644d49ab:0x8de11f3b4db688b2`. The second half equals the
+CID we already had (10223486968675076274), which confirms the source, and the
+result was then checked by opening
+`maps/place/?q=place_id:ChIJq0lNZMefJIYRsoi2TTsf4Y0`, which loads Pelican Row
+at the right address.
+
+**If the link ever breaks, do not hand-edit that id.** Open the listing in
+Google Maps, copy the `!1s0x...:0x...` pair out of the URL, and re-derive it.
 
 Five hardcoded stars is the one claim to check occasionally; it is the rating
 with no review count, deliberately, and there are no dates. Both go stale, and

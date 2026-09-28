@@ -35,6 +35,91 @@
     });
   }
 
+  /* ── Repeatable field rows ───────────────────────────────
+     Any [data-repeat] container with a [data-repeat-add] button beside
+     it can grow copies of its first row. Used by the socials field on
+     Become a Vendor, and written generically so another form can reuse
+     it by adding the attributes and nothing else:
+
+       data-repeat            the container holding .repeat-row elements
+       data-repeat-max        how many rows are allowed (default 5)
+       data-repeat-examples   pipe-separated placeholders, cycled per row
+       data-repeat-add        the button, a sibling of the container
+
+     Clones drop the id, because ids have to stay unique and the visible
+     <label for> belongs to the first row only. They keep data-label,
+     which is what the mailto block reads to caption each line in the
+     email, and they gain an aria-label so the field still announces
+     itself to a screen reader. */
+
+  var repeats = document.querySelectorAll("[data-repeat]");
+
+  Array.prototype.forEach.call(repeats, function (wrap) {
+    var addBtn = wrap.parentNode.querySelector("[data-repeat-add]");
+    var first = wrap.querySelector(".repeat-row");
+    if (!addBtn || !first) return;
+
+    var max = parseInt(wrap.getAttribute("data-repeat-max"), 10) || 5;
+    var examples = (wrap.getAttribute("data-repeat-examples") || "")
+      .split("|").filter(function (s) { return s; });
+    var template = first.cloneNode(true);
+
+    var rows = function () { return wrap.querySelectorAll(".repeat-row"); };
+
+    var sync = function () {
+      var list = rows();
+      // One row has nothing to remove back to, so hide its button.
+      Array.prototype.forEach.call(list, function (row) {
+        var btn = row.querySelector(".row-remove");
+        if (btn) btn.hidden = list.length < 2;
+      });
+      addBtn.hidden = list.length >= max;
+    };
+
+    addBtn.addEventListener("click", function () {
+      var list = rows();
+      if (list.length >= max) return;
+
+      var row = template.cloneNode(true);
+      var input = row.querySelector("input");
+
+      if (input) {
+        input.value = "";
+        input.removeAttribute("id");
+        input.removeAttribute("aria-invalid");
+        var label = input.getAttribute("data-label") || input.name || "Entry";
+        input.setAttribute("aria-label", label + " " + (list.length + 1));
+        if (examples.length) {
+          input.placeholder = examples[list.length % examples.length];
+        }
+      }
+
+      wrap.appendChild(row);
+      sync();
+      if (input) input.focus();
+    });
+
+    // Delegated, so rows added later need no rebinding.
+    wrap.addEventListener("click", function (e) {
+      var btn = e.target.closest && e.target.closest(".row-remove");
+      if (!btn || btn.hidden || rows().length < 2) return;
+
+      var row = btn.closest(".repeat-row");
+      if (!row) return;
+
+      // Keep the keyboard somewhere sensible after the row disappears.
+      var neighbour = row.previousElementSibling || row.nextElementSibling;
+      row.parentNode.removeChild(row);
+      sync();
+
+      var focusTarget = neighbour && neighbour.querySelector("input");
+      if (focusTarget) focusTarget.focus();
+      else if (!addBtn.hidden) addBtn.focus();
+    });
+
+    sync();
+  });
+
   /* ── Facebook feed ───────────────────────────────────────
      Facebook draws the feed at the width in its URL and never
      reflows it, and it refuses to go above 500px (asking for 900

@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=49">
+<link rel="stylesheet" href="styles.css?v=58">
 
 <!-- Breadcrumbs, so a search result can show Home > Become a Vendor -->
 <script type="application/ld+json">
@@ -81,10 +81,12 @@
     </button>
 
     <nav class="site-nav" id="siteNav" aria-label="Main">
+      <a href="events.html">News &amp; Events</a>
       <a href="about.html">About Us</a>
-      <a href="return-policy.html">Return Policy</a>
-      <a href="become-a-vendor.html" aria-current="page">Become a Vendor</a>
       <a href="vendors.html">Our Vendors</a>
+      <a href="become-a-vendor.html" aria-current="page">Become a Vendor</a>
+      <a href="return-policy.html">Return Policy</a>
+
     </nav>
   </div>
 </header>
@@ -185,11 +187,15 @@
         <!-- A div, not a p: the repeat rows below are block elements and a
              <p> would close itself around them. -->
         <div class="field">
-          <label for="socials">Social media <span class="field-opt">optional</span></label>
-          <div class="repeat" data-repeat data-repeat-max="5"
-               data-repeat-examples="facebook.com/yourbooth|instagram.com/yourbooth|tiktok.com/@yourbooth|etsy.com/shop/yourbooth">
+          <label for="socials">Website or social media <span class="field-opt">optional</span></label>
+          <!-- Three rows, and the placeholders cycle Facebook, Instagram,
+               then a plain website, so the third hint shows this field is
+               not only for social accounts. These are what ends up on the
+               Our Vendors page, so the wording matches the ask there. -->
+          <div class="repeat" data-repeat data-repeat-max="3"
+               data-repeat-examples="facebook.com/yourbooth|instagram.com/yourbooth|yourbooth.com">
             <div class="repeat-row">
-              <input id="socials" name="socials" type="text" data-label="Social media"
+              <input id="socials" name="socials" type="text" data-label="Website or social media"
                      placeholder="facebook.com/yourbooth">
               <button type="button" class="row-remove" aria-label="Remove this entry" hidden>&times;</button>
             </div>
@@ -322,6 +328,6 @@
   </div>
 </footer>
 
-<script src="script.js?v=49"></script>
+<script src="script.js?v=58"></script>
 </body>
 </html>

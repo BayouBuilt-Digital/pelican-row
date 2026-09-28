@@ -37,7 +37,7 @@
      this HTML but can keep an old styles.css / script.js from cache, leaving
      new HTML running with an old script. Bump the number whenever either
      file changes (both tags, same number). -->
-<link rel="stylesheet" href="styles.css?v=49">
+<link rel="stylesheet" href="styles.css?v=58">
 
 <!-- Local business structured data, so Google shows the right info -->
 <script type="application/ld+json">
@@ -110,10 +110,12 @@
     </button>
 
     <nav class="site-nav" id="siteNav" aria-label="Main">
+      <a href="events.html">News &amp; Events</a>
       <a href="about.html">About Us</a>
-      <a href="return-policy.html">Return Policy</a>
-      <a href="become-a-vendor.html">Become a Vendor</a>
       <a href="vendors.html">Our Vendors</a>
+      <a href="become-a-vendor.html">Become a Vendor</a>
+      <a href="return-policy.html">Return Policy</a>
+
     </nav>
   </div>
 </header>
@@ -162,12 +164,12 @@
       </p>
 
       <ul class="cards">
-        <li class="card">
+        <li class="card card-link">
           <span class="card-mark" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M4 9h16v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M3 5h18l-1 4H4z"/><path d="M10 13h4"/></svg>
+            <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="1"/><path d="M3 10h18"/><path d="M8 3v4"/><path d="M16 3v4"/></svg>
           </span>
-          <h3>Estate pieces</h3>
-          <p>Furniture, decor, and one-off items sourced from local estates.</p>
+          <h3><a href="events.html">News &amp; events</a></h3>
+          <p>Sales, seasonal markets, and what&rsquo;s just landed on the floor.</p>
         </li>
         <li class="card card-link">
           <span class="card-mark" aria-hidden="true">
@@ -175,7 +177,7 @@
           </span>
           <!-- The link in the heading covers the whole card (see .card-link
                in styles.css), so there is still only one thing to tab to. -->
-          <h3><a href="become-a-vendor.html">Vendor booths</a></h3>
+          <h3><a href="vendors.html">Vendor booths</a></h3>
           <p>Independent sellers, each running their own booth inside the market.</p>
         </li>
         <li class="card card-link">
@@ -230,6 +232,11 @@
               <span class="g-stars" role="img" aria-label="5 out of 5 stars"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.1 6.1 20.2l1.2-6.6L2.5 9l6.6-.9z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.1 6.1 20.2l1.2-6.6L2.5 9l6.6-.9z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.1 6.1 20.2l1.2-6.6L2.5 9l6.6-.9z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.1 6.1 20.2l1.2-6.6L2.5 9l6.6-.9z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.1 6.1 20.2l1.2-6.6L2.5 9l6.6-.9z"/></svg></span>
               on
               <span class="g-mark" role="img" aria-label="Google"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg></span>
+              <span class="reviews-sep" aria-hidden="true"></span>
+              <a class="reviews-cta"
+                 href="https://search.google.com/local/writereview?placeid=ChIJq0lNZMefJIYRsoi2TTsf4Y0"
+                 target="_blank" rel="noopener"
+                 aria-label="Leave a review for Pelican Row on Google">Leave a review</a>
             </p>
 
             <ul class="reviews-track" data-carousel-track tabindex="0" role="region" aria-label="Google reviews">
@@ -455,6 +462,6 @@
   </div>
 </footer>
 
-<script src="script.js?v=49"></script>
+<script src="script.js?v=58"></script>
 </body>
 </html>

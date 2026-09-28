@@ -348,6 +348,31 @@ h1 { display: grid; gap: .5rem; margin-bottom: 1.5rem; }
 .g-mark { display: inline-flex; }
 .g-mark svg { width: 14px; height: 14px; }
 
+/* Hairline divider between the rating and the call to action. Decorative,
+   so it is aria-hidden in the markup and drawn here rather than typed as a
+   character a screen reader would read out. */
+.reviews-sep {
+  flex: none;
+  width: 1px;
+  height: 1.1em;
+  background: var(--line);
+  margin-inline: .2rem;
+}
+
+/* Deep-links straight into Google's review form for this place. The place
+   id was derived from the listing's feature id and checked against the
+   live listing; see the README before changing it. */
+.reviews-cta {
+  color: var(--brick);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color .18s, color .18s;
+}
+.reviews-cta:hover {
+  color: var(--brick-deep);
+  border-bottom-color: currentColor;
+}
+
 
 .reviews-track {
   list-style: none;
@@ -359,7 +384,12 @@ h1 { display: grid; gap: .5rem; margin-bottom: 1.5rem; }
   scrollbar-width: none;
   overscroll-behavior-x: contain;
   border-radius: var(--radius);
-  background: var(--paper-card);
+  /* Pure white, not --paper-card, and this is the one place on the site
+     that should be. The screenshots are #ffffff to their edges, so the
+     warm off-white left a visible seam where the letterboxing met the
+     image. If the screenshots are ever retaken against a different
+     background, re-sample their edges and match this to it. */
+  background: #fff;
   box-shadow: 0 0 0 1px var(--line), var(--shadow);
 }
 .reviews-track::-webkit-scrollbar { display: none; }
@@ -536,7 +566,11 @@ h1 { display: grid; gap: .5rem; margin-bottom: 1.5rem; }
   font-size: clamp(1.6rem, 1.2rem + 1.2vw, 2.1rem);
   margin-bottom: .6rem;
 }
-.feed-copy p:not(.eyebrow) {
+/* Direct children only. This is the column's body copy: the 40ch measure is
+   right for a paragraph and wrong for anything nested below, which is how it
+   ended up clamping the reviews title to 294px and wrapping the review link
+   onto its own row. The child combinator keeps it aimed at what it is for. */
+.feed-copy > p:not(.eyebrow) {
   color: var(--ink-soft);
   max-width: 40ch;
   margin: 0 0 1.6rem;
@@ -777,6 +811,10 @@ h1 { display: grid; gap: .5rem; margin-bottom: 1.5rem; }
   cursor: pointer;
 }
 .add-row::before { content: "+ "; }
+/* The mobile block below gives .add-row display:inline-flex, which would
+   outrank the UA's [hidden]{display:none} and leave the button on screen
+   after the row limit is reached. Same trap as .carousel-nav and .vendor. */
+.add-row[hidden] { display: none; }
 .add-row:hover { color: var(--brick-deep); text-decoration: underline; }
 
 /* Marks an optional field without shouting about it. */
@@ -830,6 +868,39 @@ h1 { display: grid; gap: .5rem; margin-bottom: 1.5rem; }
 }
 
 .page-body { padding-block: clamp(2.5rem, 2rem + 2vw, 3.75rem) clamp(3.5rem, 2.5rem + 4vw, 5.5rem); }
+
+/* ── News & events ────────────────────────────────────────
+   A dated list, newest first. Entries with no date lay out the same way,
+   because "upstairs is open now" belongs here as much as a sale does. */
+
+.events {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: 68ch;
+}
+
+.event {
+  padding: 1.75rem 0;
+  border-top: 1px solid var(--line-soft);
+}
+.event:first-child { border-top: 0; padding-top: 0; }
+
+.event-when {
+  margin: 0 0 .35rem;
+  font-family: var(--sans);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--brick);
+}
+
+.event h2 {
+  font-size: clamp(1.3rem, 1.1rem + .7vw, 1.6rem);
+  margin: 0 0 .5rem;
+}
+.event p:not(.event-when) { margin: 0; color: var(--ink-soft); }
 
 /* ── Vendor directory ─────────────────────────────────────
    A list of independent sellers with links out to their own sites. The
@@ -1104,9 +1175,12 @@ h1 { display: grid; gap: .5rem; margin-bottom: 1.5rem; }
   /* Same 4:3 crop on phones — taken off the top, same as desktop. */
 }
 
-@media (max-width: 760px) {
-  body { font-size: 16px; }
-
+/* The menu collapses to the button earlier than the rest of the mobile
+   rules, and on its own breakpoint on purpose. With five links the nav
+   needs about 840px beside the wordmark, so between 760px and here it
+   used to wrap onto a second row while the button was still hidden.
+   If a sixth link is ever added, re-measure and raise this number. */
+@media (max-width: 920px) {
   .nav-toggle { display: inline-flex; }
 
   .site-nav {
@@ -1122,6 +1196,11 @@ h1 { display: grid; gap: .5rem; margin-bottom: 1.5rem; }
   .site-nav a { padding-block: .9rem; border-bottom: 1px solid var(--line-soft); }
   .site-nav a:hover { border-bottom-color: var(--line-soft); }
   .site-nav a:last-child { border-bottom: 0; }
+
+}
+
+@media (max-width: 760px) {
+  body { font-size: 16px; }
 
   .lede { max-width: none; }
 
@@ -1154,6 +1233,15 @@ h1 { display: grid; gap: .5rem; margin-bottom: 1.5rem; }
   .footer-links a,
   .footer-credit a,
   .prose p a { padding-block: .35rem; }
+
+  /* A flex item, so padding would grow the whole line. min-height lifts it
+     the 2px it needs to clear the 24px floor; inline-flex keeps the label
+     centred in the slightly taller box. */
+  .reviews-cta {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+  }
 
   /* Phone numbers and email addresses are the main thing anyone does on
      a phone here, and they were 26px tall. */
