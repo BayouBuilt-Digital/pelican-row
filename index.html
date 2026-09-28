@@ -6,15 +6,29 @@
 <title>Pelican Row Estate &amp; Market | Lafayette, LA</title>
 <meta name="description" content="Pelican Row Estate &amp; Market is an estate and vendor market at 6413 Johnston St. in Lafayette, Louisiana. Visit us, or reach out about becoming a vendor.">
 <link rel="canonical" href="https://www.pelicanrowmarket.com/">
-<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <meta name="theme-color" content="#faf5ea">
 
-<!-- Open Graph / social sharing -->
+<!-- Open Graph / social sharing. Facebook is this business's main channel,
+     so a shared link has to render as a card rather than a bare URL.
+     og-image.jpg is 1200x630, built by tools/make-og-image.py: the hero
+     photo is 4:3 and every platform crops it differently, usually across
+     the sign. -->
+<meta property="og:site_name" content="Pelican Row Estate &amp; Market">
+<meta property="og:locale" content="en_US">
 <meta property="og:type" content="business.business">
 <meta property="og:title" content="Pelican Row Estate &amp; Market">
-<meta property="og:description" content="An estate and vendor market on Johnston Street in Lafayette, Louisiana.">
-<meta property="og:image" content="https://www.pelicanrowmarket.com/assets/building.jpg">
+<meta property="og:description" content="An estate and vendor market on Johnston Street in Lafayette, Louisiana. More than 100 vendors under one roof.">
+<meta property="og:image" content="https://www.pelicanrowmarket.com/assets/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Pelican Row Estate &amp; Market storefront on Johnston Street in Lafayette">
 <meta property="og:url" content="https://www.pelicanrowmarket.com/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Pelican Row Estate &amp; Market">
+<meta name="twitter:description" content="An estate and vendor market on Johnston Street in Lafayette, Louisiana. More than 100 vendors under one roof.">
+<meta name="twitter:image" content="https://www.pelicanrowmarket.com/assets/og-image.jpg">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,18 +37,30 @@
      this HTML but can keep an old styles.css / script.js from cache, leaving
      new HTML running with an old script. Bump the number whenever either
      file changes (both tags, same number). -->
-<link rel="stylesheet" href="styles.css?v=7">
+<link rel="stylesheet" href="styles.css?v=49">
 
 <!-- Local business structured data, so Google shows the right info -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Store",
+  "@id": "https://www.pelicanrowmarket.com/#store",
   "name": "Pelican Row Estate & Market",
-  "image": "https://www.pelicanrowmarket.com/assets/building.jpg",
+  "description": "An estate and vendor market on Johnston Street in Lafayette, Louisiana, with more than 100 vendors selling antiques, vintage furniture, home decor, collectibles and estate pieces across two floors.",
+  "image": [
+    "https://www.pelicanrowmarket.com/assets/og-image.jpg",
+    "https://www.pelicanrowmarket.com/assets/building.jpg"
+  ],
+  "logo": "https://www.pelicanrowmarket.com/assets/logo.png",
   "url": "https://www.pelicanrowmarket.com/",
   "telephone": "+1-337-915-9602",
   "email": "james@pelicanrowmarket.com",
+  "priceRange": "$$",
+  "areaServed": {
+    "@type": "City",
+    "name": "Lafayette",
+    "containedInPlace": { "@type": "State", "name": "Louisiana" }
+  },
   "address": {
     "@type": "PostalAddress",
     "streetAddress": "6413 Johnston St, Ste 400",
@@ -84,13 +110,10 @@
     </button>
 
     <nav class="site-nav" id="siteNav" aria-label="Main">
-      <a href="#market">The Market</a>
-      <a href="#visit">Visit</a>
-      <a href="#contact">Contact</a>
-      <a class="nav-fb" href="https://www.facebook.com/p/Pelican-Row-Estate-Market-100091994943430/" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.25-1.5 1.55-1.5h1.65V3.6A22 22 0 0 0 14.3 3.5c-2.4 0-4 1.45-4 4.1v2.3H7.6V13h2.7v8z"/></svg>
-        <span>Facebook</span>
-      </a>
+      <a href="about.html">About Us</a>
+      <a href="return-policy.html">Return Policy</a>
+      <a href="become-a-vendor.html">Become a Vendor</a>
+      <a href="vendors.html">Our Vendors</a>
     </nav>
   </div>
 </header>
@@ -122,7 +145,7 @@
       </div>
 
       <div class="hero-media">
-        <img src="assets/building.jpg" alt="The Pelican Row Estate &amp; Market storefront on Johnston Street in Lafayette" width="1371" height="1261" fetchpriority="high">
+        <img src="assets/building.jpg" alt="The Pelican Row Estate &amp; Market storefront on Johnston Street in Lafayette" width="960" height="720" fetchpriority="high">
       </div>
     </div>
   </section>
@@ -146,18 +169,20 @@
           <h3>Estate pieces</h3>
           <p>Furniture, decor, and one-off items sourced from local estates.</p>
         </li>
-        <li class="card">
+        <li class="card card-link">
           <span class="card-mark" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M4 20V8l8-4 8 4v12"/><path d="M9 20v-6h6v6"/></svg>
           </span>
-          <h3>Vendor booths</h3>
+          <!-- The link in the heading covers the whole card (see .card-link
+               in styles.css), so there is still only one thing to tab to. -->
+          <h3><a href="become-a-vendor.html">Vendor booths</a></h3>
           <p>Independent sellers, each running their own booth inside the market.</p>
         </li>
-        <li class="card">
+        <li class="card card-link">
           <span class="card-mark" aria-hidden="true">
             <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m16 16 5 5"/></svg>
           </span>
-          <h3>Looking for something specific?</h3>
+          <h3><a href="#contact">Looking for something specific?</a></h3>
           <p>Tell us what you&rsquo;re after and we&rsquo;ll watch for it as new pieces come in.</p>
         </li>
       </ul>
@@ -174,26 +199,107 @@
           <p class="eyebrow">On Facebook</p>
           <h3>Recent posts from the market</h3>
           <p>
-            We share new arrivals and booth updates from our vendors on
-            Facebook as they come in.
+            Half the fun is finding something you weren&rsquo;t looking for.
+            Here&rsquo;s what just hit the floor: one of a kind, and gone is
+            gone.
           </p>
           <a class="fb-button" href="https://www.facebook.com/p/Pelican-Row-Estate-Market-100091994943430/" target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.25-1.5 1.55-1.5h1.65V3.6A22 22 0 0 0 14.3 3.5c-2.4 0-4 1.45-4 4.1v2.3H7.6V13h2.7v8z"/></svg>
             <span>Follow on Facebook</span>
           </a>
+
+          <!--
+            Google reviews, as the screenshots the owner supplied. They are
+            pictures on purpose: the stars, the profile photos and Google's
+            own styling are what make them read as real. The full text of
+            each one is in its alt attribute, so screen readers and search
+            engines still get the words.
+
+            TO ADD ONE: drop the image in assets/reviews/, copy a slide, and
+            add a matching dot button. Set width/height to the file's real
+            pixel size so the slot doesn't jump while it loads. Newest first.
+          -->
+          <div class="reviews">
+            <!-- Reads "Rated 5 out of 5 stars on Google" to a screen
+                 reader: the two icons carry the words the glyphs stand
+                 for, so nobody gets "Rated on". The star gold is sampled
+                 from the screenshots below (#ffbb29) so the inline stars
+                 and the ones in the images are the same colour. -->
+            <p class="reviews-title">
+              Rated
+              <span class="g-stars" role="img" aria-label="5 out of 5 stars"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.1 6.1 20.2l1.2-6.6L2.5 9l6.6-.9z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.1 6.1 20.2l1.2-6.6L2.5 9l6.6-.9z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.1 6.1 20.2l1.2-6.6L2.5 9l6.6-.9z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.1 6.1 20.2l1.2-6.6L2.5 9l6.6-.9z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.1 6.1 20.2l1.2-6.6L2.5 9l6.6-.9z"/></svg></span>
+              on
+              <span class="g-mark" role="img" aria-label="Google"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg></span>
+            </p>
+
+            <ul class="reviews-track" data-carousel-track tabindex="0" role="region" aria-label="Google reviews">
+              <li class="review-slide">
+                <img src="assets/reviews/1-tonya-connolly.png" alt="Tonya Connolly, five stars on Google: “Fun. Alot to see.”"
+                     width="391" height="169">
+              </li>
+              <li class="review-slide">
+                <img src="assets/reviews/2-jeanne-floreani.png" alt="Jeanne Floreani, five stars on Google: “Amazing selection! Good prices. Friendly staff. Thoroughly enjoyed ourselves.”"
+                     width="395" height="189">
+              </li>
+              <li class="review-slide">
+                <img src="assets/reviews/3-tiffany-savoy.png" alt="Tiffany Savoy, five stars on Google: “SUCH a cool place. So many different vendors selling different and unique items.”"
+                     width="394" height="189">
+              </li>
+              <li class="review-slide">
+                <img src="assets/reviews/4-krista-barras.png" alt="Krista Barras, five stars on Google: “Love this little shop! Or not so little! It offers a variety of treasures!”"
+                     width="400" height="199">
+              </li>
+              <li class="review-slide">
+                <img src="assets/reviews/5-jaclyn-soileau.png" alt="Jaclyn Soileau, five stars on Google: “Great little antique store tucked away. When you are looking for it, just look for the Edward Jones Investment sign before Waffle House. Its just down from EJ in the same Center. You will find nearly everything you are looking for!!”"
+                     width="394" height="204">
+              </li>
+            </ul>
+
+            <div class="reviews-controls" data-carousel-nav>
+              <button type="button" class="carousel-btn" data-carousel-prev aria-label="Previous review">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 4l-8 8 8 8"/></svg>
+              </button>
+
+              <div class="reviews-dots" data-carousel-dots>
+                <button type="button" class="reviews-dot" aria-label="Review 1 of 5" aria-current="true"></button>
+                <button type="button" class="reviews-dot" aria-label="Review 2 of 5"></button>
+                <button type="button" class="reviews-dot" aria-label="Review 3 of 5"></button>
+                <button type="button" class="reviews-dot" aria-label="Review 4 of 5"></button>
+                <button type="button" class="reviews-dot" aria-label="Review 5 of 5"></button>
+              </div>
+
+              <button type="button" class="carousel-btn" data-carousel-next aria-label="Next review">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4l8 8-8 8"/></svg>
+              </button>
+            </div>
+          </div>
+
         </div>
         <div class="feed-frame" id="fbFeed">
-          <div class="feed-fallback">
-            <p>Recent posts from our Facebook page show here.</p>
-            <a class="link-arrow" href="https://www.facebook.com/p/Pelican-Row-Estate-Market-100091994943430/" target="_blank" rel="noopener">View them on Facebook</a>
+          <!-- Our own header strip. Facebook's is cropped out (it renders
+               broken for this page), so this replaces it in site styling and
+               stops the panel starting abruptly mid-post. -->
+          <div class="feed-head">
+            <img class="feed-avatar" src="assets/logo-72.png" alt="" width="34" height="34">
+            <span class="feed-head-name">Pelican Row Estate &amp; Market</span>
+            <a class="feed-head-follow" href="https://www.facebook.com/p/Pelican-Row-Estate-Market-100091994943430/" target="_blank" rel="noopener">Follow</a>
           </div>
-          <iframe
+          <div class="feed-body">
+            <div class="feed-fallback">
+              <p>Recent posts from our Facebook page show here.</p>
+              <a class="link-arrow" href="https://www.facebook.com/p/Pelican-Row-Estate-Market-100091994943430/" target="_blank" rel="noopener">View them on Facebook</a>
+            </div>
+            <!-- script.js sizes the iframe and scales this wrapper. -->
+            <div class="feed-scale">
+              <iframe
             title="Recent Facebook posts from Pelican Row Estate &amp; Market"
-            src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fp%2FPelican-Row-Estate-Market-100091994943430%2F&amp;tabs=timeline&amp;width=500&amp;height=620&amp;small_header=true&amp;hide_cover=true&amp;show_facepile=false"
+            src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fp%2FPelican-Row-Estate-Market-100091994943430%2F&amp;tabs=timeline&amp;width=500&amp;height=690&amp;small_header=true&amp;hide_cover=true&amp;show_facepile=false"
             loading="lazy"
             scrolling="no"
             allowfullscreen
             allow="clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -336,8 +442,12 @@
     <p class="footer-address">
       6413 Johnston St, Ste&nbsp;400 &middot; Lafayette, LA 70503<br>
       <a href="tel:+13379159602">337.915.9602</a> &middot;
-      <a href="mailto:james@pelicanrowmarket.com">james@pelicanrowmarket.com</a>
+      <a href="mailto:james@pelicanrowmarket.com">james@pelicanrowmarket.com</a> &middot;
+      <a href="https://www.facebook.com/p/Pelican-Row-Estate-Market-100091994943430/" target="_blank" rel="noopener">Facebook</a>
     </p>
+    <nav class="footer-links" aria-label="Legal">
+      <a href="terms.html">Terms &amp; Conditions</a>
+    </nav>
     <div class="footer-meta">
       <p class="footer-legal">&copy; <span id="year">2026</span> Pelican Row Estate &amp; Market</p>
       <p class="footer-credit">Website by <a href="https://bayoubuilt-digital.com/" target="_blank" rel="noopener">BayouBuilt Digital</a></p>
@@ -345,6 +455,6 @@
   </div>
 </footer>
 
-<script src="script.js?v=7"></script>
+<script src="script.js?v=49"></script>
 </body>
 </html>

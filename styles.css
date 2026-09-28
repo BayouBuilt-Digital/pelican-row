@@ -23,6 +23,11 @@
   --brick-deep: #7b3b22;
   --brick-wash: #f0e0d6;
 
+  /* The navy off the storefront: the roofline reads around #294366 and the
+     pelican on the sign is darker again. The only cool colour in the
+     palette, so use it sparingly or it stops meaning anything. */
+  --navy:       #223e65;
+
   /* Lines */
   --line:       rgba(51, 39, 31, 0.14);
   --line-soft:  rgba(51, 39, 31, 0.08);
@@ -42,6 +47,10 @@ html { scroll-behavior: smooth; scroll-padding-top: 88px; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+  /* The global rule above only kills the timing; without this the card would
+     still jump to its scaled size. Colour and shadow still respond. */
+  .card:hover,
+  .vendor:hover { transform: none; }
 }
 
 body {
@@ -169,6 +178,8 @@ h3 { font-size: 1.22rem; letter-spacing: .005em; }
   transition: border-color .18s, color .18s;
 }
 .site-nav a:hover { color: var(--brick); border-bottom-color: var(--brick); }
+/* Marks which page you're on. */
+.site-nav a[aria-current="page"] { color: var(--brick); border-bottom-color: var(--brick); }
 
 .nav-fb { display: inline-flex; align-items: center; gap: .45rem; }
 .nav-fb svg { width: 17px; height: 17px; fill: currentColor; }
@@ -206,10 +217,10 @@ h3 { font-size: 1.22rem; letter-spacing: .005em; }
 .hero-card { width: 100%; }
 
 /* Same panel treatment as the map and the cards further down the page.
-   The photo is nearly square (1371x1261), which made the panel taller than
-   the text beside it. 4:3 trims that back. The trim is taken entirely off
-   the TOP, which is sky: the image is anchored to the bottom of the panel,
-   so the storefront, sign and forecourt are all kept. */
+   The storefront photo is 960x720, which is exactly this 4:3 panel, so
+   nothing is cropped. cover + bottom anchoring are kept anyway so that a
+   replacement photo of a different shape still behaves: it would lose sky
+   off the top rather than the sign or the forecourt. */
 .hero-media {
   position: relative;
   aspect-ratio: 4 / 3;
@@ -295,6 +306,129 @@ h1 { display: grid; gap: .5rem; margin-bottom: 1.5rem; }
 .section { padding-block: clamp(3.75rem, 2.5rem + 5vw, 6.5rem); }
 .section-tint { background: var(--paper-tint); }
 
+/* ── Google reviews carousel ──────────────────────────────
+   Lives in the copy column beside the Facebook feed, filling the space
+   under the Follow button. One review at a time, because the column is
+   narrow and these are screenshots at their natural size.
+   The track is a plain scroller, so swipe and arrow keys work on their
+   own; the buttons and dots just drive scrollLeft. */
+
+/* Sits clear of the Follow button above it, so the reviews read as their
+   own block rather than as part of the Facebook copy. */
+.reviews {
+  /* The gap is split either side of the rule rather than stacked on one
+     side, so the line sits centred in it. 3rem + 3rem = the 6rem total. */
+  margin-top: 3rem;
+  padding-top: 3rem;
+  border-top: 1px solid var(--line);
+  max-width: 400px;
+}
+
+.reviews-title {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  flex-wrap: wrap;
+  font-family: var(--sans);
+  font-size: .8rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin: 0 0 .7rem;
+}
+
+/* Gold sampled from the screenshots so these stars and the ones inside the
+   images are the same colour rather than nearly the same. */
+.g-stars { display: inline-flex; gap: .09rem; }
+.g-stars svg { width: 15px; height: 15px; fill: #ffbb29; }
+
+/* Google's own four-colour mark, used as attribution. Sized to the cap
+   height of the text beside it so the line doesn't look pasted together. */
+.g-mark { display: inline-flex; }
+.g-mark svg { width: 14px; height: 14px; }
+
+
+.reviews-track {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+  border-radius: var(--radius);
+  background: var(--paper-card);
+  box-shadow: 0 0 0 1px var(--line), var(--shadow);
+}
+.reviews-track::-webkit-scrollbar { display: none; }
+.reviews-track:focus-visible { outline: 2px solid var(--brick); outline-offset: 3px; }
+
+/* Each slide is the full width of the frame: one review on screen at a
+   time, whatever the column is doing. The screenshots differ in height,
+   so they sit centred in a slot as tall as the tallest one instead of
+   making the panel jump between reviews. */
+.review-slide {
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+  display: grid;
+  place-items: center;
+  padding: .5rem;
+}
+.review-slide img { width: 100%; height: auto; }
+
+.reviews-controls {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  margin-top: .85rem;
+}
+
+.carousel-btn {
+  flex: none;
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--paper-card);
+  color: var(--ink);
+  cursor: pointer;
+  transition: background-color .18s, border-color .18s, color .18s, opacity .18s;
+}
+.carousel-btn svg {
+  width: 15px; height: 15px;
+  fill: none; stroke: currentColor; stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.carousel-btn:hover:not(:disabled) { color: var(--brick); border-color: var(--brick); }
+.carousel-btn:disabled { opacity: .35; cursor: default; }
+
+.reviews-dots { display: flex; margin-inline: auto; }
+
+/* The button IS the touch target (20x24), and the visible 8px dot is drawn
+   by the pseudo-element inside it. An earlier version kept 8px buttons and
+   overflowed a bigger ::before out of each one, but neighbouring dots then
+   overlapped and stole each other's clicks. */
+.reviews-dot {
+  width: 20px; height: 24px;
+  padding: 0;
+  border: 0;
+  background: none;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.reviews-dot::before {
+  content: "";
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--line);
+  transition: background-color .18s, transform .18s;
+}
+.reviews-dot:hover::before { background: var(--ink-faint); }
+.reviews-dot[aria-current="true"]::before { background: var(--brick); transform: scale(1.25); }
+
 /* ── Cards ───────────────────────────────────────────────── */
 
 .cards {
@@ -304,14 +438,63 @@ h1 { display: grid; gap: .5rem; margin-bottom: 1.5rem; }
 }
 
 .card {
+  position: relative;          /* so a hovered card can sit above its neighbours */
   background: var(--paper-card);
   border: 1px solid var(--line-soft);
   border-radius: var(--radius);
   padding: 2rem 1.75rem;
   box-shadow: var(--shadow);
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+}
+
+/* Only on devices that really hover. On a touch screen :hover can stick
+   after a tap and leave a card stranded in its lifted state. */
+@media (hover: hover) {
+  .card:hover {
+    transform: translateY(-4px) scale(1.02);
+    border-color: var(--line);
+    box-shadow: 0 2px 4px rgba(51, 39, 31, .06), 0 22px 44px -22px rgba(51, 39, 31, .45);
+    z-index: 1;
+  }
+  .card:hover .card-mark {
+    background: var(--brick);
+    color: var(--paper-card);
+  }
 }
 .card h3 { margin-bottom: .45rem; }
 .card p { margin: 0; color: var(--ink-soft); font-size: .97rem; }
+
+/* Two of the three cards lead somewhere. The link sits in the heading but
+   its ::before covers the whole card, so the entire card is clickable while
+   there is still only one thing for a keyboard to land on. */
+.card-link { cursor: pointer; }
+.card-link h3 a {
+  color: inherit;
+  text-decoration: none;
+}
+.card-link h3 a::before {
+  content: "";
+  position: absolute;
+  inset: 0;                       /* the click target */
+}
+/* The arrow marks which cards go somewhere, so the hover lift isn't the only
+   clue and the card that doesn't link can't be mistaken for one. */
+.card-link h3 a::after {
+  content: " \2192";
+  display: inline-block;
+  font-family: var(--sans);       /* the serif has no arrow glyph */
+  color: var(--brick);
+  transition: transform .22s ease;
+}
+.card-link:hover h3 a { color: var(--brick); }
+.card-link:hover h3 a::after { transform: translateX(4px); }
+
+/* Keyboard focus should ring the whole card, not just the heading text. */
+.card-link:has(a:focus-visible) {
+  outline: 2px solid var(--brick);
+  outline-offset: 3px;
+}
+.card-link h3 a:focus-visible { outline: none; }
 
 .card-mark {
   display: grid; place-items: center;
@@ -320,6 +503,7 @@ h1 { display: grid; gap: .5rem; margin-bottom: 1.5rem; }
   border-radius: 50%;
   background: var(--brick-wash);
   color: var(--brick);
+  transition: background-color .22s ease, color .22s ease;
 }
 .card-mark svg {
   width: 21px; height: 21px;
@@ -330,8 +514,15 @@ h1 { display: grid; gap: .5rem; margin-bottom: 1.5rem; }
 /* ── Facebook feed (inside The Market) ───────────────────── */
 
 .feed {
+  /* ONE number controls the feed's size. Facebook renders it at 500px max
+     (tested: asking for 900 returns 498), so anything wider comes from
+     magnifying it here, not from Facebook. The panel width is derived, so
+     the feed always exactly fills its frame. 1 = no magnification. */
+  --feed-scale: 1.1;
+  --feed-w: calc(500px * var(--feed-scale));
+
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 500px);  /* 500 = Facebook's max */
+  grid-template-columns: minmax(0, 1fr) minmax(0, var(--feed-w));
   gap: clamp(2rem, 1rem + 3vw, 4rem);
   /* Top, not center: the feed is tall, and centered copy floated in the
      middle of it. Aligned to the top it reads as the feed's heading. */
@@ -356,47 +547,74 @@ h1 { display: grid; gap: .5rem; margin-bottom: 1.5rem; }
 .feed-frame {
   position: relative;
   width: 100%;
-  max-width: 500px;
-  /* The frame owns the height, not the iframe: some blockers collapse a
-     blocked iframe entirely, and the fallback needs this box to stay put.
-     Must match height= in the iframe URL. */
-  height: 620px;
+  max-width: var(--feed-w);
   justify-self: end;
   background: #fff;
   border-radius: var(--radius);
   overflow: hidden;
-  /* A 1px ring instead of a border, so the frame's width IS the feed's width
-     (500 on desktop) with no border to subtract. */
   box-shadow: 0 0 0 1px var(--line), var(--shadow);
 }
 
-/* Sits behind the iframe. An empty or blocked iframe is transparent, so this
-   shows through; a loaded feed is opaque and covers it. */
-.feed-fallback {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-content: center;
-  justify-items: center;
-  gap: .35rem;
-  padding: 2rem;
-  text-align: center;
+/* Our own header strip, in place of Facebook's cropped one. */
+.feed-head {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  padding: .7rem .9rem;
+  background: var(--paper-card);
+  border-bottom: 1px solid var(--line);
 }
-.feed-fallback p { margin: 0; color: var(--ink-soft); font-size: .95rem; }
+.feed-avatar { flex: none; width: 34px; height: 34px; border-radius: 50%; }
+.feed-head-name {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--serif);
+  font-size: 1.02rem;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.feed-head-follow {
+  flex: none;
+  padding: .32rem .7rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--brick);
+  text-decoration: none;
+  transition: background-color .18s, border-color .18s;
+}
+.feed-head-follow:hover { background: var(--brick-wash); border-color: var(--brick); }
 
-.feed-frame iframe {
-  position: relative;   /* later in the markup + positioned = painted on top */
-  display: block;
-  width: 100%;
-  height: 100%;
-  border: 0;
+/* The window the feed shows through.
+   --feed-scale > 1 magnifies the feed past Facebook's 500px ceiling: the
+   iframe is rendered narrow and scaled up, so everything inside grows.
+   --feed-crop hides Facebook's own 70px header (fixed at every width). */
+.feed-body {
+  --feed-height: 740px;
+  --feed-crop: 70px;
+
+  position: relative;
+  height: var(--feed-height);
+  overflow: hidden;
 }
+.feed-scale {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;          /* script.js sets the transform and offset */
+}
+.feed-scale iframe { display: block; border: 0; }
 
 /* Set by script.js when this browser refuses to load Facebook. The empty
    iframe is removed so it can't swallow clicks, and with no feed to make
    room for, the panel shrinks to fit the message. */
-.feed-frame.is-blocked { height: auto; }
-.feed-frame.is-blocked iframe { display: none; }
+.feed-frame.is-blocked .feed-body { height: auto; }
+.feed-frame.is-blocked .feed-scale { display: none; }
 .feed-frame.is-blocked .feed-fallback { position: static; padding: 2.75rem 2rem; }
 
 /* ── Visit ───────────────────────────────────────────────── */
@@ -472,6 +690,7 @@ h1 { display: grid; gap: .5rem; margin-bottom: 1.5rem; }
 .fb-button svg { width: 18px; height: 18px; fill: var(--brick); }
 .fb-button:hover { color: var(--brick); border-color: var(--brick); }
 
+
 .form {
   background: var(--paper-card);
   border: 1px solid var(--line-soft);
@@ -491,11 +710,12 @@ h1 { display: grid; gap: .5rem; margin-bottom: 1.5rem; }
 }
 
 .field input,
+.field select,
 .field textarea {
   font: inherit;
   font-size: .97rem;
   color: var(--ink);
-  background: var(--paper);
+  background-color: var(--paper);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: .68rem .8rem;
@@ -504,11 +724,72 @@ h1 { display: grid; gap: .5rem; margin-bottom: 1.5rem; }
 }
 .field textarea { resize: vertical; min-height: 7rem; }
 
+/* Drop the OS dropdown styling and draw our own chevron, so the select
+   matches the text inputs beside it. */
+.field select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 2.4rem;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%236d5c4e' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right .85rem center;
+  background-size: 12px 8px;
+}
+.field select:invalid { color: var(--ink-faint); }   /* the "Choose one" state */
+
 .field input:focus,
-.field textarea:focus { background: #fff; border-color: var(--brick); }
+.field select:focus,
+.field textarea:focus { background-color: #fff; border-color: var(--brick); }
+
+/* Repeatable field rows (the social media entries). */
+.repeat { display: grid; gap: .5rem; }
+.repeat-row { display: flex; gap: .5rem; align-items: center; }
+.repeat-row input { flex: 1; min-width: 0; }
+
+.row-remove {
+  flex: none;
+  width: 2.35rem;
+  align-self: stretch;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: none;
+  color: var(--ink-faint);
+  font: inherit;
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color .18s, border-color .18s;
+}
+.row-remove:hover { color: var(--brick); border-color: var(--brick); }
+
+.add-row {
+  justify-self: start;
+  margin-top: .2rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: .8rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--brick);
+  cursor: pointer;
+}
+.add-row::before { content: "+ "; }
+.add-row:hover { color: var(--brick-deep); text-decoration: underline; }
+
+/* Marks an optional field without shouting about it. */
+.field-opt {
+  font-weight: 400;
+  letter-spacing: .02em;
+  text-transform: none;
+  color: var(--ink-faint);
+}
 
 .field input[aria-invalid="true"],
-.field textarea[aria-invalid="true"] { border-color: #b4462f; background: #fdf3f0; }
+.field select[aria-invalid="true"],
+.field textarea[aria-invalid="true"] { border-color: #b4462f; background-color: #fdf3f0; }
 
 .form-note {
   margin: .9rem 0 0;
@@ -517,6 +798,239 @@ h1 { display: grid; gap: .5rem; margin-bottom: 1.5rem; }
   color: var(--ink-soft);
 }
 .form-note[data-state="error"] { color: #a8402a; }
+
+/* ── Inner pages (About, Return Policy, Terms) ───────────── */
+
+.page-head {
+  background: var(--paper-tint);
+  border-bottom: 1px solid var(--line);
+  padding-block: clamp(2.75rem, 2rem + 3vw, 4.5rem);
+}
+.page-head h1 {
+  display: block;                     /* the home page h1 is a grid; this isn't */
+  font-size: clamp(2.1rem, 1.5rem + 2.2vw, 3.1rem);
+  letter-spacing: -.01em;
+  margin: 0;
+}
+.page-lede {
+  font-family: var(--serif);
+  font-size: clamp(1.1rem, 1rem + .4vw, 1.3rem);
+  line-height: 1.5;
+  color: var(--ink-soft);
+  max-width: 52ch;
+  margin: .9rem 0 0;
+}
+.page-meta {
+  margin: 1.25rem 0 0;
+  font-size: .75rem;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.page-body { padding-block: clamp(2.5rem, 2rem + 2vw, 3.75rem) clamp(3.5rem, 2.5rem + 4vw, 5.5rem); }
+
+/* ── Vendor directory ─────────────────────────────────────
+   A list of independent sellers with links out to their own sites. The
+   search filters the markup that is already on the page rather than
+   fetching anything, so it works on a static host and needs no index. */
+
+.vendor-search { max-width: 34rem; margin-bottom: 1.75rem; }
+.vendor-search .field { margin-bottom: .5rem; }
+
+.vendor-count {
+  margin: 0;
+  min-height: 1.4em;            /* reserve the line so results don't jump */
+  font-size: .82rem;
+  color: var(--ink-faint);
+}
+
+.vendors {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
+}
+
+.vendor {
+  position: relative;          /* so a hovered card sits above its neighbours */
+
+  /* auto-fit collapses the empty tracks when the search filters the list,
+     so a single result inherited the whole row and stretched to 1120px.
+     Capping it at half the wrap keeps one card looking like a card.
+     A fixed value, not 50%: a percentage on a grid item resolves against
+     its own track, so with four cards showing it would halve all of them. */
+  max-width: calc(var(--wrap) / 2);
+
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  background: var(--paper-card);
+  border: 2px solid var(--navy);
+  border-radius: var(--radius);
+  padding: 1.5rem 1.4rem;
+  box-shadow: var(--shadow);
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+}
+
+/* display:flex above outranks the UA's [hidden]{display:none}, so a card
+   the search had hidden stayed on screen: the count said "1 vendor
+   matches" while all four were still visible. Same trap as .carousel-nav. */
+.vendor[hidden] { display: none; }
+
+/* Matches the cards on the home page. Scoped to devices that really hover,
+   because on a touch screen :hover can stick after a tap and leave a card
+   stranded in its lifted state. */
+@media (hover: hover) {
+  /* No border-color change here, unlike .card: the outline is already a
+     solid navy, so shifting it on hover would only pull it away from the
+     colour the card is meant to have. The lift and the shadow carry it. */
+  .vendor:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 2px 4px rgba(51, 39, 31, .06), 0 22px 44px -22px rgba(51, 39, 31, .45);
+    z-index: 1;
+  }
+  .vendor:hover .vendor-avatar { box-shadow: 0 0 0 1px var(--brick); }
+}
+
+.vendor-head { display: flex; align-items: center; gap: .8rem; }
+
+/* The vendor's own Facebook profile picture, served from assets/vendors/.
+   alt is empty on purpose: the name sits right beside it, so describing
+   the image again would just make a screen reader say it twice. The tinted
+   background shows through while it loads and if the file is missing, so a
+   gap never collapses the row. */
+.vendor-avatar {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--paper-tint);
+  box-shadow: 0 0 0 1px var(--line);
+}
+
+.vendor-name { font-size: 1.15rem; margin: 0; }
+
+.vendor-meta {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: .95rem;
+}
+
+.vendor-booth {
+  display: block;
+  margin-top: .3rem;
+  font-family: var(--sans);
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+/* margin-top: auto puts the links on a common baseline across the row.
+   It belongs in this shorthand rather than in a rule of its own: a later
+   `margin: 0` would quietly win and the links would ride up under short
+   cards. It sits on the links, not on .vendor-meta, because not every
+   vendor has a description and those cards must still line up. */
+.vendor-links {
+  list-style: none;
+  margin: auto 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+}
+.vendor-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: .3rem .7rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font-family: var(--sans);
+  font-size: .76rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  color: var(--ink);
+  text-decoration: none;
+  transition: color .18s, border-color .18s, background-color .18s;
+}
+.vendor-links a:hover {
+  color: var(--brick);
+  border-color: var(--brick);
+  background: var(--brick-wash);
+}
+
+.vendor-none { margin: auto 0 0; font-size: .86rem; color: var(--ink-faint); }
+
+.vendor-empty {
+  margin: 2rem 0 0;
+  padding: 1.5rem;
+  background: var(--paper-card);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  color: var(--ink-soft);
+}
+
+.vendor-cta { margin-top: 3.5rem; }
+
+/* Prose column: narrower than .wrap, because full-width body text is hard
+   to read. ~68 characters a line. */
+.prose { max-width: 68ch; }
+.prose h2 {
+  font-size: clamp(1.4rem, 1.2rem + .8vw, 1.75rem);
+  margin: 2.5rem 0 .5rem;
+}
+.prose h2:first-child { margin-top: 0; }
+.prose p { margin: 0 0 1.1rem; color: var(--ink-soft); }
+.prose ul { margin: 0 0 1.25rem; padding-left: 1.2rem; color: var(--ink-soft); }
+.prose li { margin-bottom: .45rem; }
+.prose strong { color: var(--ink); font-weight: 600; }
+.prose .link-arrow { margin-top: 0; }
+
+/* Photos inside a prose column. Same panel treatment as the rest of the site,
+   and the image keeps its own proportions so nothing is cropped. */
+.prose-figure { margin: 1.75rem 0 2rem; }
+.prose-figure img {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.prose-figure figcaption {
+  margin-top: .6rem;
+  font-size: .87rem;
+  color: var(--ink-faint);
+}
+
+/* Visible "this isn't finished yet" banner. Delete the element from the page
+   once the real wording is in. */
+.draft-note {
+  background: var(--brick-wash);
+  border-left: 3px solid var(--brick);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: .9rem 1.1rem;
+  margin: 0 0 2rem;
+  font-size: .95rem;
+}
+.draft-note strong { color: var(--brick-deep); }
+
+/* The one line of a policy page a customer must not miss. */
+.policy-headline {
+  font-family: var(--serif);
+  font-size: clamp(1.3rem, 1.1rem + .9vw, 1.65rem);
+  line-height: 1.35;
+  color: var(--ink);
+  border-left: 3px solid var(--brick);
+  padding: .1rem 0 .1rem 1.1rem;
+  margin: 0 0 1.6rem;
+}
 
 /* ── Footer ──────────────────────────────────────────────── */
 
@@ -534,6 +1048,21 @@ h1 { display: grid; gap: .5rem; margin-bottom: 1.5rem; }
 .footer-address { margin: 0; font-size: .95rem; color: rgba(250, 245, 234, .8); line-height: 1.9; }
 .footer-address a { color: var(--paper); text-decoration-color: rgba(250, 245, 234, .4); }
 .footer-address a:hover { color: #fff; text-decoration-color: currentColor; }
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.25rem;
+}
+.footer-links a {
+  font-size: .78rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: rgba(250, 245, 234, .82);
+  text-decoration-color: rgba(250, 245, 234, .35);
+}
+.footer-links a:hover { color: #fff; text-decoration-color: currentColor; }
 
 /* Copyright and credit sit as one small group, closer together than the
    footer's other rows. */
@@ -567,6 +1096,7 @@ h1 { display: grid; gap: .5rem; margin-bottom: 1.5rem; }
   .visit-map { order: -1; }
 
   .feed { grid-template-columns: minmax(0, 1fr); }
+  .feed { --feed-scale: 1; }        /* already full width; no need to magnify */
   .feed-frame { justify-self: center; }
 
   /* Below this the two columns get too narrow — stack them, photo underneath. */
@@ -597,4 +1127,67 @@ h1 { display: grid; gap: .5rem; margin-bottom: 1.5rem; }
 
   .field-row { grid-template-columns: 1fr; gap: 0; }
   .btn { width: 100%; }
+
+  /* ── Mobile: form fields ──────────────────────────────────
+     16px is not a style choice. iOS Safari zooms the page in when you
+     focus a control whose text is smaller than 16px, and it does not
+     zoom back out afterwards, so the rest of the form is then filled in
+     on a page scrolled sideways. These were .97rem (15.5px), which is
+     just under the line. */
+  .field input,
+  .field select,
+  .field textarea { font-size: 16px; }
+
+  /* ── Mobile: tap targets ──────────────────────────────────
+     Everything a thumb has to hit gets at least 44px, which is Apple's
+     guideline and comfortably over the 24px WCAG 2.5.8 floor. Desktop
+     keeps the smaller, tidier sizes; this only applies where there is
+     no cursor. */
+  .nav-toggle { min-height: 44px; }
+  .wordmark { min-height: 44px; justify-content: center; }
+
+  /* Footer links sat at 16-21px. These are secondary, and they are inline
+     in running text, so they get vertical padding to grow the hit area
+     past the 24px WCAG 2.5.8 floor without moving anything: padding on an
+     inline box expands what you can tap but does not change the line. */
+  .footer-address a,
+  .footer-links a,
+  .footer-credit a,
+  .prose p a { padding-block: .35rem; }
+
+  /* Phone numbers and email addresses are the main thing anyone does on
+     a phone here, and they were 26px tall. */
+  .stack { gap: .1rem; }
+  .stack a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .link-arrow {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .feed-head-follow { padding: .6rem .85rem; }
+
+  .carousel-btn { width: 44px; height: 44px; }
+  .reviews-dot { width: 26px; }
+
+  .add-row {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin-top: 0;
+  }
+
+  /* The Facebook panel was 797px tall against an 812px viewport, so on a
+     phone it filled the entire screen and nothing around it was visible.
+     script.js reads this and resizes the iframe to match. */
+  .feed-body { --feed-height: 560px; }
+
+  /* The sticky header is 73px here, not the 88px the desktop value
+     assumes, so anchored jumps were landing low. */
+  html { scroll-padding-top: 80px; }
 }

@@ -1,0 +1,7 @@
+# Pelican Row Estate & Market
+# Everything here is public; there is nothing to keep out of search.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://www.pelicanrowmarket.com/sitemap.xml
