@@ -98,9 +98,10 @@ closed.
 
 There's no build step and no templating, so the header and footer markup is
 duplicated across all seven HTML files. **Changing a menu link, the address, or
-anything else in the header or footer means editing all five.** That is the
-cost of keeping the site buildless; the alternative would be a build step or
-rendering the header in JavaScript, which would hurt search engines.
+anything else in the header or footer means editing all seven.** That is the
+cost of keeping the site buildless; the alternatives are a generator script
+that writes the shared block into every page, or rendering the header in
+JavaScript, which puts the site's own navigation behind a script.
 
 ### The three new pages are unfinished
 
@@ -591,6 +592,26 @@ any field that might hold more than one address.
 
 The form promises up to 30 days for links to appear. If that stops being
 true, change the line rather than leaving it.
+
+### Linking straight to the form
+
+    https://www.pelicanrowmarket.com/vendors.html#send-your-links
+
+opens the page with the "Send us your links" panel already expanded and
+scrolled to. Useful for sending a vendor straight to it instead of asking
+them to find it.
+
+The `<details>` carries `id="send-your-links"`, but the id alone is not
+enough: a plain anchor jump lands on a panel that is still shut, showing
+nothing. A short block in `script.js` opens it, and a link aimed at anything
+*inside* the panel works too, so `#vendorPhone` would also open it.
+
+It scrolls again on `window.load`. The browser makes its own jump to the
+fragment after the script has run, so the last word on where the page sits
+is not ours, and the banner image above the panel can still be arriving,
+which moves the target after an early scroll has aimed at it. The scroll is
+`behavior: "instant"` rather than the site's default smooth — the page is
+arriving at that fragment, so it should already be there.
 
 ### The search
 

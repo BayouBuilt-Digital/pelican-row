@@ -603,6 +603,46 @@
     runFilter();
   }
 
+  /* ── Linkable <details> ──────────────────────────────────
+     Makes #send-your-links on the Our Vendors page work as a shareable
+     link: the form is inside a closed <details>, and a plain anchor jump
+     lands on a collapsed panel showing nothing.
+
+     Newer browsers do open a <details> when a fragment points inside it,
+     but not all of them, and not for the <details> element itself in every
+     version. Twelve lines here means the link behaves the same everywhere
+     rather than depending on which browser opened the email.
+
+     Scrolled explicitly after opening: the browser did its jump while the
+     panel was still shut, so by the time it expands the target has moved
+     down the page. scroll-margin-top is left to the stylesheet's
+     scroll-padding-top, which already accounts for the sticky header. */
+  var openTarget = function () {
+    var id = window.location.hash.slice(1);
+    if (!id) return;
+
+    var el = document.getElementById(id);
+    /* Also catch a link aimed at something INSIDE the panel, such as a
+       field, not only at the panel itself. */
+    var box = el && (el.tagName === "DETAILS" ? el : el.closest("details"));
+    if (!box) return;
+
+    box.open = true;
+    /* "instant", not the site's default smooth: the page is arriving at
+       this fragment, so it should already be there, not glide down from
+       the top while the panel expands underneath. */
+    box.scrollIntoView({ block: "start", behavior: "instant" });
+  };
+
+  openTarget();
+  /* And once more when the page has finished loading. Two reasons: the
+     browser makes its own jump to the fragment after this script runs, so
+     the last word on where the page sits is not ours; and the banner image
+     above the panel may still be arriving, which moves the target after an
+     early scroll has already aimed at it. */
+  window.addEventListener("load", openTarget);
+  window.addEventListener("hashchange", openTarget);
+
   /* ── Mailto forms ────────────────────────────────────────
      Every form with data-mailto is handled here: the contact form
      on the home page and the booth enquiry form on Become a Vendor.
