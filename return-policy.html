@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-locked>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -29,7 +29,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=93">
+<link rel="stylesheet" href="styles.css?v=98">
+
+<!-- Password gate while the site is in review. Deliberately NOT deferred:
+     it runs before the body is parsed so the page is hidden before it can
+     be painted. Delete this one line on each page to open the site up. -->
+<script src="gate.js?v=98"></script>
 
 <!-- Breadcrumbs, so a search result can show Home > Return Policy -->
 <script type="application/ld+json">
@@ -44,6 +49,22 @@
 </script>
 </head>
 <body>
+
+<noscript>
+  <!-- Shown only when scripting is off. The gate cannot run, so nothing can
+       unlock the page; this says so instead of leaving a blank screen. It is
+       styled with the same .gate classes, and .gate-title is a <p> rather
+       than an <h1> so the document does not carry two h1s. -->
+  <div class="gate">
+    <div class="gate-card">
+      <p class="gate-name">Pelican&nbsp;Row<span>Estate &amp; Market</span></p>
+      <p class="gate-title">This site is in review</p>
+      <p class="gate-note">It needs JavaScript to open. Please turn it on,
+        reload the page, and enter the password you were given.</p>
+    </div>
+  </div>
+</noscript>
+
 
 <!--
   ─────────────────────────────────────────────────────────────
@@ -224,6 +245,6 @@
   </div>
 </footer>
 
-<script src="script.js?v=93"></script>
+<script src="script.js?v=98"></script>
 </body>
 </html>

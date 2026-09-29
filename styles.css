@@ -1630,3 +1630,141 @@ main > :last-child {
      assumes, so anchored jumps were landing low. */
   html { scroll-padding-top: 80px; }
 }
+
+/* ============================================================
+   PASSWORD GATE
+   Self-contained on purpose: at launch the <script src="gate.js">
+   tags come out of the seven pages and everything below can be
+   left alone or deleted in one piece. See gate.js for what this
+   does and does not protect.
+   ============================================================ */
+
+/* data-locked is set on <html> in the MARKUP of every page, and gate.js
+   removes it in <head> once it knows this browser has access — so the site
+   is hidden by default and stays hidden with JavaScript off, and neither
+   state is ever painted. display:none and not visibility/opacity: hidden
+   content still has layout, and a hidden page that is still 4000px tall
+   leaves a scrollbar next to the password box. */
+html[data-locked] { overflow: hidden; }
+/* <noscript> is exempt, or the no-JS message would be hidden along with
+   everything else — its contents only render when scripting is off, and a
+   display:none on the element takes them with it. */
+html[data-locked] body > *:not(.gate):not(noscript) { display: none !important; }
+
+.gate {
+  position: fixed;
+  inset: 0;
+  z-index: 200;                       /* over the sticky header's 100 */
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: var(--paper);
+  overflow-y: auto;                   /* small screens, on-screen keyboard */
+}
+
+.gate-card {
+  width: 100%;
+  max-width: 24rem;
+  padding: clamp(1.75rem, 1.4rem + 1.6vw, 2.5rem);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper-card);
+  box-shadow: var(--shadow);
+  text-align: left;
+}
+
+/* The market's name set as a wordmark rather than pulled in as the logo
+   image: this screen should render the moment the CSS does, without waiting
+   on a file that may not be cached yet. */
+.gate-name {
+  margin: 0 0 1.5rem;
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--brick);
+}
+.gate-name span {
+  display: block;
+  margin-top: .2rem;
+  font-family: var(--sans);
+  font-size: .62rem;
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.gate-title {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--ink);
+}
+.gate-note {
+  margin: .6rem 0 1.5rem;
+  font-family: var(--serif);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+.gate-label {
+  display: block;
+  margin-bottom: .4rem;
+  font-family: var(--sans);
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.gate-input {
+  width: 100%;
+  padding: .7rem .85rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #fff;
+  font-family: var(--sans);
+  font-size: 1rem;                    /* 16px, or iOS zooms the page in */
+  color: var(--ink);
+}
+.gate-input:focus-visible {
+  outline: 2px solid var(--navy);
+  outline-offset: 1px;
+}
+.gate-input[aria-invalid="true"] { border-color: var(--brick); }
+
+.gate-go {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 1rem;
+  padding: .82rem 1.7rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: var(--brick);
+  color: #fff;
+  font-family: var(--sans);
+  font-size: .78rem;
+  font-weight: 600;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color .18s, transform .18s;
+}
+.gate-go:hover { background: var(--brick-deep); }
+.gate-go:active { transform: translateY(1px); }
+.gate-go[disabled] { opacity: .65; cursor: default; transform: none; }
+
+.gate-error {
+  margin: .9rem 0 0;
+  font-family: var(--sans);
+  font-size: .82rem;
+  line-height: 1.45;
+  color: var(--brick-deep);
+}
+/* The message is toggled through the hidden attribute, and this file sets
+   no display on it — a display here would override [hidden] and leave the
+   error on screen permanently. Same trap as .carousel-nav and .vendor. */
