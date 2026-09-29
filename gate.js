@@ -97,6 +97,16 @@
 
   var html = document.documentElement;
 
+  /* Stroked SVGs rather than an emoji or a character: the eye glyphs sit
+     off-centre in their line boxes and render differently on every
+     platform. Same reasoning as the lightbox close button. */
+  var SVG_OPEN = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+    '<path d="M1.6 12S5.6 5.2 12 5.2 22.4 12 22.4 12 18.4 18.8 12 18.8 1.6 12 1.6 12Z"/>' +
+    '<circle cx="12" cy="12" r="3.1"/></svg>';
+  var SVG_SHUT = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+    '<path d="M1.6 12S5.6 5.2 12 5.2 22.4 12 22.4 12 18.4 18.8 12 18.8 1.6 12 1.6 12Z"/>' +
+    '<circle cx="12" cy="12" r="3.1"/><path d="M3.5 3.5l17 17"/></svg>';
+
   /* WHERE THE GRANT IS KEPT — localStorage, and nothing else.
 
      localStorage is shared by every page of an origin, so entering the
@@ -206,9 +216,14 @@
         '<p class="gate-note">It is not open to the public yet. Enter the ' +
           'password you were given to take a look.</p>' +
         '<label class="gate-label" for="gate-pw">Password</label>' +
-        '<input class="gate-input" id="gate-pw" type="password" name="password" ' +
-               'autocomplete="current-password" autocapitalize="off" ' +
-               'autocorrect="off" spellcheck="false" required>' +
+        '<div class="gate-field">' +
+          '<input class="gate-input" id="gate-pw" type="password" name="password" ' +
+                 'autocomplete="current-password" autocapitalize="off" ' +
+                 'autocorrect="off" spellcheck="false" required>' +
+          /* type=button, or it submits the form on the first tap. */
+          '<button class="gate-peek" type="button" aria-pressed="false" ' +
+                  'aria-label="Show password" title="Show password"></button>' +
+        '</div>' +
         '<button class="gate-go" type="submit">Enter the site</button>' +
         '<p class="gate-error" role="alert" aria-live="polite" hidden></p>' +
       '</form>';
@@ -217,6 +232,26 @@
     var input = gate.querySelector(".gate-input");
     var error = gate.querySelector(".gate-error");
     var go    = gate.querySelector(".gate-go");
+    var peek  = gate.querySelector(".gate-peek");
+
+    function showPassword(on) {
+      input.type = on ? "text" : "password";
+      peek.innerHTML = on ? SVG_SHUT : SVG_OPEN;
+      peek.setAttribute("aria-pressed", on ? "true" : "false");
+      peek.setAttribute("aria-label", on ? "Hide password" : "Show password");
+      peek.title = on ? "Hide password" : "Show password";
+    }
+    showPassword(false);
+
+    peek.addEventListener("click", function () {
+      /* Switching an input's type can move the caret to the end or drop the
+         selection, so put it back and return focus to the field — the point
+         of looking is to carry on typing. */
+      var at = input.selectionStart;
+      showPassword(input.type === "password");
+      input.focus();
+      try { input.setSelectionRange(at, at); } catch (e) { /* older browsers */ }
+    });
 
     function fail(message) {
       error.textContent = message;

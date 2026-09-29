@@ -1721,9 +1721,12 @@ html[data-locked] body > *:not(.gate):not(noscript) { display: none !important; 
   text-transform: uppercase;
   color: var(--ink-faint);
 }
+/* Positioning context for the show-password button. */
+.gate-field { position: relative; }
+
 .gate-input {
   width: 100%;
-  padding: .7rem .85rem;
+  padding: .7rem 3rem .7rem .85rem;   /* room on the right for the button */
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: #fff;
@@ -1736,6 +1739,35 @@ html[data-locked] body > *:not(.gate):not(noscript) { display: none !important; 
   outline-offset: 1px;
 }
 .gate-input[aria-invalid="true"] { border-color: var(--brick); }
+/* Edge draws its own reveal control inside password fields; without this
+   there would be two eyes side by side. */
+.gate-input::-ms-reveal { display: none; }
+
+.gate-peek {
+  position: absolute;
+  top: 50%;
+  right: .25rem;
+  transform: translateY(-50%);
+  width: 40px; height: 40px;
+  display: grid; place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--ink-faint);
+  cursor: pointer;
+  transition: color .18s;
+}
+.gate-peek:hover { color: var(--ink); }
+.gate-peek:focus-visible { outline: 2px solid var(--navy); outline-offset: 1px; }
+.gate-peek svg {
+  width: 19px; height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
 
 .gate-go {
   width: 100%;

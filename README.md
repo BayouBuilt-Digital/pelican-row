@@ -227,6 +227,13 @@ Rather than teach each of them to re-measure, the page starts again with the
 gate already satisfied — the state they were all written for. One reload,
 once per browser.
 
+The field has a show/hide button inside it on the right — a stroked SVG eye
+rather than a character or emoji, for the same reason as the lightbox close
+button, and `type="button"` so tapping it does not submit the form. Toggling
+an input's `type` can move the caret, so the handler puts the cursor back
+where it was and returns focus to the field. Edge's own `::-ms-reveal` is
+suppressed, or there would be two eyes side by side.
+
 ### Changing the password
 
     python -c "import hashlib; print(hashlib.sha256(b'pelican-row-gate:v1:NEWPASSWORD').hexdigest())"
