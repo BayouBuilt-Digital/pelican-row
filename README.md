@@ -18,12 +18,43 @@ assets/apple-touch-icon.png  iOS home screen, 180
 assets/logo-72.png  small avatar in the Facebook panel
 assets/reviews/   Google review screenshots, newest first
 assets/vendors/   vendor profile pictures, 144x144
+assets/events/    event flyers, 900px long edge
+assets/shop/      Our Vendors banner slideshow, 1400x788
+assets/banner-events/  News & Events banner slideshow, 1400x788
 assets/og-image.jpg 1200x630 social sharing card
 robots.txt          crawl rules, points at the sitemap
 sitemap.xml         all five pages
 tools/              scripts that rebuild the icons and the social image
 print/              printable sign for the register (not part of the site)
 ```
+
+## Page spacing
+
+Set once in `styles.css`:
+
+    --page-edge: clamp(2.5rem, 2rem + 2vw, 3.75rem)   /* 57.6px desktop, 40px mobile */
+
+    .page-head + .section,
+    .hero + .section,
+    main > :last-child    -> padding-block: var(--page-edge)
+
+**A section that touches either end of the page carries that gap on both
+sides**, so it is evenly padded in itself rather than tight at one edge and
+loose at the other. One token drives it, so the two ends of a page cannot
+drift apart; they used to, at 57.6px top against 88px bottom.
+
+The larger `.section` value (104px) is left for sections with a neighbour
+above *and* below, where its job is separating one band from the next. Only
+the home page's Visit section currently qualifies.
+
+**Every block on every page is now symmetric top to bottom**, verified at
+1280px and 375px. If you add a section, that stays true automatically: it
+either touches an end and gets `--page-edge`, or it sits between two others
+and gets the interior value.
+
+Written as relationships rather than per-page classes, so a new page needs no
+extra markup. `.page-head` covers the photo banner too, since that element
+carries both classes.
 
 ## Pages and navigation
 
@@ -41,6 +72,27 @@ print/              printable sign for the register (not part of the site)
 - **Visit and Contact have no menu link.** They're sections of the home page,
   reached by the "Get directions" and "Contact us" buttons in the hero. Links
   written as `index.html#visit` reach them from the other pages.
+
+### The mobile menu
+
+It slides down and fades in, and each link rises a beat after the one above
+it. **The panel stays `display: flex` and hides with `visibility`**, because
+`display` cannot be transitioned; the old `none`/`flex` swap is why it used
+to appear instantly. `visibility` still keeps it out of the tab order and the
+accessibility tree while closed, which `opacity` alone would not, and its
+transition is delayed until the fade finishes so the panel is not yanked away
+mid-animation.
+
+It closes on: the button, a link, **anywhere else on the page**, and Escape
+(which also returns focus to the button). The outside-click handler skips
+clicks on the toggle, or its own click would arrive immediately after opening
+the menu and shut it again, and skips the panel itself so a stray tap on the
+padding is not treated as "outside".
+
+`prefers-reduced-motion` gets its own override rather than relying on the
+global one: that rule zeroes transition *durations* but not *delays*, and a
+260ms visibility delay would leave the panel hanging on screen after it had
+closed.
 
 ### The header and footer are copied into each page
 
@@ -128,18 +180,67 @@ made the Facebook feed show up as a blank white box during development.
 ## News & Events page
 
 `events.html`. A dated list, newest first, for sales, seasonal markets and
-news. **It is a placeholder**: the three entries are examples showing the
-layout. The first card on the home page points here too.
+news. The first card on the home page points here too.
 
-Entries with no `<time>` lay out the same way, because "upstairs is open now"
-belongs in this list as much as a dated sale does. When there is a date, the
-`datetime` attribute must be a real ISO date and must say the same thing as
-the human-readable text beside it; one is for machines, the other for people.
+The page has two halves:
+
+**The upcoming half is a placeholder, built from the same markup as a past
+entry** so both halves of the page are the same shape: text on the left, a
+flyer on the right, stacking with the image first on a phone. It says plainly
+that nothing is booked and hands the visitor the Facebook page.
+
+The flyer slot holds `assets/events/upcoming-placeholder.jpg`, an old flyer
+put through `make-event-flyers.py`'s blur mode, faded to 50% with a **Coming
+soon** banner across it. The blur is baked into the file, not applied with a
+CSS filter: a filter only hides the artwork, leaving a legible flyer in the
+page advertising dates nobody has agreed to. The slot is `aria-hidden`,
+because the words beside it already say there is nothing booked.
+
+The past list is what makes the coming-soon half work. On its own, "nothing
+on the calendar" reads like a dead page; underneath two real sales it reads
+as a page between events. **When a sale ends, move it down into the past list
+rather than deleting it.**
+
+To announce one, replace the placeholder entry with a real one: drop
+`event-upcoming` and `is-placeholder`, remove the banner, and point the flyer
+at the real artwork. Entries with no `<time>` lay out the same way, because
+"upstairs is open now" belongs in this list as much as a dated sale does. When there is a
+date, the `datetime` attribute must be a real ISO date and must say the same
+thing as the human-readable text beside it; one is for machines, the other
+for people.
 
 **A stale events page is worse than no events page.** A visitor who sees a
 newest entry from eight months ago concludes the shop has closed. If nobody
 will keep it current, delete the page along with its menu link and the home
 page card, and let the Facebook feed do this job instead.
+
+### Flyers
+
+`python tools/make-event-flyers.py <source.jpg> <slug>` writes
+`assets/events/<slug>.jpg` at 900px on the long edge, down from the ~1400px
+and 250-300KB they come off Facebook at. They display around 260px wide, so
+900px stays crisp on a 2x screen.
+
+**Nothing is cropped.** A flyer is a designed composition with the dates set
+into it; trimming it to a tidy aspect ratio would cut them off. That is why
+the two current ones have different shapes, one landscape and one portrait,
+and the layout simply accepts that.
+
+Each flyer's `alt` spells out what the poster says, including the dates and
+the categories, because for a visitor who cannot see it the flyer is
+otherwise silent.
+
+On a phone the entry stacks with **the flyer first**: it carries the name and
+the date in one glance, which the text then repeats.
+
+### One date is inferred, not verified
+
+The "one more night" flyer says only **TONIGHT**, with no date on it. It is
+recorded as **Sunday 27 September 2026** because that was the only night
+between the sneak peek (Saturday 26th) and the day it was supplied, and a
+vendor's post that weekend said the sale was "keeping it going through
+Sunday". Facebook would not show the original post without a login, so this
+was not confirmed at source. **Worth checking with the market.**
 
 ### The menu breakpoint moved for this
 
@@ -188,6 +289,85 @@ group (`/groups/<id>/user/<id>`), which makes anyone who clicks it log in and
 join before they see anything. Their own page opens for everyone. Same for
 `profile.php?id=` links: Facebook redirects them to a readable URL, so follow
 it and store that instead.
+
+### The banner slideshow
+
+Used on two pages now, Our Vendors and News & Events, from the same CSS and
+the same block in `script.js`. The page head crossfades photos behind the
+heading every 6 seconds.
+
+    python tools/make-shop-slides.py <source-dir> assets/shop          27 36
+    python tools/make-shop-slides.py <source-dir> assets/banner-events 47 49
+
+### Two modes, and why
+
+The banner is about 3:1 on a desktop, far wider than a photo. `object-fit:
+cover` therefore throws away a lot of height no matter what you feed it.
+
+**Default mode** crops the source to 16:9 and lets the browser crop again.
+Measured on the News & Events banner that was 21% lost at build plus 41.6%
+in the browser: under half the photo survived. Fine for a busy interior
+where any part of the frame will do, which is what `assets/shop` is.
+
+**Fit mode** exists for a photo with a subject that has to survive whole, a
+sign, a storefront, a printed banner. Nothing is cropped: the whole photo is
+centred in a 2.6:1 canvas and the space either side is filled with a blurred,
+darkened copy of itself, so the browser's crop eats the filler instead. It
+cuts the loss from 41.6% to 14.5%.
+
+**Neither banner uses fit mode right now.** Both were given photos of the
+shop interior, which are busy enough that any part of the frame reads fine,
+and full-bleed looks better than blurred wings. Reach for fit mode only when
+an image has one thing in it that must not be cut.
+
+On a phone the banner is taller than it is wide, so the crop runs the other
+way and about half the canvas width shows, which is the photo plus a little
+of the blur. That is why the subject is centred rather than offset.
+
+**To put it on another page:** add `page-head-media` to that page's
+`.page-head`, wrap its text in a `.page-head-plate`, and drop in the
+`.slideshow` div with a first image and a `data-slideshow-images` list. No
+CSS or JavaScript changes; the script picks up every `[data-slideshow]` on
+the page.
+
+**Only the first image is in the HTML.** The other nine are listed in
+`data-slideshow-images` and `script.js` fetches each one just before its
+turn. Ten of these is 1.2MB, and a banner that costs a megabyte before
+anyone has read the heading is a bad trade; this way the page starts at
+about 105KB and only pays for the rest if the visitor stays to look. With
+JavaScript off the first image simply stays put and the banner still looks
+finished.
+
+**It stops when it cannot be seen.** No advancing while the tab is in the
+background or the banner is scrolled off, and it never starts at all under
+`prefers-reduced-motion`. A slideshow is motion nobody asked for, so it
+should cost nothing when nobody is watching.
+
+**The sources are all portrait** and the banner is a wide band, so
+`make-shop-slides.py` crops a 16:9 strip from slightly above centre: shop
+interiors keep their shelves in the middle and waste the bottom on floor.
+Cropping at build time also means the browser downloads only the part that
+is ever visible, instead of a 2000px-tall frame it would crop anyway.
+
+**Legibility comes from the plate, not the scrim.** The wash over the
+photos is light (.22 to .32) so the shop is actually visible; the words sit
+on `.page-head-plate`, a translucent panel sized to the text rather than the
+page. That split is the whole design: darken the scrim and you lose the
+photographs, so the panel carries the contrast instead.
+
+The plate's alpha is load-bearing. Measured against the worst case, a
+near-white photo behind it, the heading is 6.6:1, the lede
+5.1:1 and the "Meet" eyebrow 5.1:1, all clear of AA. **If you lighten the
+plate, re-measure**, because the photos rotate and one of them will be the
+bright one.
+
+The eyebrow is `#f2d3bf`, not the `--on-dark-accent` used on the dark
+reviews band. That colour measured 3.2:1 here and failed: it sits on
+near-black there, and on a much lighter translucent panel here. Same accent,
+different backdrop, different answer.
+
+The images are decorative: the heading already says what the page is, so
+`alt` is empty and the strip is `aria-hidden`.
 
 ### Vendor avatars
 

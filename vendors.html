@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=58">
+<link rel="stylesheet" href="styles.css?v=81">
 
 <!-- Breadcrumbs, so a search result can show Home > Our Vendors -->
 <script type="application/ld+json">
@@ -94,25 +94,45 @@
 
 <main id="main">
 
-  <div class="page-head">
-    <div class="wrap">
-      <p class="eyebrow">Shop</p>
-      <h1>Our Vendors</h1>
-      <p class="page-lede">
-        Every booth at Pelican Row is run by an independent seller. Here is
-        who they are, what they sell, and where to find them online between
-        visits.
-      </p>
+  <!--
+    The banner runs a slideshow of the shop behind the heading.
+
+    Only the first slide is in the markup. The other nine are listed in
+    data-slideshow and script.js loads each one just before it is needed,
+    so the page costs one image up front (about 105KB) instead of ten
+    (about 1.2MB). With JavaScript off, the first image simply stays put
+    and the banner still looks finished.
+
+    The images are decorative: the heading says what the page is, so alt
+    is empty and the whole strip is aria-hidden. Rebuild them with
+    tools/make-shop-slides.py.
+  -->
+  <div class="page-head page-head-media">
+    <div class="slideshow" aria-hidden="true" data-slideshow
+         data-slideshow-images="assets/shop/02.jpg|assets/shop/03.jpg|assets/shop/04.jpg|assets/shop/05.jpg|assets/shop/06.jpg|assets/shop/07.jpg|assets/shop/08.jpg|assets/shop/09.jpg|assets/shop/10.jpg">
+      <img class="slide is-active" src="assets/shop/01.jpg" alt=""
+           width="1400" height="788" fetchpriority="high">
+    </div>
+
+    <div class="wrap page-head-inner">
+      <!-- The words sit on their own panel rather than straight on the
+           photo. That keeps the scrim light enough to actually see the
+           shop, and the text legible whichever picture is showing. -->
+      <div class="page-head-plate">
+        <p class="eyebrow">Meet</p>
+        <h1>Our Vendors</h1>
+        <p class="page-lede">
+          Every booth at Pelican Row has an independent seller behind it, with
+          their own unique finds and favorites. Get to know the people who make
+          our market special, explore what they sell, and find them online to
+          keep up with their latest finds between visits.
+        </p>
+      </div>
     </div>
   </div>
 
   <section class="section" id="directory">
     <div class="wrap">
-
-      <p class="draft-note">
-        <strong>Partial list:</strong> four vendors so far, all checked. Add
-        the rest, then delete this note.
-      </p>
 
       <!-- Filters the list already in the page. With JavaScript off the
            search hides itself and the full list is still there to read. -->
@@ -256,6 +276,6 @@
   </div>
 </footer>
 
-<script src="script.js?v=58"></script>
+<script src="script.js?v=81"></script>
 </body>
 </html>

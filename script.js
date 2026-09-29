@@ -13,23 +13,38 @@
   var nav = document.getElementById("siteNav");
 
   if (toggle && nav) {
-    toggle.addEventListener("click", function () {
-      var open = nav.classList.toggle("is-open");
+    var navOpen = function () { return nav.classList.contains("is-open"); };
+
+    var setNav = function (open) {
+      nav.classList.toggle("is-open", open);
       toggle.setAttribute("aria-expanded", String(open));
-    });
+    };
+
+    toggle.addEventListener("click", function () { setNav(!navOpen()); });
 
     // Tapping a link should close the menu behind you.
     nav.addEventListener("click", function (e) {
-      if (e.target.closest("a")) {
-        nav.classList.remove("is-open");
-        toggle.setAttribute("aria-expanded", "false");
-      }
+      if (e.target.closest("a")) setNav(false);
+    });
+
+    /* Anywhere else on the page closes it too. Without this the only way
+       out is the button you came from, which on a phone means reaching
+       back to the top of the screen to dismiss something covering what
+       you were trying to read.
+
+       The toggle is excluded or its own click would arrive here straight
+       after opening the menu and shut it again. The nav itself is excluded
+       so that a stray tap on the panel's padding does not count as "outside";
+       links are handled above. */
+    document.addEventListener("click", function (e) {
+      if (!navOpen()) return;
+      if (toggle.contains(e.target) || nav.contains(e.target)) return;
+      setNav(false);
     });
 
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && nav.classList.contains("is-open")) {
-        nav.classList.remove("is-open");
-        toggle.setAttribute("aria-expanded", "false");
+      if (e.key === "Escape" && navOpen()) {
+        setNav(false);
         toggle.focus();
       }
     });
@@ -340,6 +355,109 @@
     for (var s = 0; s < shots.length; s++) shots[s].addEventListener("load", sync);
     sync();
   }
+
+  /* ── Banner slideshow ────────────────────────────────────
+     Crossfades photos of the shop behind a page heading.
+
+     The images are NOT all in the markup. The first one is; the rest are
+     listed in data-slideshow-images and fetched one at a time, each just
+     before its turn. Ten of these is 1.2MB, and a banner that costs a
+     megabyte before anyone has read the heading is a bad trade. This way
+     the page starts at one image and only pays for the others if the
+     visitor stays to look.
+
+     It stops when it cannot be seen: no advancing while the tab is in the
+     background or the banner is scrolled off. And it never starts under
+     prefers-reduced-motion, which is the whole point of that setting. */
+
+  var shows = document.querySelectorAll("[data-slideshow]");
+
+  Array.prototype.forEach.call(shows, function (show) {
+    var queue = (show.getAttribute("data-slideshow-images") || "")
+      .split("|").filter(function (s) { return s; });
+    var first = show.querySelector(".slide");
+    if (!first || !queue.length) return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    var HOLD = 6000;          // how long each photo stays
+    var slides = [first];
+    var index = 0;
+    var timer = null;
+    var loading = false;
+    var onScreen = true;
+
+    // Fetch the next file and keep it as a slide, ready to fade in.
+    function fetchNext(after) {
+      if (loading || !queue.length) { if (after) after(); return; }
+      loading = true;
+
+      var src = queue.shift();
+      var img = new Image();
+
+      img.onload = function () {
+        img.className = "slide";
+        img.alt = "";
+        /* Copy the box from the slide already in the markup, because the
+           two banners use different sizes. Read the ATTRIBUTES, not
+           img.width: on an <img> that property reports the rendered width
+           once the element has been laid out, so it hands back the banner's
+           size instead of the file's. */
+        var w = first.getAttribute("width"), h = first.getAttribute("height");
+        if (w) img.setAttribute("width", w);
+        if (h) img.setAttribute("height", h);
+        show.appendChild(img);
+        slides.push(img);
+        loading = false;
+        if (after) after();
+      };
+      img.onerror = function () {
+        // A missing file shouldn't stall the rotation: skip it and move on.
+        loading = false;
+        if (after) after();
+      };
+      img.src = src;
+    }
+
+    function step() {
+      var advance = function () {
+        if (slides.length < 2) return;
+        slides[index].classList.remove("is-active");
+        index = (index + 1) % slides.length;
+        slides[index].classList.add("is-active");
+        // Pull the following one in during this slide's turn, so it is
+        // decoded and ready rather than popping in mid-fade.
+        fetchNext();
+      };
+
+      if (slides.length < 2) fetchNext(advance);
+      else advance();
+    }
+
+    function play() {
+      if (timer || !onScreen || document.hidden) return;
+      timer = setInterval(step, HOLD);
+    }
+    function pause() {
+      clearInterval(timer);
+      timer = null;
+    }
+
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) pause(); else play();
+    });
+
+    if (window.IntersectionObserver) {
+      new IntersectionObserver(function (entries) {
+        onScreen = entries[0].isIntersecting;
+        if (onScreen) play(); else pause();
+      }, { threshold: 0 }).observe(show);
+    }
+
+    // Load the second image straight away so the first change isn't a wait.
+    fetchNext();
+    play();
+  });
 
   /* ── Vendor search ───────────────────────────────────────
      Filters the vendor list that is already in the page. No index and

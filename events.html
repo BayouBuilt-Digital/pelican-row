@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>News &amp; Events | Pelican Row Estate &amp; Market</title>
-<meta name="description" content="Sales, seasonal markets and news from Pelican Row Estate &amp; Market in Lafayette, Louisiana. What is coming up, and what has just landed on the floor.">
+<meta name="description" content="Warehouse sales, seasonal markets and news from Pelican Row Estate &amp; Market in Lafayette, Louisiana. See what we have put on, and what is coming up next.">
 <link rel="canonical" href="https://www.pelicanrowmarket.com/events.html">
 <link rel="icon" href="assets/favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=58">
+<link rel="stylesheet" href="styles.css?v=81">
 
 <!-- Breadcrumbs, so a search result can show Home > News & Events -->
 <script type="application/ld+json">
@@ -47,27 +47,26 @@
 
 <!--
   ─────────────────────────────────────────────────────────────
-  PLACEHOLDER PAGE. It is linked from the main menu and from the
-  home page, so it is reachable by visitors: either fill it in
-  or take those two links out. An empty page in the menu is
-  worse than no page.
+  This page is live and says "coming soon". It is linked from
+  the main menu and from a card on the home page, so visitors
+  do reach it: it needs real entries before long, or those two
+  links should come out.
 
-  TO ADD AN ENTRY: copy one <li class="event"> block and fill it
-  in. Newest first. The <time> datetime attribute must be a real
-  ISO date (2026-11-14); it is what a machine reads, while the
+  TO ADD AN ENTRY: delete the .coming-soon block, uncomment the
+  <ul class="events"> below it, and fill in one <li> per entry,
+  newest first. The <time> datetime attribute must be a real ISO
+  date (2026-11-14); that is what a machine reads, while the
   text beside it is what a person reads, so keep the two saying
-  the same thing.
+  the same thing. Undated news (a new vendor, a change of hours)
+  belongs here too: leave the <time> out and it still lays out.
 
-  Undated news (a new vendor, a change of hours) is fine here
-  too: leave the <time> out and the entry still lays out.
-
-  IF THIS PAGE GOES STALE it actively hurts: a visitor seeing a
-  newest entry from eight months ago concludes the shop is shut.
-  If nobody will keep it current, delete the page and the two
-  links and let the Facebook feed on the home page do this job.
+  IF THIS PAGE GOES STALE it actively hurts. A visitor seeing a
+  newest entry from eight months ago concludes the shop is shut,
+  which is worse than the honest "coming soon" it says now. If
+  nobody will keep it current, delete the page and the two links
+  and let the Facebook feed on the home page do this job.
   ─────────────────────────────────────────────────────────────
 -->
-
 <a class="skip" href="#main">Skip to main content</a>
 
 <header class="site-header">
@@ -96,81 +95,144 @@
 
 <main id="main">
 
-  <div class="page-head">
-    <div class="wrap">
-      <p class="eyebrow">What&rsquo;s happening</p>
-      <h1>News &amp; Events</h1>
-      <p class="page-lede">
-        Sales, seasonal markets, new vendors and anything else worth a trip
-        out to Johnston Street.
-      </p>
+  <!--
+    Same banner component as Our Vendors: see the note there and in the
+    README. Only the first slide is in the markup; script.js fetches the
+    rest one at a time, so the page costs one image up front rather than
+    six. With JavaScript off the first image stays put.
+
+    Rebuild the images with:
+      python tools/make-shop-slides.py <source-dir> assets/banner-events 47 49
+  -->
+  <div class="page-head page-head-media">
+    <div class="slideshow" aria-hidden="true" data-slideshow
+         data-slideshow-images="assets/banner-events/02.jpg|assets/banner-events/03.jpg">
+      <img class="slide is-active" src="assets/banner-events/01.jpg" alt=""
+           width="1400" height="788" fetchpriority="high">
+    </div>
+
+    <div class="wrap page-head-inner">
+      <div class="page-head-plate">
+        <p class="eyebrow">What&rsquo;s happening</p>
+        <h1>News &amp; Events</h1>
+        <p class="page-lede">
+          Sales, seasonal markets, new vendors and anything else worth a trip
+          out to Johnston Street.
+        </p>
+      </div>
     </div>
   </div>
 
   <section class="section" id="upcoming">
     <div class="wrap">
 
-      <p class="draft-note">
-        <strong>Placeholder:</strong> the entries below are examples showing
-        the layout. Replace them with real ones and delete this note, or
-        remove this page and its two links until there is something to put
-        here.
-      </p>
+      <!-- Same markup as a past entry, so the two halves of the page match.
+           WHEN A SALE IS ANNOUNCED: replace this entry with a real one, drop
+           the placeholder classes and point the flyer at the real artwork.
+           When it is over, move it into the past list rather than deleting
+           it: that list is what shows a first-time visitor this place
+           actually runs events. -->
+      <p class="eyebrow">Coming soon</p>
+      <h2 class="events-title">Current &amp; future events</h2>
 
       <ul class="events">
 
-        <li class="event">
-          <p class="event-when">
-            <time datetime="2026-11-14">Example: Friday 14 November</time>
-          </p>
-          <h2>Holiday open house</h2>
-          <p>
-            One line on what it is and why someone would come. Keep it short;
-            the date and the name do most of the work.
-          </p>
+        <li class="event event-media event-upcoming">
+          <div class="event-body">
+            <p>
+              Our calendar is still taking shape, but we have several events in
+              the works over the next few weeks as we ease into the holiday
+              season. Follow along on Facebook or check back here to be among
+              the first to hear about what&rsquo;s coming.
+            </p>
+            <a class="fb-button" href="https://www.facebook.com/p/Pelican-Row-Estate-Market-100091994943430/" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.25-1.5 1.55-1.5h1.65V3.6A22 22 0 0 0 14.3 3.5c-2.4 0-4 1.45-4 4.1v2.3H7.6V13h2.7v8z"/></svg>
+              <span>Follow on Facebook</span>
+            </a>
+          </div>
+
+          <!-- A stand-in for artwork that does not exist yet. The blur is
+               baked into the file by tools/make-event-flyers.py, not applied
+               in CSS: a CSS filter would leave a readable flyer in the page
+               advertising dates nobody has agreed to. Decorative, so the
+               whole slot is hidden from screen readers; the words beside it
+               already say there is nothing booked. -->
+          <div class="event-flyer-slot" aria-hidden="true">
+            <img class="event-flyer is-placeholder" src="assets/events/upcoming-placeholder.jpg"
+                 alt="" width="750" height="900" loading="lazy">
+            <span class="flyer-banner">Coming soon</span>
+          </div>
         </li>
 
-        <li class="event">
-          <p class="event-when">
-            <time datetime="2026-10-03">Example: Saturday 3 October</time>
-          </p>
-          <h2>Warehouse sale</h2>
-          <p>
-            A second example, to show two entries stacked. Newest goes at the
-            top.
-          </p>
+      </ul>
+
+    </div>
+  </section>
+
+  <section class="section section-tint" id="past">
+    <div class="wrap">
+
+      <p class="eyebrow">Previously</p>
+      <h2 class="events-title">Past events</h2>
+      <p class="section-lede">
+        A sense of what we put on, so you know what to watch for.
+      </p>
+
+      <!--
+        Flyers are the market's own, resized by tools/make-event-flyers.py
+        and served from assets/events/. Each <time> is a real ISO date and
+        says the same thing as the text beside it.
+      -->
+      <ul class="events">
+
+        <li class="event event-media">
+          <div class="event-body">
+            <p class="event-when">
+              <time datetime="2026-09-27">Sunday 27 September 2026</time> &middot; 6&ndash;8pm
+            </p>
+            <h3>Warehouse Sale: one more night</h3>
+            <p>
+              The September sale was held over for a closing night. Glassware,
+              home decor, holiday items, furniture, collectibles and
+              kitchenware.
+            </p>
+          </div>
+          <img class="event-flyer" src="assets/events/warehouse-sale-one-more-night.jpg"
+               alt="Flyer: One More Night, Warehouse Sale, tonight 6 to 8pm, with glassware, home decor, holiday items, furniture, collectibles and kitchenware"
+               width="900" height="750" loading="lazy">
         </li>
 
-        <li class="event">
-          <!-- No <time>: undated news lays out the same way. -->
-          <h2>Example: upstairs is open</h2>
-          <p>
-            News with no date attached sits in the same list. Useful for a new
-            floor, a change of hours, or a vendor worth pointing at.
-          </p>
+        <li class="event event-media">
+          <div class="event-body">
+            <p class="event-when">
+              <time datetime="2026-09-25">Friday 25</time> and
+              <time datetime="2026-09-26">Saturday 26 September 2026</time> &middot; 6&ndash;8pm
+            </p>
+            <h3>Warehouse Sale sneak peek</h3>
+            <p>
+              Two evenings in the warehouse before the stock reached the shop
+              floor. Home goods and decor, kitchenware, tools, furniture and
+              vintage finds.
+            </p>
+          </div>
+          <img class="event-flyer" src="assets/events/warehouse-sale-sneak-peek.jpg"
+               alt="Flyer: Warehouse Sale Sneak Peek, Friday 25th and Saturday 26th September, 6pm to 8pm, with home goods and decor, kitchenware, tools, furniture and vintage finds"
+               width="750" height="900" loading="lazy">
         </li>
 
       </ul>
 
       <div class="prose vendor-cta">
-        <h2>In the meantime</h2>
+        <h3>Planning a visit?</h3>
         <p>
-          The quickest place to see what has just hit the floor is
-          <a href="https://www.facebook.com/p/Pelican-Row-Estate-Market-100091994943430/" target="_blank" rel="noopener">our Facebook page</a>,
-          which we post to most days. The
-          <a href="index.html#market">feed on the home page</a> shows the same
-          posts.
-        </p>
-        <p>
-          Planning a visit? Our <a href="index.html#visit">hours and location</a>
-          are on the home page.
+          Our <a href="index.html#visit">hours and location</a> are on the home
+          page, along with the
+          <a href="index.html#market">latest posts from the market</a>.
         </p>
       </div>
 
     </div>
-  </section>
-
-</main>
+  </main>
 
 <footer class="site-footer">
   <div class="wrap footer-inner">
@@ -195,6 +257,6 @@
   </div>
 </footer>
 
-<script src="script.js?v=58"></script>
+<script src="script.js?v=81"></script>
 </body>
 </html>
