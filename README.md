@@ -214,6 +214,42 @@ newest entry from eight months ago concludes the shop has closed. If nobody
 will keep it current, delete the page along with its menu link and the home
 page card, and let the Facebook feed do this job instead.
 
+### Clicking a flyer
+
+Each flyer opens larger in a `<dialog>`. Clicking the backdrop, pressing
+Escape or using the close button all dismiss it, and focus returns to the
+flyer you came from.
+
+**The buttons are built in `script.js`, not written into the markup.** With
+JavaScript off the flyers stay plain images rather than becoming controls
+that do nothing when pressed. That also means the wrapping button becomes
+the grid child, which is why `.flyer-zoom` carries the same layout rules as
+`.event-flyer`; miss that and the flyer stops stacking first on a phone.
+
+**Two kinds of image are deliberately left alone.** The upcoming
+placeholder is a deliberate blur, so there is nothing to see up close, and
+the banner slides are decoration behind the heading.
+
+The previous image is cleared when a flyer is opened, not when the dialog
+is closed. `<dialog>`'s `close` event is not reliably delivered
+everywhere — it never fires in the preview this was built in — so cleanup
+that hangs off it can simply never run. Doing it at open time always runs.
+
+**`.lightbox` must set `position: fixed` itself.** The UA stylesheet's
+`dialog:modal` rule is easy to knock out: any author rule setting `position`
+on the dialog wins the cascade, and the dialog then computes to
+`position: absolute`, which anchors it to the top of the *document* rather
+than the viewport. The page scrolls up to meet it, and you only notice once
+you close the preview and find yourself back at the top. So the rule pins it
+explicitly — `position: fixed; inset: 0; margin: auto` with `width` and
+`height` at `fit-content` to centre it — and that also gives the close
+button the containing block it needs.
+
+**The close button draws an SVG cross, not a `×` character.** The glyph sits
+off-centre inside its own line box, so centring the box leaves the mark
+visibly high and to one side; no amount of `place-items: center` fixes it.
+Two stroked paths are geometry, and land dead centre in the 40px circle.
+
 ### Flyers
 
 `python tools/make-event-flyers.py <source.jpg> <slug>` writes
@@ -405,6 +441,40 @@ the page also answers "who sells what, and which booth".
 The links point at sites the market does not control. **If a vendor leaves,
 remove their entry** — a dead link here reflects on the market, not on them.
 
+### The vendor listing form
+
+Under "Are you one of our vendors?", behind a **Send us your links** toggle.
+It asks for name, booth number, phone, up to three website or social media
+links, and an optional free-text box. Name, booth, phone and **one**
+link are required; everything else is optional. It goes to James with Brad
+and deanna.hagan@bayoubuilt-digital.com copied.
+
+**`data-raw` on the link inputs prints their values with no caption.**
+"Website or social media: facebook.com/x" three times over is noise when the
+URLs speak for themselves, so those lines go into the email bare. The field
+still carries `data-label`, which is what a screen reader reads on the cloned
+rows; only the email formatting changes. Both forms use it.
+
+The free-text box is `name="message"`, which the mailto block treats as the
+body of the email rather than as another captioned line.
+
+The booth field has no placeholder and `autocomplete="off"`. Booth numbers
+are not a format anyone should be nudged towards, and a browser offering a
+previous entry there is noise.
+
+**The toggle is a `<details>`, not JavaScript.** It opens on the same page
+with no script involved, so it still works with scripting off, where a
+JS-hidden panel would simply be unreachable.
+
+**A mailto can take several recipients, but each address must be encoded on
+its own.** Running `encodeURIComponent` over the whole comma-separated list
+turns the separators into `%2C`, and some mail apps then treat the lot as one
+malformed recipient. `script.js` has an `addrs()` helper for this; use it for
+any field that might hold more than one address.
+
+The form promises up to 30 days for links to appear. If that stops being
+true, change the line rather than leaving it.
+
 ### The search
 
 `script.js` filters the markup already in the page: no index, no fetch,
@@ -436,6 +506,23 @@ Two details worth keeping if you touch it:
 
 The booth enquiry form first, then vendor hours and terms.
 
+### The two-part lede
+
+This page opens with a statement — "Your next booth could be at Pelican
+Row." — and the explanation underneath, as two paragraphs rather than one
+with a `<br>` in it. The first carries `.page-lede-lead`, which only sets it
+bold; the size and colour stay the lede's.
+
+**That is a class and not `.page-lede:first-of-type` for a reason.** Every
+other page has a single lede paragraph, and a lone element is also its own
+first-of-type, so that selector would have restyled the lede on all of them.
+
+The weight is **600, not `bold`**. EB Garamond is loaded at 400, 500 and 600,
+so 700 would snap down to 600 in any case; asking for the weight that exists
+means the rule says what actually renders. 600 is the heaviest weight used
+anywhere on the site — the headings are 500 — so if a true 700 is ever
+wanted, it needs adding to the Google Fonts URL in all seven pages first.
+
 ### Repeatable rows
 
 The "Website or social media" field grows extra rows, capped at three.
@@ -454,7 +541,9 @@ attributes in the markup, so another form can reuse it without touching
 | `data-repeat-add` | the button, a sibling of the container |
 
 Cloned rows **drop the `id`** (ids have to stay unique, and the visible
-`<label for>` belongs to the first row only) and **keep `data-label`**,
+`<label for>` belongs to the first row only), **drop `required`** (a required
+first row means "at least one"; carrying it onto clones would trap anyone who
+clicked Add another out of curiosity) and **keep `data-label`**,
 which is what the mailto block reads to caption each line in the email.
 They also gain an `aria-label` like "Website or social media 3" so it still
 announces itself without a label.

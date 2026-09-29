@@ -837,6 +837,52 @@ main > :last-child {
 .add-row[hidden] { display: none; }
 .add-row:hover { color: var(--brick-deep); text-decoration: underline; }
 
+/* ── Reveal ───────────────────────────────────────────────
+   A <details> styled as a link. Native, so it needs no JavaScript and
+   stays usable with scripting off, where a JS-hidden panel would just be
+   unreachable. */
+
+.reveal { margin: 1.3rem 0 1.9rem; }
+
+.reveal > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding-block: .5rem;
+  cursor: pointer;
+  font-family: var(--sans);
+  font-size: .82rem;
+  font-weight: 600;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--brick);
+  list-style: none;                  /* drop the default triangle ... */
+}
+.reveal > summary::-webkit-details-marker { display: none; }   /* ... and in Safari */
+.reveal > summary:hover { color: var(--brick-deep); }
+
+/* A chevron that turns when the panel opens, so the control says which way
+   it is going rather than only that it is clickable. */
+.reveal > summary::after {
+  content: "";
+  width: .42rem;
+  height: .42rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform .2s ease;
+}
+.reveal[open] > summary::after { transform: translateY(1px) rotate(-135deg); }
+
+.reveal-body { margin-top: 1.1rem; max-width: 34rem; }
+
+/* The quiet line above a submit button that sets expectations. */
+.form-hint {
+  margin: 0 0 1.1rem;
+  font-size: .88rem;
+  color: var(--ink-soft);
+}
+
 /* Marks an optional field without shouting about it. */
 .field-opt {
   font-weight: 400;
@@ -951,6 +997,18 @@ main > :last-child {
   max-width: 52ch;
   margin: .9rem 0 0;
 }
+/* The opening line of a two-part lede: a statement, with the explanation
+   under it. Same size and colour as the lede it sits above, set bold.
+
+   600, not 700: the font is loaded at 400/500/600, so bold would snap to
+   600 anyway on the way past. Asking for what is actually there keeps the
+   rule honest about what renders. It is also the heaviest weight on the
+   site, above the 500 the headings use.
+
+   A CLASS, not .page-lede:first-of-type. Every other page has a single lede
+   paragraph, and a lone element is also its own first-of-type, so that
+   selector would quietly restyle all of them. */
+.page-lede-lead { font-weight: 600; }
 .page-meta {
   margin: 1.25rem 0 0;
   font-size: .75rem;
@@ -1021,6 +1079,91 @@ main > :last-child {
   box-shadow: 0 0 0 1px var(--line), var(--shadow);
 }
 
+/* ── Flyer lightbox ───────────────────────────────────────
+   script.js wraps each flyer in .flyer-zoom, so that button becomes the
+   grid child and has to carry the layout rules the image had. */
+
+.flyer-zoom {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+  border-radius: var(--radius);
+}
+.flyer-zoom:focus-visible { outline: 2px solid var(--brick); outline-offset: 4px; }
+.flyer-zoom .event-flyer { transition: transform .22s ease; }
+
+@media (hover: hover) {
+  .flyer-zoom:hover .event-flyer { transform: scale(1.02); }
+}
+
+/* Pinned to the viewport and centred explicitly rather than leaning on the
+   UA's dialog:modal rule. Left to itself this computed to position:absolute,
+   which anchors the dialog to the top of the DOCUMENT: open it halfway down
+   a long page and the browser scrolls up to reach it, leaving you at the top
+   once it closes. fixed also makes this the containing block for the close
+   button, which is what position:relative was there for. */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: fit-content;
+  height: fit-content;
+  max-width: min(92vw, 60rem);
+  max-height: 92vh;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius);
+  background: transparent;
+  overflow: visible;
+}
+.lightbox::backdrop { background: rgba(28, 21, 17, .84); }
+
+.lightbox img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 88vh;
+  object-fit: contain;
+  border-radius: var(--radius);
+  background: #fff;                 /* a flyer's own white, not the backdrop */
+  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .8);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: .55rem;
+  right: .55rem;
+  z-index: 1;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(28, 21, 17, .72);
+  color: var(--paper);
+  cursor: pointer;
+  transition: background-color .18s;
+}
+/* An SVG cross, not a "times" character. The glyph sits off-centre inside
+   its own line box, so no amount of centring the box centres the mark. */
+.lightbox-close svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.lightbox-close:hover { background: rgba(28, 21, 17, .92); }
+
+@media (prefers-reduced-motion: reduce) {
+  .flyer-zoom:hover .event-flyer { transform: none; }
+}
+
 /* ── Upcoming placeholder ─────────────────────────────────
    Stands in for a flyer that does not exist yet: a wrecked copy of an old
    one, faded back, with a banner across it so nobody mistakes it for a
@@ -1064,7 +1207,8 @@ main > :last-child {
      left the placeholder stranded below its text. */
   .event-media { grid-template-columns: minmax(0, 1fr); }
   .event-flyer,
-  .event-flyer-slot { order: -1; max-width: 340px; }
+  .event-flyer-slot,
+  .flyer-zoom { order: -1; max-width: 340px; }
 }
 
 /* ── Vendor directory ─────────────────────────────────────
@@ -1428,6 +1572,7 @@ main > :last-child {
      keeps the smaller, tidier sizes; this only applies where there is
      no cursor. */
   .nav-toggle { min-height: 44px; }
+  .reveal > summary { min-height: 44px; }
   .wordmark { min-height: 44px; justify-content: center; }
 
   /* Footer links sat at 16-21px. These are secondary, and they are inline
@@ -1437,7 +1582,8 @@ main > :last-child {
   .footer-address a,
   .footer-links a,
   .footer-credit a,
-  .prose p a { padding-block: .35rem; }
+  .prose p a,
+  .event-body p a { padding-block: .35rem; }
 
   /* A flex item, so padding would grow the whole line. min-height lifts it
      the 2px it needs to clear the 24px floor; inline-flex keeps the label

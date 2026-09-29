@@ -102,6 +102,11 @@
         input.value = "";
         input.removeAttribute("id");
         input.removeAttribute("aria-invalid");
+        /* Extra rows are never required, even when the first one is. A
+           required first row means "at least one"; carrying that onto the
+           clones would mean a visitor who clicks Add another cannot submit
+           until they fill a row they only opened out of curiosity. */
+        input.removeAttribute("required");
         var label = input.getAttribute("data-label") || input.name || "Entry";
         input.setAttribute("aria-label", label + " " + (list.length + 1));
         if (examples.length) {
@@ -459,6 +464,73 @@
     play();
   });
 
+  /* ── Flyer lightbox ──────────────────────
+     Clicking an event flyer opens it larger in a dialog.
+
+     The buttons are built here rather than written into the markup, so
+     that with JavaScript off the flyers stay plain images instead of
+     controls that do nothing when pressed.
+
+     <dialog> rather than a hand-rolled overlay: it traps focus, closes on
+     Escape, makes the rest of the page inert and returns focus to the
+     button afterwards, all of which would otherwise have to be written
+     and then maintained.
+
+     Two kinds of image are skipped. The upcoming placeholder is a
+     deliberate blur, so there is nothing to look at up close, and the
+     banner slides are decoration behind the heading. */
+
+  var flyers = document.querySelectorAll(".event-flyer:not(.is-placeholder)");
+
+  if (flyers.length && window.HTMLDialogElement) {
+    var box = document.createElement("dialog");
+    box.className = "lightbox";
+    box.setAttribute("aria-label", "Flyer");
+    box.innerHTML =
+      '<button type="button" class="lightbox-close" aria-label="Close">' +
+        '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+        '<path d="M6 6l12 12M18 6L6 18"/></svg></button>' +
+      '<img alt="">';
+    document.body.appendChild(box);
+
+    var boxImg = box.querySelector("img");
+
+    Array.prototype.forEach.call(flyers, function (img) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "flyer-zoom";
+      btn.setAttribute("aria-label", "View this flyer larger");
+
+      // Wrap the image: the button takes its place in the grid, which is
+      // why .flyer-zoom carries the same layout rules as .event-flyer.
+      img.parentNode.insertBefore(btn, img);
+      btn.appendChild(img);
+
+      btn.addEventListener("click", function () {
+        /* Clear first, then set. Without this the dialog can show the
+           previous flyer for a frame while the new one decodes. Done here
+           rather than on the dialog's close event, which is not reliably
+           delivered everywhere: the cleanup then depends on an event that
+           may never arrive, where this always runs. */
+        boxImg.removeAttribute("src");
+        boxImg.alt = img.alt || "";
+        boxImg.src = img.currentSrc || img.src;
+        box.showModal();
+      });
+    });
+
+    box.querySelector(".lightbox-close").addEventListener("click", function () {
+      box.close();
+    });
+
+    /* Clicking the backdrop closes it. The backdrop is not an element, so
+       the click arrives on the dialog itself; anything inside the picture
+       reports that child as the target instead. */
+    box.addEventListener("click", function (e) {
+      if (e.target === box) box.close();
+    });
+  }
+
   /* ── Vendor search ───────────────────────────────────────
      Filters the vendor list that is already in the page. No index and
      no fetch, so it works on any static host and keeps working if the
@@ -549,6 +621,16 @@
     var to = form.dataset.mailto;
     var cc = form.dataset.mailtoCc;
 
+    /* A mailto can carry several addresses separated by commas, but each
+       address has to be encoded on its own. Running encodeURIComponent over
+       the whole list turns the separators into %2C and some mail apps then
+       treat the lot as one malformed recipient. */
+    var addrs = function (list) {
+      return list.split(",").map(function (a) {
+        return encodeURIComponent(a.trim());
+      }).join(",");
+    };
+
     var say = function (text, state) {
       if (!note) return;
       note.textContent = text;
@@ -591,15 +673,24 @@
       }
 
       var data = new FormData(form);
-      var name = ((data.get("firstName") || "") + " " + (data.get("lastName") || "")).trim();
+      // A form may ask for one "name" or for first and last separately.
+      var name = (data.get("name") ||
+        ((data.get("firstName") || "") + " " + (data.get("lastName") || ""))).trim();
 
       // Anything beyond name and message gets its own line, captioned
       // with its label, so a form can add fields without touching this.
       var extras = [];
       Array.prototype.forEach.call(form.elements, function (el) {
         if (!el.name || !el.value.trim()) return;
-        if (["firstName", "lastName", "message"].indexOf(el.name) !== -1) return;
-        extras.push(labelFor(el) + ": " + el.value.trim());
+        if (["name", "firstName", "lastName", "message"].indexOf(el.name) !== -1) return;
+        /* data-raw prints the value on its own, with no caption. Used for
+           the link rows: "Website or social media: facebook.com/x" three
+           times over is noise when the URLs speak for themselves. The
+           field keeps its data-label, which is what a screen reader reads
+           on the cloned rows. */
+        extras.push(el.hasAttribute("data-raw")
+          ? el.value.trim()
+          : labelFor(el) + ": " + el.value.trim());
       });
 
       // No email line in the signature: the visitor's mail app supplies
@@ -613,10 +704,10 @@
         (extras.length ? "\n" + extras.join("\n") : "");
 
       window.location.href =
-        "mailto:" + encodeURIComponent(to) +
+        "mailto:" + addrs(to) +
         "?subject=" + encodeURIComponent(subject) +
         "&body=" + encodeURIComponent(body) +
-        (cc ? "&cc=" + encodeURIComponent(cc) : "");
+        (cc ? "&cc=" + addrs(cc) : "");
 
       say("Opening your email app with the message ready to send. If nothing happens, email us at " + to + ".");
     });
