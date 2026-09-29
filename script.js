@@ -645,7 +645,7 @@
 
   /* ── Mailto forms ────────────────────────────────────────
      Every form with data-mailto is handled here: the contact form
-     on the home page and the booth enquiry form on Become a Vendor.
+     on the home page and the booth inquiry form on Become a Vendor.
      Each hands its message to the visitor's own email app,
      pre-filled. Deliberate: no form service to depend on, and the
      reply address comes from their mail app so it is always valid.

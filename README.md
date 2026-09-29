@@ -8,7 +8,7 @@ index.html          home (the market, visit, contact)
 about.html          About Us              <- real content, needs photos
 return-policy.html  Return Policy         <- DO NOT PUBLISH AS-IS
 terms.html          Terms & Conditions    <- DO NOT PUBLISH AS-IS
-become-a-vendor.html Become a Vendor      <- enquiry form + booth terms
+become-a-vendor.html Become a Vendor      <- inquiry form + booth terms
 styles.css          all styling, shared by every page
 script.js           mobile menu, Facebook feed sizing, contact form
 assets/building.jpg storefront photo, 960x720 (exactly the hero panel's 4:3)
@@ -642,7 +642,7 @@ Two details worth keeping if you touch it:
 
 ## Become a Vendor page
 
-The booth enquiry form first, then vendor hours and terms.
+The booth inquiry form first, then vendor hours and terms.
 
 ### The two-part lede
 
@@ -700,7 +700,7 @@ still no form service anywhere on the site. Both forms are now driven by one
 block in `script.js`, which picks up any `<form data-mailto="...">`:
 
 - `data-mailto` / `data-mailto-cc` set the recipients.
-- `data-subject` sets the subject line ("Booth enquiry from Jane Doe"). The
+- `data-subject` sets the subject line ("Booth inquiry from Jane Doe"). The
   contact form omits it and falls back to "Website inquiry".
 - Fields other than first name, last name and message are appended to the
   email body captioned with their own `<label>` text. That is how Phone and
