@@ -58,9 +58,10 @@ carries both classes.
 
 ## Pages and navigation
 
-- **Top menu (every page):** News & Events, About Us, Our Vendors,
-  Become a Vendor, Return Policy. Ordered by what a visitor is most
-  likely to want, with the policy page last.
+- **Top menu (every page):** News & Events, Our Vendors, Become a Vendor,
+  About Us, Return Policy. Ordered by what a visitor is most likely to
+  want — what's on now, who's selling, how to join them — with the
+  background reading and the policy page last.
 - **Footer (every page):** address, phone, email, Facebook, and
   Terms & Conditions.
 - **Facebook moved from the menu to the footer** when Our Vendors took
@@ -707,11 +708,11 @@ block in `script.js`, which picks up any `<form data-mailto="...">`:
   "What you sell" arrive without the script knowing about them, and how you
   can add a field later without touching the JavaScript.
 
-**The terms are real and complete**: vendor hours, rent from $135/month, 20%
-commission, no other fees, $20/day late, monthly payout in the first week,
-month to month with 30 days' notice, booth rules, and risk/insurance. When any
-of it changes, update the page **and** the "Terms last updated" date in the
-page header.
+**The terms are real and complete**: vendor hours, rent of $175/month for a
+standard 10 x 10, 20% commission, monthly payout in the first week, month to
+month with 30 days' notice, booth rules, and risk/insurance. When any of it
+changes, update the page **and** the "Terms last updated" date in the page
+header.
 
 As with the return policy, **the public page is the readable summary and the
 signed booth agreement is what binds a vendor.** Keep the two in step, and have
@@ -1008,9 +1009,23 @@ feeds Google). If hours ever change, update both.
 
 ## Address
 
-**6413 Johnston St, Ste 400, Lafayette, LA 70503.** The old Wix pages
-contradicted each other (`/home` said #500, `/contact-3` said STE 400);
-Google's listing for the business says **#400**, so that's what the page uses.
+**6413 Johnston St, Ste 500, Lafayette, LA 70503.**
+
+This changed, and the history is worth keeping because the suite number has
+been wrong in public more than once. The old Wix pages contradicted each
+other — `/home` said #500, `/contact-3` said STE 400 — and Google's listing
+said #400 at the time, so the site launched with 400. Google now says
+**#500** (checked 30 September 2026 on the listing itself, not on a search
+result, which still echoes the stale Wix page). The Trust Acadiana flyer on
+News & Events also reads #500, which is the same answer from an independent
+source.
+
+It appears in **14 places across seven pages** — every footer, the Visit
+section, the About and legal pages, and the `streetAddress` in the JSON-LD.
+Change it everywhere or Google gets two different answers from one site.
+
+Map links do **not** carry the address; they use the listing's CID (see
+below), so they follow Google's own record automatically.
 
 ---
 

@@ -29,12 +29,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=103">
+<link rel="stylesheet" href="styles.css?v=107">
 
 <!-- Password gate while the site is in review. Deliberately NOT deferred:
      it runs before the body is parsed so the page is hidden before it can
      be painted. Delete this one line on each page to open the site up. -->
-<script src="gate.js?v=103"></script>
+<script src="gate.js?v=107"></script>
 
 <!-- Breadcrumbs, so a search result can show Home > Become a Vendor -->
 <script type="application/ld+json">
@@ -103,9 +103,9 @@
 
     <nav class="site-nav" id="siteNav" aria-label="Main">
       <a href="events.html">News &amp; Events</a>
-      <a href="about.html">About Us</a>
       <a href="vendors.html">Our Vendors</a>
       <a href="become-a-vendor.html" aria-current="page">Become a Vendor</a>
+      <a href="about.html">About Us</a>
       <a href="return-policy.html">Return Policy</a>
 
     </nav>
@@ -202,9 +202,10 @@
           <label for="space">Space needed</label>
           <select id="space" name="space" required>
             <option value="" disabled selected>Choose one</option>
-            <option value="8 x 8">8 &times; 8</option>
-            <option value="10 x 10">10 &times; 10</option>
-            <option value="Larger than 10 x 10">Larger than 10 &times; 10</option>
+            <option value="Small">Small</option>
+            <option value="Medium">Medium</option>
+            <option value="Large">Large</option>
+            <option value="XL">XL</option>
           </select>
         </p>
         <!-- A div, not a p: the repeat rows below are block elements and a
@@ -225,15 +226,6 @@
           </div>
           <button type="button" class="add-row" data-repeat-add>Add another</button>
         </div>
-        <p class="field">
-          <label for="moveIn">When you&rsquo;re looking to move in</label>
-          <select id="moveIn" name="moveIn" required>
-            <option value="" disabled selected>Choose one</option>
-            <option value="1-3 months">1-3 months</option>
-            <option value="3-6 months">3-6 months</option>
-            <option value="6-12 months">6-12 months</option>
-          </select>
-        </p>
         <p class="field">
           <label for="message">Anything else we should know <span class="field-opt">optional</span></label>
           <textarea id="message" name="message" rows="5"></textarea>
@@ -260,7 +252,7 @@
         </p>
         <dl class="hours">
           <div><dt>Wednesday</dt><dd>4:00 &ndash; 6:00 pm</dd></div>
-          <div><dt>Thursday</dt><dd>All day</dd></div>
+          <div><dt>Thursday</dt><dd>10:00 am &ndash; 6:00 pm</dd></div>
           <div><dt>Friday</dt><dd>4:00 &ndash; 6:00 pm</dd></div>
           <div><dt>Saturday</dt><dd>4:00 &ndash; 6:00 pm</dd></div>
           <div><dt>Sunday</dt><dd>3:00 &ndash; 7:00 pm</dd></div>
@@ -268,10 +260,8 @@
 
         <h2>Booth rent and fees</h2>
         <ul>
-          <li><strong>Rent:</strong> starting at $135 a month, depending on the
-            booth</li>
+          <li><strong>Rent:</strong> standard 10 &times; 10, $175 a month</li>
           <li><strong>Commission:</strong> 20% of sales</li>
-          <li><strong>Late payment:</strong> $20 per day</li>
         </ul>
 
         <h2>Getting paid</h2>
@@ -298,7 +288,6 @@
             purse booth, for example, we would not want purses sold in the
             booth beside it.</li>
           <li>Keep the aisles clear.</li>
-          <li>No food or firearms.</li>
         </ul>
 
         <h2>Risk and insurance</h2>
@@ -330,7 +319,7 @@
       <span class="wordmark-sub">Estate &amp; Market</span>
     </a>
     <p class="footer-address">
-      6413 Johnston St, Ste&nbsp;400 &middot; Lafayette, LA 70503<br>
+      6413 Johnston St, Ste&nbsp;500 &middot; Lafayette, LA 70503<br>
       <a href="tel:+13379159602">337.915.9602</a> &middot;
       <a href="mailto:james@pelicanrowmarket.com">james@pelicanrowmarket.com</a> &middot;
       <a href="https://www.facebook.com/p/Pelican-Row-Estate-Market-100091994943430/" target="_blank" rel="noopener">Facebook</a>
@@ -345,6 +334,6 @@
   </div>
 </footer>
 
-<script src="script.js?v=103"></script>
+<script src="script.js?v=107"></script>
 </body>
 </html>

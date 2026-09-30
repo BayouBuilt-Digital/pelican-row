@@ -795,6 +795,13 @@ main > :last-child {
 .field select:focus,
 .field textarea:focus { background-color: #fff; border-color: var(--brick); }
 
+/* The browser's own placeholder grey (#757575) lands at 3.8:1 on our paper
+   and slightly worse on the tinted search box — under the 4.5:1 floor for
+   text. --ink-faint was picked for exactly this job and measures 4.7:1 on
+   the tint, while still reading as a hint rather than as a typed value. */
+.field input::placeholder,
+.field textarea::placeholder { color: var(--ink-faint); opacity: 1; }
+
 /* Repeatable field rows (the social media entries). */
 .repeat { display: grid; gap: .5rem; }
 .repeat-row { display: flex; gap: .5rem; align-items: center; }
@@ -1218,6 +1225,51 @@ main > :last-child {
 
 .vendor-search { max-width: 34rem; margin-bottom: 1.75rem; }
 .vendor-search .field { margin-bottom: .5rem; }
+
+/* The shared .field rule gives inputs a hairline border in --line, which on
+   this page's cream is 1.3:1 — readable on a desktop monitor, easy to miss
+   on a phone, where it stopped looking like something you could type in.
+
+   The border does the work here, not a fill. Every background that can sit
+   on --paper is stuck in a narrow band (the tinted option reached 1.11:1),
+   because the page is already nearly white. A border has no such ceiling:
+   navy against this cream is 9.93:1.
+
+   Navy specifically, because the vendor cards below carry a 2px border in
+   the same colour. The search box is the control that filters those cards,
+   so it belongs to them; matching the outline says so without adding a
+   colour the page does not already use. Kept to 1px so it reads as a field
+   rather than as another card. */
+.vendor-search input {
+  border-color: var(--navy);
+
+  /* A magnifying glass, so the box announces what it is before anyone reads
+     the label above it. On a cream page a field cannot rely on its fill to
+     say "search" — white is spoken for by the focus state — so the icon
+     carries that meaning instead.
+
+     Drawn as a background image rather than an element in the markup: no
+     wrapper, no extra node to position, and nothing for a screen reader to
+     announce twice when the field is already labelled. The trade is that
+     the stroke colour is baked in and cannot follow currentColor, which
+     costs nothing while the field has one resting colour. --ink-faint,
+     %23 being the # that a data URI will not take raw. */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23746452' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='M15.6 15.6 21 21'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left .8rem center;
+  background-size: 18px 18px;
+  padding-left: 2.7rem;               /* clear of the glass, not over it */
+}
+
+/* Safari draws its own clear button inside type=search once there is text.
+   It sits on the right, away from the glass, so it is left alone — two
+   affordances, neither on top of the other. */
+
+/* Focus still lifts the fill to white and turns the border brick, from the
+   .field rules above. Spelled out because that rule outranks this one by
+   only a single class, and the state change should not depend on a margin
+   a later edit could close by accident. */
+.vendor-search input:focus { background-color: #fff; border-color: var(--brick); }
 
 .vendor-count {
   margin: 0;
