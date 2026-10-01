@@ -27,8 +27,11 @@
      pelican on the sign is darker again. The only cool colour in the
      palette, so use it sparingly or it stops meaning anything. */
   --navy:       #223e65;
+  --navy-wash:  rgba(34, 62, 101, .08);   /* hover tint, as --brick-wash is for brick */
 
   /* Lines */
+  --ink-wash:   rgba(51, 39, 31, .05);    /* hover tint for ink-lettered buttons */
+
   --line:       rgba(51, 39, 31, 0.14);
   --line-soft:  rgba(51, 39, 31, 0.08);
 
@@ -71,6 +74,10 @@ img { max-width: 100%; display: block; }
 a { color: var(--brick); text-decoration-color: rgba(154, 78, 48, .35); text-underline-offset: 3px; }
 a:hover { color: var(--brick-deep); text-decoration-color: currentColor; }
 
+/* Focus rings are BRICK. Navy was tried here and reverted: a field resting
+   in navy that turns brick when you click into it is a clearer change than
+   one that stays the same colour and merely gains a ring. The error state
+   stays distinguishable by its pink fill, which focus does not have. */
 :where(a, button, input, textarea, iframe):focus-visible {
   outline: 2px solid var(--brick);
   outline-offset: 3px;
@@ -300,7 +307,10 @@ h1 { display: grid; gap: .5rem; margin-bottom: 1.5rem; }
 .btn-primary:hover { background: var(--brick-deep); color: #fff; }
 
 .btn-ghost { background: transparent; color: var(--ink); border-color: var(--line); }
-.btn-ghost:hover { background: rgba(51,39,31,.05); color: var(--ink); border-color: var(--ink-faint); }
+/* The pattern every ink-lettered button follows: the letters stay put and
+   the button itself darkens. Brick and navy are reserved for buttons that
+   are brick or navy to begin with. */
+.btn-ghost:hover { background: var(--ink-wash); color: var(--ink); border-color: var(--ink-faint); }
 
 .btn-block { width: 100%; }
 
@@ -410,7 +420,18 @@ main > :last-child {
      image. If the screenshots are ever retaken against a different
      background, re-sample their edges and match this to it. */
   background: #fff;
-  box-shadow: 0 0 0 1px var(--line), var(--shadow);
+  /* A REAL BORDER, not a box-shadow ring. The ring was drawn with a 1.5px
+     spread, and a spread is not rounded to whole device pixels the way a
+     border width is — so with the frame landing on half pixels (left 72.5,
+     top 386.25) each edge antialiased differently: one side a solid line,
+     another a half-strength grey. Against the drop shadow underneath, that
+     read as embossed.
+
+     A border rounds per edge like the cards' do, so all four match. It costs
+     no width either, because box-sizing is border-box: the frame stays the
+     same size and the slides, at 100% of the content box, simply follow. */
+  border: 1.5px solid var(--ink);
+  box-shadow: var(--shadow);
 }
 .reviews-track::-webkit-scrollbar { display: none; }
 .reviews-track:focus-visible { outline: 2px solid var(--brick); outline-offset: 3px; }
@@ -451,7 +472,11 @@ main > :last-child {
   fill: none; stroke: currentColor; stroke-width: 2;
   stroke-linecap: round; stroke-linejoin: round;
 }
-.carousel-btn:hover:not(:disabled) { color: var(--brick); border-color: var(--brick); }
+.carousel-btn:hover:not(:disabled) {
+  background: var(--ink-wash);
+  color: var(--ink);
+  border-color: var(--ink-faint);
+}
 .carousel-btn:disabled { opacity: .35; cursor: default; }
 
 .reviews-dots { display: flex; margin-inline: auto; }
@@ -503,6 +528,12 @@ main > :last-child {
   .card:hover {
     transform: translateY(-4px) scale(1.02);
     border-color: var(--line);
+  }
+  /* .card:hover would otherwise wash the outline out to a hairline grey on
+     the way up. The vendor cards hold theirs through the lift; these do the
+     same. */
+  .card-link:hover {
+    border-color: var(--ink);
     box-shadow: 0 2px 4px rgba(51, 39, 31, .06), 0 22px 44px -22px rgba(51, 39, 31, .45);
     z-index: 1;
   }
@@ -514,10 +545,23 @@ main > :last-child {
 .card h3 { margin-bottom: .45rem; }
 .card p { margin: 0; color: var(--ink-soft); font-size: .97rem; }
 
-/* Two of the three cards lead somewhere. The link sits in the heading but
-   its ::before covers the whole card, so the entire card is clickable while
-   there is still only one thing for a keyboard to land on. */
-.card-link { cursor: pointer; }
+/* These cards lead somewhere. The link sits in the heading but its ::before
+   covers the whole card, so the entire card is clickable while there is
+   still only one thing for a keyboard to land on. */
+.card-link {
+  cursor: pointer;
+  /* The same 2px outline the vendor cards carry, in --ink: the darkest
+     colour in the palette and the one the body text is already set in, so
+     it reads as black on cream without the glare of a true #000.
+
+     The base .card keeps its hairline, so a card that is only a card and
+     not a link would still look different from one that goes somewhere.
+
+     1.5px, not 2: enough to read as a drawn edge, light enough that a grid
+     of them does not turn into a wall of boxes. The vendor cards and the
+     reviews frame use the same weight. */
+  border: 1.5px solid var(--ink);
+}
 .card-link h3 a {
   color: inherit;
   text-decoration: none;
@@ -568,7 +612,7 @@ main > :last-child {
      (tested: asking for 900 returns 498), so anything wider comes from
      magnifying it here, not from Facebook. The panel width is derived, so
      the feed always exactly fills its frame. 1 = no magnification. */
-  --feed-scale: 1.1;
+  --feed-scale: 1;
   --feed-w: calc(500px * var(--feed-scale));
 
   display: grid;
@@ -594,6 +638,27 @@ main > :last-child {
   color: var(--ink-soft);
   max-width: 40ch;
   margin: 0 0 1.6rem;
+}
+
+/* The feed opening a section rather than following one (Our Partners). It
+   keeps the rule above it — that line is what separates the section's own
+   lede from the featured partner beneath — but not the home page's spacing,
+   which is sized to put daylight between the feed and a grid of cards. Here
+   there is only a paragraph above, so the gap is roughly half. */
+.feed-tight {
+  margin-top: 2.25rem;
+  /* The same token the section below the rule is padded with, so the space
+     under the line and the space from the feed to the next section are the
+     one measurement rather than two that happen to match at one width. */
+  padding-top: var(--page-edge);
+}
+
+/* The partner's name in that column. The home page's .feed-copy h3 IS its
+   section heading and is sized accordingly; this one sits under an h2, so it
+   has to be visibly smaller or the hierarchy reads backwards. */
+.feed-copy .featured-name {
+  font-size: clamp(1.25rem, 1.05rem + .7vw, 1.55rem);
+  margin-bottom: .6rem;
 }
 
 /* The plugin's insides can't be styled (it's another site's frame), so the
@@ -638,11 +703,25 @@ main > :last-child {
   font-weight: 600;
   letter-spacing: .1em;
   text-transform: uppercase;
-  color: var(--brick);
+  /* Navy, as the one piece of Facebook's own chrome we draw ourselves —
+     it reads as belonging to the panel below it rather than to the brick
+     links in the copy beside it. */
+  color: var(--navy);
   text-decoration: none;
   transition: background-color .18s, border-color .18s;
 }
-.feed-head-follow:hover { background: var(--brick-wash); border-color: var(--brick); }
+/* The hover follows the text rather than staying brick, or the button would
+   change colour family on the way in. The tint is --navy-wash, the navy
+   counterpart of --brick-wash, shared with the other Facebook controls.
+
+   The colour is restated here and NOT left to inherit: the base a:hover rule
+   sets --brick-deep, so without this line the label turned brick the moment
+   you pointed at it. Same reason the vendor-card chips restate theirs. */
+.feed-head-follow:hover {
+  color: var(--navy);
+  background: var(--navy-wash);
+  border-color: var(--navy);
+}
 
 /* The window the feed shows through.
    --feed-scale > 1 magnifies the feed past Facebook's 500px ceiling: the
@@ -741,8 +820,19 @@ main > :last-child {
   letter-spacing: .08em;
   transition: border-color .18s, color .18s;
 }
-.fb-button svg { width: 18px; height: 18px; fill: var(--brick); }
-.fb-button:hover { color: var(--brick); border-color: var(--brick); }
+/* The f mark is navy, the one cool colour on the site — it reads as the
+   Facebook mark rather than as another piece of the button, and the words
+   beside it stay in ink. Left navy on hover too: the mark belongs to
+   Facebook, so it should not change when the button reacts. */
+.fb-button svg { width: 18px; height: 18px; fill: var(--navy); }
+/* Every Facebook control on the site hovers the same way: navy text, navy
+   border, navy wash. The colour is restated rather than inherited because
+   the base a:hover rule sets --brick-deep and would otherwise win. */
+.fb-button:hover {
+  color: var(--navy);
+  border-color: var(--navy);
+  background: var(--navy-wash);
+}
 
 
 .form {
@@ -770,7 +860,10 @@ main > :last-child {
   font-size: .97rem;
   color: var(--ink);
   background-color: var(--paper);
-  border: 1px solid var(--line);
+  /* --ink, like the cards: boxes on this site are outlined in the same
+     near-black. 1px, not the cards' 2px — a form is a column of these and
+     at 2px they would read as a stack of boxes rather than as a form. */
+  border: 1px solid var(--ink);
   border-radius: var(--radius);
   padding: .68rem .8rem;
   width: 100%;
@@ -791,6 +884,8 @@ main > :last-child {
 }
 .field select:invalid { color: var(--ink-faint); }   /* the "Choose one" state */
 
+/* Clicking in lifts the fill to white and turns the navy border brick, so
+   the field you are typing in is unmistakable. */
 .field input:focus,
 .field select:focus,
 .field textarea:focus { background-color: #fff; border-color: var(--brick); }
@@ -953,6 +1048,15 @@ main > :last-child {
   position: absolute;
   inset: 0;
   background: linear-gradient(to bottom, rgba(28, 21, 17, .22), rgba(28, 21, 17, .32));
+}
+
+/* A lighter wash for a banner whose photo should carry more of the frame.
+   Used on Become a Vendor, where the room is bright and the standard wash
+   was flattening it. Safe to lighten: legibility is the plate's job, and
+   the plate's own .64 over a near-white image still measures ~5:1 with no
+   wash under it at all, so this cannot drop the text below the floor. */
+.page-head-light .slideshow::after {
+  background: linear-gradient(to bottom, rgba(28, 21, 17, .10), rgba(28, 21, 17, .18));
 }
 
 .page-head-inner { position: relative; }   /* above the scrim */
@@ -1190,7 +1294,10 @@ main > :last-child {
   top: 50%;
   transform: translateY(-50%);
   padding: .5rem .4rem;
-  background: rgba(154, 78, 48, .94);
+  /* --navy at the same alpha. Kept as a literal rgba() because the token is
+     a hex and this needs to let a little of the photo through, which is what
+     stops it reading as a sticker laid on top. */
+  background: rgba(34, 62, 101, .94);
   color: var(--paper);
   font-family: var(--sans);
   font-size: .72rem;
@@ -1200,11 +1307,55 @@ main > :last-child {
   text-align: center;
 }
 
+/* An upcoming date is promoted from caption to CHIP: same words, but filled
+   so it registers as an object before anything is read. This is what event
+   listings everywhere do, and it is the cheapest way to make one line in a
+   stack of text win — a filled shape is seen at a glance, where a colour or
+   weight change still has to be read to be noticed.
+
+   Navy, the colour already outlining the vendor cards and the search box on
+   Our Vendors. It is the site's second accent, so the chip is not a new
+   colour, and it matches the "Coming soon" banner beside it: the two labels
+   on this entry are the same kind of thing and now look it.
+
+   ONLY on .event-upcoming. Past entries keep the plain caption — a loud date
+   on something that already happened competes with the thing you can still
+   go to, which is the opposite of the point. The "News" caption in this same
+   section stays plain too: it is a label, not a date. */
+.event-upcoming .event-when {
+  display: inline-block;
+  margin-bottom: .7rem;
+  /* The .14em tracking hangs after the last letter, so an even padding looks
+     heavier on the right. Taking it back off balances the chip optically. */
+  padding: .42rem calc(.78rem - .14em) .42rem .78rem;
+  border-radius: var(--radius);
+  background: var(--navy);
+  color: var(--paper);
+  /* On a phone the line is too long for the column and wraps to two. Balance
+     evens them out so it reads as a deliberate two-line label rather than a
+     full line with a short stub under it. Ignored where unsupported, which
+     only costs the ragged wrap it was going to have anyway. */
+  text-wrap: balance;
+}
+
 .event-upcoming .fb-button { margin-top: 1.2rem; }
 
 /* Section heading for either events list. Tighter under-margin than a
    default h2 because an eyebrow sits above it. */
 .events-title { margin-bottom: .6rem; }
+
+/* Past events has a lede paragraph under its heading, and that paragraph's
+   2rem bottom margin is what sets the list off from the words above it.
+   Current & future events has no lede, so its list came up against the
+   heading's .6rem and read as cramped beside the other section.
+
+   This gives a list that follows the heading DIRECTLY the same 2rem of air.
+   Adjacent margins collapse, so this replaces the heading's .6rem rather
+   than stacking on top of it, and the two lists end up with an identical
+   gap above them. If a lede is ever added here, the selector stops matching
+   and the spacing goes back to coming from the lede, as it does next door. */
+.events-title + .events { margin-top: 2rem; }
+
 
 @media (max-width: 640px) {
   /* Stack, flyer first: it carries the name and the date in one glance.
@@ -1235,14 +1386,9 @@ main > :last-child {
    because the page is already nearly white. A border has no such ceiling:
    navy against this cream is 9.93:1.
 
-   Navy specifically, because the vendor cards below carry a 2px border in
-   the same colour. The search box is the control that filters those cards,
-   so it belongs to them; matching the outline says so without adding a
-   colour the page does not already use. Kept to 1px so it reads as a field
-   rather than as another card. */
+   The border itself now comes from the shared .field rule, which every form
+   field on the site uses. What stays here is the icon. */
 .vendor-search input {
-  border-color: var(--navy);
-
   /* A magnifying glass, so the box announces what it is before anyone reads
      the label above it. On a cream page a field cannot rely on its fill to
      say "search" — white is spoken for by the focus state — so the icon
@@ -1301,7 +1447,7 @@ main > :last-child {
   flex-direction: column;
   gap: .5rem;
   background: var(--paper-card);
-  border: 2px solid var(--navy);
+  border: 1.5px solid var(--ink);   /* matches the home cards and the reviews frame */
   border-radius: var(--radius);
   padding: 1.5rem 1.4rem;
   box-shadow: var(--shadow);
@@ -1320,6 +1466,17 @@ main > :last-child {
   /* No border-color change here, unlike .card: the outline is already a
      solid navy, so shifting it on hover would only pull it away from the
      colour the card is meant to have. The lift and the shadow carry it. */
+  /* Partner cards sit still. A vendor card's lift is an invitation to look
+     closer at a list someone is scanning; the partners list is short and
+     read once, so the movement is just movement. The shadow stays put with
+     it — a lifted shadow under a card that has not lifted reads as a
+     rendering fault. */
+  .vendor.partner:hover { transform: none; box-shadow: var(--shadow); }
+  /* And the logo keeps its resting ring: a partner card does nothing at all
+     on hover, so a brick ring appearing on the one round thing in it would
+     be the only thing moving. */
+  .vendor.partner:hover .vendor-avatar { box-shadow: 0 0 0 1px var(--line); }
+
   .vendor:hover {
     transform: translateY(-4px) scale(1.02);
     box-shadow: 0 2px 4px rgba(51, 39, 31, .06), 0 22px 44px -22px rgba(51, 39, 31, .45);
@@ -1392,10 +1549,40 @@ main > :last-child {
   text-decoration: none;
   transition: color .18s, border-color .18s, background-color .18s;
 }
+/* The plain chips — a website, anything that is not Facebook or Instagram.
+   Those two keep their own colours through the rules below, which outrank
+   this one by an attribute selector. */
 .vendor-links a:hover {
+  color: var(--ink);
+  border-color: var(--ink-faint);
+  background: var(--ink-wash);
+}
+
+/* The Facebook link on a card is lettered navy, like the Follow button on
+   the feed panel. Matched on the href rather than a class, so a vendor added
+   later gets it from their URL and nobody has to remember to tag the markup.
+   The hover follows the text into navy for the same reason it does there:
+   otherwise the chip would change colour family the moment you touch it. */
+.vendor-links a[href*="facebook.com"] { color: var(--navy); }
+
+/* Instagram is lettered brick, the site's other accent, so the two platforms
+   are told apart at a glance without either one being filled in.
+
+   It carries its own hover, and it has to. It used to inherit the shared
+   .vendor-links a:hover, which was brick at the time — then that rule went
+   ink to match the ghost buttons and Instagram quietly went with it. A chip
+   that states its colour only at rest will follow whatever the default
+   becomes. */
+.vendor-links a[href*="instagram.com"] { color: var(--brick); }
+.vendor-links a[href*="instagram.com"]:hover {
   color: var(--brick);
   border-color: var(--brick);
   background: var(--brick-wash);
+}
+.vendor-links a[href*="facebook.com"]:hover {
+  color: var(--navy);
+  border-color: var(--navy);
+  background: var(--navy-wash);
 }
 
 .vendor-none { margin: auto 0 0; font-size: .86rem; color: var(--ink-faint); }
@@ -1527,10 +1714,15 @@ main > :last-child {
 }
 
 /* The menu collapses to the button earlier than the rest of the mobile
-   rules, and on its own breakpoint on purpose. With five links the nav
-   needs about 840px beside the wordmark, so between 760px and here it
-   used to wrap onto a second row while the button was still hidden.
-   If a sixth link is ever added, re-measure and raise this number. */
+   rules, and on its own breakpoint on purpose: otherwise the nav wraps onto
+   a second row while the button is still hidden.
+
+   Measured, not guessed. Wordmark 167px + five links 667px = 834px, which
+   with the wrap's 40px of gutters runs out at about 874px. 920 leaves a
+   little room for a longer label. It was briefly 1020, when Return Policy
+   and Our Partners were both in the menu and six links needed 978px; moving
+   Return Policy to the footer took it back under. Re-measure if a link is
+   ever added. */
 @media (max-width: 920px) {
   .nav-toggle { display: inline-flex; }
 
@@ -1787,7 +1979,7 @@ html[data-locked] body > *:not(.gate):not(noscript) { display: none !important; 
   color: var(--ink);
 }
 .gate-input:focus-visible {
-  outline: 2px solid var(--navy);
+  outline: 2px solid var(--brick);
   outline-offset: 1px;
 }
 .gate-input[aria-invalid="true"] { border-color: var(--brick); }
@@ -1811,7 +2003,7 @@ html[data-locked] body > *:not(.gate):not(noscript) { display: none !important; 
   transition: color .18s;
 }
 .gate-peek:hover { color: var(--ink); }
-.gate-peek:focus-visible { outline: 2px solid var(--navy); outline-offset: 1px; }
+.gate-peek:focus-visible { outline: 2px solid var(--brick); outline-offset: 1px; }
 .gate-peek svg {
   width: 19px; height: 19px;
   fill: none;

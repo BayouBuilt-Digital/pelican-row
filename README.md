@@ -59,11 +59,29 @@ carries both classes.
 ## Pages and navigation
 
 - **Top menu (every page):** News & Events, Our Vendors, Become a Vendor,
-  About Us, Return Policy. Ordered by what a visitor is most likely to
+  About Us, Our Partners. Ordered by what a visitor is most likely to
   want — what's on now, who's selling, how to join them — with the
-  background reading and the policy page last.
-- **Footer (every page):** address, phone, email, Facebook, and
-  Terms & Conditions.
+  background reading last. **Our Vendors and Become a Vendor must stay
+  adjacent**: they are browse-then-join, and anything inserted between them
+  breaks the pair.
+- **The menu breakpoint is tied to the link count.** Five links need 834px of
+  header, so the button takes over at 920px. Adding one means measuring
+  again — see the note above the media query in `styles.css`.
+- **Footer (every page):** address, phone, email, Facebook, then a legal nav
+  of **Return Policy, Terms & Conditions**, then the copyright and credit.
+
+### Why the policies live in the footer
+
+The footer is where people look for them. It is the convention across retail
+sites, and it keeps the top menu to the five things a visitor came for rather
+than the two they only check before buying.
+
+**Return Policy comes before Terms & Conditions** in that row on purpose.
+The return policy is a pre-purchase question — "what if it doesn't fit, what
+if it's broken" — and on a secondhand, all-sales-final shop it is the single
+most likely thing a shopper hunts the footer for. Terms & Conditions covers
+the website, which almost nobody reads before buying a lamp. First position
+goes to the one that gets looked for.
 - **Facebook moved from the menu to the footer** when Our Vendors took
   its slot. It had to go somewhere: on About, Return Policy and Terms
   the menu link was the only link to the Facebook page on the whole
@@ -98,8 +116,8 @@ closed.
 ### The header and footer are copied into each page
 
 There's no build step and no templating, so the header and footer markup is
-duplicated across all seven HTML files. **Changing a menu link, the address, or
-anything else in the header or footer means editing all seven.** That is the
+duplicated across all eight HTML files. **Changing a menu link, the address, or
+anything else in the header or footer means editing all eight.** That is the
 cost of keeping the site buildless; the alternatives are a generator script
 that writes the shared block into every page, or rendering the header in
 JavaScript, which puts the site's own navigation behind a script.
@@ -149,7 +167,7 @@ While the site is in review it is hidden behind a password `PREM6413`.
 
 **Every page ships locked.** `data-locked` is on `<html>` in the markup and
 the CSS hides the body while it is there, so the site is hidden by default.
-`gate.js` — loaded in the `<head>` of all seven pages, deliberately **not**
+`gate.js` — loaded in the `<head>` of all eight pages, deliberately **not**
 deferred — takes the attribute off once it knows this browser has access,
 before the body is parsed, so neither state is ever painted.
 
@@ -244,7 +262,7 @@ Paste the result into `DIGEST` in `gate.js` and bump the `?v=` numbers.
 
 ### Removing it at launch
 
-**Three things come out of each of the seven pages, and the order matters.**
+**Three things come out of each of the eight pages, and the order matters.**
 The pages are locked by their own markup now, so deleting the script alone
 would leave the site hidden from everyone, permanently:
 
@@ -408,6 +426,55 @@ the nav can wrap. **Adding a sixth link means re-measuring and raising that
 920.**
 
 ---
+
+## Our Partners page
+
+`partners.html`. Businesses Pelican Row works with outside the market, as
+opposed to the vendors who rent booths inside it.
+
+**Dates first, directory second.** Someone arriving from a shared sale post
+wants to know when and where, not who else we work with, so "Upcoming partner
+events" sits above the list.
+
+The events section is a **Facebook panel rather than entries we maintain**.
+Total Estate Liquidators announce each sale on their own page with the address
+and hours; copying those into this page by hand would mean a second place to
+keep correct, and the one most likely to go stale. The panel reuses the home
+page's markup minus the copy column beside it — see `.feed-solo` in
+`styles.css`, which carries the sizing tokens that `.feed` would otherwise
+provide. The id is still `fbFeed`, which is what `script.js` looks for, and
+there is only ever one feed per page.
+
+**The plugin href is the `profile.php?id=` form on purpose.** Facebook
+redirects that page to a `/people/Total-Estate-Liquidators-LLC/…` URL, but
+feeding *that* form to the page plugin returns an empty panel. Tested both.
+
+The partner cards reuse the `.vendors` / `.vendor` classes for layout only.
+There is no `data-vendor` attribute, so the vendor search ignores them.
+
+### The partner's profile picture
+
+`assets/partners/total-estate-liquidators.jpg`, 72x72 (34px on screen at 2x),
+in the feed's header strip exactly as the market's own logo is on the home
+page. **Self-hosted, for the same reason as the vendor avatars:** Facebook's
+image URLs are signed and expire, so a hotlinked one serves a broken image in
+a few weeks.
+
+Getting it is fiddly, so the route that works is worth recording:
+
+- `graph.facebook.com/<id>/picture` returns Facebook's **grey silhouette**
+  for this page, not the logo. It looks like it worked. It did not.
+- The avatar in the page plugin is a signed `s50x50` URL. Editing the size in
+  it gives a 403 — the size is part of what the signature covers.
+- What does work: open the page, read its `og:image`, which is the profile
+  picture at up to 720x720, and downscale that. The URL expires, so it has to
+  be re-read each time rather than kept.
+
+### Adding a partner
+
+Copy the `<li class="vendor">` block. Name, a one-line meta line, a sentence
+in their own words where possible, and their links. No avatar is needed — the
+card already handles one without.
 
 ## Our Vendors page
 
@@ -660,7 +727,7 @@ The weight is **600, not `bold`**. EB Garamond is loaded at 400, 500 and 600,
 so 700 would snap down to 600 in any case; asking for the weight that exists
 means the rule says what actually renders. 600 is the heaviest weight used
 anywhere on the site — the headings are 500 — so if a true 700 is ever
-wanted, it needs adding to the Google Fonts URL in all seven pages first.
+wanted, it needs adding to the Google Fonts URL in all eight pages first.
 
 ### Repeatable rows
 
@@ -720,6 +787,37 @@ the signed one drafted by a Louisiana attorney, particularly the liability and
 insurance wording.
 
 ---
+
+## The two accent colours
+
+The palette has two accents and they do different jobs. Keeping them apart is
+what makes either of them mean anything — if everything is brick, nothing is.
+
+**Brick (`--brick`) is the action.** Links, buttons, the arrow on a card, the
+`SHOP`-style eyebrows, and in a form the error state.
+
+**Navy (`--navy`) is reserved, and stays rare.** Two places only: the date
+chip and the "Coming soon" banner on News & Events. The token's own note says
+to use it sparingly or it stops meaning anything, and that is the point — it
+is the only cool colour on the site, so wherever it appears is somewhere that
+wants to be noticed.
+
+It was tried as the border on every card and field and pulled back out. At
+that scale it stopped being an accent and became the house colour, which took
+the emphasis out of the two chips it is for.
+
+**Borders are `--ink`.** Cards at 2px, form fields and the search box at 1px.
+It is the darkest colour in the palette and the one the body text is set in,
+so it reads as black on cream without the glare of a true `#000`.
+
+**Focus is brick**, including on the fields, which therefore change colour
+when you click into them — near-black at rest, brick when focused. The error
+state is still distinguishable because it carries a pink fill that focus does
+not have.
+
+When adding something new, ask which of the two it is. If it is a surface or
+a container that is not interactive — a section divider, the header rule, the
+hairline between event entries — it is neither, and stays `--line`.
 
 ## Icons
 
@@ -1020,7 +1118,7 @@ result, which still echoes the stale Wix page). The Trust Acadiana flyer on
 News & Events also reads #500, which is the same answer from an independent
 source.
 
-It appears in **14 places across seven pages** — every footer, the Visit
+It appears in **15 places across eight pages** — every footer, the Visit
 section, the About and legal pages, and the `streetAddress` in the JSON-LD.
 Change it everywhere or Google gets two different answers from one site.
 

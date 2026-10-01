@@ -29,12 +29,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=107">
+<link rel="stylesheet" href="styles.css?v=147">
 
 <!-- Password gate while the site is in review. Deliberately NOT deferred:
      it runs before the body is parsed so the page is hidden before it can
      be painted. Delete this one line on each page to open the site up. -->
-<script src="gate.js?v=107"></script>
+<script src="gate.js?v=147"></script>
 
 <!-- Breadcrumbs, so a search result can show Home > Become a Vendor -->
 <script type="application/ld+json">
@@ -106,7 +106,7 @@
       <a href="vendors.html">Our Vendors</a>
       <a href="become-a-vendor.html" aria-current="page">Become a Vendor</a>
       <a href="about.html">About Us</a>
-      <a href="return-policy.html">Return Policy</a>
+      <a href="partners.html">Our Partners</a>
 
     </nav>
   </div>
@@ -114,17 +114,26 @@
 
 <main id="main">
 
-  <div class="page-head">
-    <div class="wrap">
-      <p class="eyebrow">Vendors</p>
-      <h1>Become a Vendor</h1>
-      <p class="page-lede page-lede-lead">Your next booth could be at Pelican Row.</p>
-      <p class="page-lede">
-        More than 100 vendors call Pelican Row home, each with something
-        different to offer. Tell us what you sell and how much space you need,
-        and we&rsquo;ll let you know where the waiting list stands.
-      </p>
-      <p class="page-meta">Terms last updated September 2026</p>
+  <!-- Single banner image, not a slideshow: no data-slideshow attribute, so
+       the script leaves it alone and nothing rotates. Booths and the rooms
+       they sit in, which is what this page is asking someone to join. -->
+  <div class="page-head page-head-media page-head-light">
+    <div class="slideshow" aria-hidden="true">
+      <img class="slide is-active" src="assets/banner-vendor/01.jpg" alt=""
+           width="1400" height="788" fetchpriority="high">
+    </div>
+    <div class="wrap page-head-inner">
+      <div class="page-head-plate">
+        <p class="eyebrow">Vendors</p>
+        <h1>Become a Vendor</h1>
+        <p class="page-lede page-lede-lead">Your next booth could be at Pelican Row.</p>
+        <p class="page-lede">
+          More than 100 vendors call Pelican Row home, each with something
+          different to offer. Tell us what you sell and how much space you
+          need, and we&rsquo;ll let you know where the waiting list stands.
+        </p>
+        <p class="page-meta">Terms last updated September 2026</p>
+      </div>
     </div>
   </div>
 
@@ -251,16 +260,20 @@
           and tidy:
         </p>
         <dl class="hours">
-          <div><dt>Wednesday</dt><dd>4:00 &ndash; 6:00 pm</dd></div>
+          <div><dt>Wednesday</dt><dd>4:00 pm &ndash; 6:00 pm</dd></div>
           <div><dt>Thursday</dt><dd>10:00 am &ndash; 6:00 pm</dd></div>
-          <div><dt>Friday</dt><dd>4:00 &ndash; 6:00 pm</dd></div>
-          <div><dt>Saturday</dt><dd>4:00 &ndash; 6:00 pm</dd></div>
-          <div><dt>Sunday</dt><dd>3:00 &ndash; 7:00 pm</dd></div>
+          <div><dt>Friday</dt><dd>4:00 pm &ndash; 6:00 pm</dd></div>
+          <div><dt>Saturday</dt><dd>4:00 pm &ndash; 6:00 pm</dd></div>
+          <div><dt>Sunday</dt><dd>3:00 pm &ndash; 7:00 pm</dd></div>
         </dl>
 
         <h2>Booth rent and fees</h2>
         <ul>
-          <li><strong>Rent:</strong> standard 10 &times; 10, $175 a month</li>
+          <!-- The link points back up to the form on this same page, so the
+               one thing this line asks you to do is one tap away. -->
+          <li><strong>Rent:</strong> $175 a month for a standard 10 &times; 10.
+            Other sizes are available &mdash;
+            <a href="#inquire">inquire about sizes and pricing</a>.</li>
           <li><strong>Commission:</strong> 20% of sales</li>
         </ul>
 
@@ -325,6 +338,7 @@
       <a href="https://www.facebook.com/p/Pelican-Row-Estate-Market-100091994943430/" target="_blank" rel="noopener">Facebook</a>
     </p>
     <nav class="footer-links" aria-label="Legal">
+      <a href="return-policy.html">Return Policy</a>
       <a href="terms.html">Terms &amp; Conditions</a>
     </nav>
     <div class="footer-meta">
@@ -334,6 +348,6 @@
   </div>
 </footer>
 
-<script src="script.js?v=107"></script>
+<script src="script.js?v=147"></script>
 </body>
 </html>

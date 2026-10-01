@@ -29,12 +29,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=107">
+<link rel="stylesheet" href="styles.css?v=147">
 
 <!-- Password gate while the site is in review. Deliberately NOT deferred:
      it runs before the body is parsed so the page is hidden before it can
      be painted. Delete this one line on each page to open the site up. -->
-<script src="gate.js?v=107"></script>
+<script src="gate.js?v=147"></script>
 
 <!-- Breadcrumbs, so a search result can show Home > News & Events -->
 <script type="application/ld+json">
@@ -108,7 +108,7 @@
       <a href="vendors.html">Our Vendors</a>
       <a href="become-a-vendor.html">Become a Vendor</a>
       <a href="about.html">About Us</a>
-      <a href="return-policy.html">Return Policy</a>
+      <a href="partners.html">Our Partners</a>
 
     </nav>
   </div>
@@ -147,12 +147,9 @@
   <section class="section" id="upcoming">
     <div class="wrap">
 
-      <!-- Same markup as a past entry, so the two halves of the page match.
-           WHEN A SALE IS ANNOUNCED: replace this entry with a real one, drop
-           the placeholder classes and point the flyer at the real artwork.
-           When it is over, move it into the past list rather than deleting
-           it: that list is what shows a first-time visitor this place
-           actually runs events. -->
+      <!-- WHEN AN EVENT IS OVER: move it into the past list rather than
+           deleting it. That list is what shows a first-time visitor this
+           place actually runs events. -->
       <p class="eyebrow">Latest</p>
       <h2 class="events-title">Current &amp; future events</h2>
 
@@ -160,11 +157,18 @@
 
         <li class="event event-media event-upcoming">
           <div class="event-body">
+            <!-- Both dates are real ISO values and say the same thing as the
+                 text beside them, so the markup and the words cannot drift. -->
+            <p class="event-when">
+              <time datetime="2026-10-17">Saturday 17</time> and
+              <time datetime="2026-10-18">Sunday 18 October 2026</time>
+              &middot; 9&ndash;11am each day
+            </p>
+            <h3>Pelican Row Warehouse Sale</h3>
             <p>
-              Our calendar is still taking shape, but we have several events in
-              the works over the next few weeks as we ease into the holiday
-              season. Follow along on Facebook or check back here to be among
-              the first to hear about what&rsquo;s coming.
+              Love a good find? Make a morning of it. Join us for two mornings
+              of browsing at the warehouse; you might find just what
+              you&rsquo;ve been looking for.
             </p>
             <a class="fb-button" href="https://www.facebook.com/p/Pelican-Row-Estate-Market-100091994943430/" target="_blank" rel="noopener">
               <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.25-1.5 1.55-1.5h1.65V3.6A22 22 0 0 0 14.3 3.5c-2.4 0-4 1.45-4 4.1v2.3H7.6V13h2.7v8z"/></svg>
@@ -172,12 +176,12 @@
             </a>
           </div>
 
-          <!-- A stand-in for artwork that does not exist yet. The blur is
+          <!-- A stand-in until the sale's own flyer is drawn. The blur is
                baked into the file by tools/make-event-flyers.py, not applied
                in CSS: a CSS filter would leave a readable flyer in the page
-               advertising dates nobody has agreed to. Decorative, so the
-               whole slot is hidden from screen readers; the words beside it
-               already say there is nothing booked. -->
+               advertising a different event's dates. Decorative, so the whole
+               slot is hidden from screen readers &mdash; the dates and times
+               beside it are the real information, and they are text. -->
           <div class="event-flyer-slot" aria-hidden="true">
             <img class="event-flyer is-placeholder" src="assets/events/upcoming-placeholder.jpg"
                  alt="" width="750" height="900" loading="lazy">
@@ -287,6 +291,7 @@
       <a href="https://www.facebook.com/p/Pelican-Row-Estate-Market-100091994943430/" target="_blank" rel="noopener">Facebook</a>
     </p>
     <nav class="footer-links" aria-label="Legal">
+      <a href="return-policy.html">Return Policy</a>
       <a href="terms.html">Terms &amp; Conditions</a>
     </nav>
     <div class="footer-meta">
@@ -296,6 +301,6 @@
   </div>
 </footer>
 
-<script src="script.js?v=107"></script>
+<script src="script.js?v=147"></script>
 </body>
 </html>

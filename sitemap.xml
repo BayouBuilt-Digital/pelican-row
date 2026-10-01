@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Five pages, all of them public. Update <lastmod> when a page's content
+  Eight pages, all of them public. Update <lastmod> when a page's content
   really changes; leaving a stale date is better than bumping every date on
   every deploy, which teaches crawlers to ignore the field.
 -->
@@ -34,6 +34,12 @@
     <lastmod>2026-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.pelicanrowmarket.com/partners.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.pelicanrowmarket.com/return-policy.html</loc>

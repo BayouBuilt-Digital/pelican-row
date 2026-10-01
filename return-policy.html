@@ -29,12 +29,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=107">
+<link rel="stylesheet" href="styles.css?v=147">
 
 <!-- Password gate while the site is in review. Deliberately NOT deferred:
      it runs before the body is parsed so the page is hidden before it can
      be painted. Delete this one line on each page to open the site up. -->
-<script src="gate.js?v=107"></script>
+<script src="gate.js?v=147"></script>
 
 <!-- Breadcrumbs, so a search result can show Home > Return Policy -->
 <script type="application/ld+json">
@@ -141,7 +141,7 @@
       <a href="vendors.html">Our Vendors</a>
       <a href="become-a-vendor.html">Become a Vendor</a>
       <a href="about.html">About Us</a>
-      <a href="return-policy.html" aria-current="page">Return Policy</a>
+      <a href="partners.html">Our Partners</a>
 
     </nav>
   </div>
@@ -149,15 +149,26 @@
 
 <main id="main">
 
-  <div class="page-head">
-    <div class="wrap">
-      <p class="eyebrow">Policies</p>
-      <h1>Return Policy</h1>
-      <p class="page-lede">
-        Everything at Pelican Row is sold as-is, and all sales are final.
-        Here&rsquo;s what that means before you buy.
-      </p>
-      <p class="page-meta">Last updated September 2026</p>
+  <!-- Same banner treatment as Our Vendors and News & Events, but a single
+       image rather than a slideshow: no data-slideshow attribute, so the
+       script leaves it alone and nothing rotates. The photo is the register
+       counter, which is where this policy is posted and where a question
+       about it gets asked. -->
+  <div class="page-head page-head-media">
+    <div class="slideshow" aria-hidden="true">
+      <img class="slide is-active" src="assets/banner-return/01.jpg" alt=""
+           width="1400" height="788" fetchpriority="high">
+    </div>
+    <div class="wrap page-head-inner">
+      <div class="page-head-plate">
+        <p class="eyebrow">Policies</p>
+        <h1>Return Policy</h1>
+        <p class="page-lede">
+          Everything at Pelican Row is sold as-is, and all sales are final.
+          Here&rsquo;s what that means before you buy.
+        </p>
+        <p class="page-meta">Last updated September 2026</p>
+      </div>
     </div>
   </div>
 
@@ -236,6 +247,7 @@
       <a href="https://www.facebook.com/p/Pelican-Row-Estate-Market-100091994943430/" target="_blank" rel="noopener">Facebook</a>
     </p>
     <nav class="footer-links" aria-label="Legal">
+      <a href="return-policy.html" aria-current="page">Return Policy</a>
       <a href="terms.html">Terms &amp; Conditions</a>
     </nav>
     <div class="footer-meta">
@@ -245,6 +257,6 @@
   </div>
 </footer>
 
-<script src="script.js?v=107"></script>
+<script src="script.js?v=147"></script>
 </body>
 </html>
