@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-locked>
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -37,12 +37,7 @@
      this HTML but can keep an old styles.css / script.js from cache, leaving
      new HTML running with an old script. Bump the number whenever either
      file changes (both tags, same number). -->
-<link rel="stylesheet" href="styles.css?v=147">
-
-<!-- Password gate while the site is in review. Deliberately NOT deferred:
-     it runs before the body is parsed so the page is hidden before it can
-     be painted. Delete this one line on each page to open the site up. -->
-<script src="gate.js?v=147"></script>
+<link rel="stylesheet" href="styles.css?v=148">
 
 <!-- Local business structured data, so Google shows the right info -->
 <script type="application/ld+json">
@@ -93,22 +88,6 @@
 </script>
 </head>
 <body>
-
-<noscript>
-  <!-- Shown only when scripting is off. The gate cannot run, so nothing can
-       unlock the page; this says so instead of leaving a blank screen. It is
-       styled with the same .gate classes, and .gate-title is a <p> rather
-       than an <h1> so the document does not carry two h1s. -->
-  <div class="gate">
-    <div class="gate-card">
-      <p class="gate-name">Pelican&nbsp;Row<span>Estate &amp; Market</span></p>
-      <p class="gate-title">This site is in review</p>
-      <p class="gate-note">It needs JavaScript to open. Please turn it on,
-        reload the page, and enter the password you were given.</p>
-    </div>
-  </div>
-</noscript>
-
 
 <!-- Back-to-top target. It must NOT live on the sticky header: that header is
      always pinned in the viewport, so the browser counts it as already in view
@@ -484,6 +463,6 @@
   </div>
 </footer>
 
-<script src="script.js?v=147"></script>
+<script src="script.js?v=148"></script>
 </body>
 </html>

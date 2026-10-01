@@ -163,25 +163,43 @@ confirmed with a Louisiana attorney.
 
 ## The password gate
 
-While the site is in review it is hidden behind a password `PREM6413`.
+**The gate is OFF.** The site is open; nothing is hidden. What follows
+describes the machinery, which is still on disk so it can be switched back on.
 
-**Every page ships locked.** `data-locked` is on `<html>` in the markup and
-the CSS hides the body while it is there, so the site is hidden by default.
-`gate.js` — loaded in the `<head>` of all eight pages, deliberately **not**
-deferred — takes the attribute off once it knows this browser has access,
-before the body is parsed, so neither state is ever painted.
+`gate.js` and the `.gate` rules in `styles.css` are intact and unreferenced.
+No page loads the script, carries `data-locked`, or has the `<noscript>`
+fallback, so none of it runs.
 
-Hiding by default is what covers **a visitor with JavaScript turned off**:
-nothing runs, the attribute stays, the page stays hidden. A `<noscript>` block
-in each page says so, because a blank screen looks broken. It is exempt from
-the hiding rule (`:not(noscript)`) — a `display: none` on the element takes
-its contents with it.
+### Switching it back on
 
-The trade-off: if `gate.js` ever fails to load — bad deploy, 404, blocked
-request — the site is hidden with no way in, for everyone. That is the right
-direction to fail during review and the wrong one after launch, which is
-another reason to take the gate out rather than leave it up with the password
-passed around.
+Three things go back into each page, and **`data-locked` must go in with the
+script, never on its own** — the attribute is what hides the page and the
+script is the only thing that takes it off:
+
+```html
+<html lang="en" data-locked>
+```
+```html
+<!-- in <head>, after the stylesheet, NOT deferred -->
+<script src="gate.js?v=NNN"></script>
+```
+```html
+<!-- first thing in <body> -->
+<noscript>
+  <div class="gate">
+    <div class="gate-card">
+      <p class="gate-name">Pelican&nbsp;Row<span>Estate &amp; Market</span></p>
+      <p class="gate-title">This site is in review</p>
+      <p class="gate-note">It needs JavaScript to open. Please turn it on,
+        reload the page, and enter the password you were given.</p>
+    </div>
+  </div>
+</noscript>
+```
+
+The password was `PREM6413`. Access is remembered in `localStorage` under
+`pelican-row-access` as a digest, and that machinery is untouched — a browser
+that was let in before will still be let in, without being asked again.
 
 **It is a curtain, not a lock.** Every page's text is sent to the browser
 before the gate runs, so view-source, devtools or JavaScript turned off all
@@ -260,21 +278,16 @@ suppressed, or there would be two eyes side by side.
 
 Paste the result into `DIGEST` in `gate.js` and bump the `?v=` numbers.
 
-### Removing it at launch
+### It was removed on 30 September 2026
 
-**Three things come out of each of the eight pages, and the order matters.**
-The pages are locked by their own markup now, so deleting the script alone
-would leave the site hidden from everyone, permanently:
+All three pieces came out of all eight pages together — the attribute, the
+`<noscript>` block and the script tag. Taken together is the only safe way:
+`data-locked` is what hides the page and the script is the only thing that
+removes it, so dropping the script alone would have hidden the site from
+everyone, permanently.
 
-1. `data-locked` from the `<html>` tag — **this one first**
-2. the `<noscript>` block at the top of `<body>`
-3. the `<script src="gate.js">` line in the `<head>`
-
-Then bump the `?v=` numbers, load every page in a browser that has never had
-access (a private window), and confirm the site is simply there.
-
-`gate.js` and the `.gate` rules at the end of `styles.css` can stay where they
-are afterwards, doing nothing, in case the site ever needs a gate again.
+`gate.js` and the `.gate` rules in `styles.css` were deliberately left in
+place, unreferenced, so this can be switched back on from the snippets above.
 
 ## Viewing it locally
 
@@ -296,17 +309,18 @@ Pages are free and take about a minute.
 When the domain moves off Wix, point `pelicanrowmarket.com` at the new host and
 the old `/home` and `/contact-3` URLs can redirect to `/`.
 
-### After editing `styles.css`, `script.js` or `gate.js`
+### After editing `styles.css` or `script.js`
 
-Bump the version number on all three tags, in **every** page:
+Bump the version number on both tags, in **every** page:
 
 ```html
 <link rel="stylesheet" href="styles.css?v=20">
-<script src="gate.js?v=20"></script>
 <script src="script.js?v=20"></script>
 ```
 
-Change `20` to `21` (and so on), the same number everywhere. Without this, a
+Change `20` to `21` (and so on), the same number everywhere. (`gate.js` had a
+tag of its own while the password gate was up; if it goes back in, it gets
+the same number.) Without this, a
 returning visitor's browser can reload the page's HTML but keep an old copy of
 the script or stylesheet from its cache, so the new page runs with old code.
 That is what made the Facebook feed show up as a blank white box during
