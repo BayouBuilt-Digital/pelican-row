@@ -106,14 +106,24 @@
 
 <main id="main">
 
-  <div class="page-head">
-    <div class="wrap">
-      <p class="eyebrow">About us</p>
-      <h1>Meet James and Brad</h1>
-      <p class="page-lede">
-        Pelican Row grew from one reseller&rsquo;s stall into a market of more
-        than 100 vendors on Johnston Street in Lafayette.
-      </p>
+  <!-- Single image, not a slideshow: no data-slideshow attribute, so the
+       script leaves it alone and nothing rotates. Lighter wash, as on the
+       other bright rooms: this is a page about the place, so the room
+       should be legible rather than tinted down. -->
+  <div class="page-head page-head-media page-head-light">
+    <div class="slideshow" aria-hidden="true">
+      <img class="slide is-active" src="assets/banner-about/01.jpg" alt=""
+           width="1400" height="788" fetchpriority="high">
+    </div>
+    <div class="wrap page-head-inner">
+      <div class="page-head-plate">
+        <p class="eyebrow">About us</p>
+        <h1>Meet James and Brad</h1>
+        <p class="page-lede">
+          Pelican Row grew from one reseller&rsquo;s stall into a market of
+          more than 100 vendors on Johnston Street in Lafayette.
+        </p>
+      </div>
     </div>
   </div>
 
