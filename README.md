@@ -674,32 +674,38 @@ same trap caught `instagram.com/bayourouge`, a different business from the
 vendor Bayou Rouge. **Never match on name alone** — and a page that reads as
 missing may simply be one you cannot see.
 
-### Three links are invisible to a logged-out visitor
+### Two links are invisible to a logged-out visitor
 
-**Tiffany Savoy** (booth TS 37) and **Brittany Clark** are **personal Facebook
-profiles**, not pages, and **Cajun Stitchin' Magician** (booth 141) is a page
-that is not visible when you are logged out. All three return "this content
-isn't available" to a signed-out visitor, and the page plugin returns an empty
-panel for the third — only the plugin shell comes back, with no page name and
-no image. So none of them has a public profile picture or intro to take, and a
-visitor who is not signed in to Facebook may hit that message when they click
-through. The links are still right; they just only open for signed-in users.
+**Brittany Clark** is a **personal Facebook profile**, not a page, and **Cajun
+Stitchin' Magician** (booth 141) is a page that is not visible when you are
+logged out. Both return "this content isn't available" to a signed-out visitor,
+and the page plugin returns an empty panel for the second — only the plugin
+shell comes back, with no page name and no image. So neither has a public
+profile picture or intro to take, and a visitor who is not signed in to
+Facebook may hit that message when they click through. The links are still
+right; they just only open for signed-in users.
 
-Their pictures are therefore **not** Facebook avatars — they are photos of the
-booths, supplied by the market and cropped here, and the blurbs were written
-for us rather than lifted from a profile. `tools/fetch-vendor-avatars.py`
-never enters into either one, so do not try to "refresh" them with it. This is
-the route to prefer whenever a vendor's page will not give anything up: ask
-them.
+Brittany Clark's picture is therefore **not** a Facebook avatar — it is a photo
+of her booth, supplied by the market and cropped here, and the blurb was
+written for us rather than lifted from a profile.
+`tools/fetch-vendor-avatars.py` never enters into it, so do not try to
+"refresh" it with that. This is the route to prefer whenever a vendor's page
+will not give anything up: ask them.
 
 Cropping a booth photo is not the same job as cropping an avatar. These end up
 at **52px, round**, so a wide shot of a table turns to mush — pick one bold
-motif with its own contrast and let it fill the frame. Tiffany Savoy's crop is
-the single ghost whose black bow and eyes survive the shrink, not the pair;
-Cajun Stitchin' Magician's is the silver fleur-de-lis on the red towel, chosen
-over the crab, the chili and the peacock by rendering all four at 52px and
-looking at them; Brittany Clark's is the embossed brass plate, which is one
-round high-contrast object where the hutch behind it is forty small ones.
+motif with its own contrast and let it fill the frame. Cajun Stitchin'
+Magician's crop is the silver fleur-de-lis on the red towel, chosen over the
+crab, the chili and the peacock by rendering all four at 52px and looking at
+them; Brittany Clark's is the embossed brass plate, which is one round
+high-contrast object where the hutch behind it is forty small ones.
+
+A **logo** sent as a flat image needs the opposite care. Winston & Stella's
+arrived as a cream disc on a white square, so it is cropped 9% in on every side
+— enough to drop the white corners the round mask would otherwise clip badly,
+not so much that it crops the flower above the wordmark. Its cream is close
+enough to `--paper-card` that the avatar's 1px `--line` ring is what makes it
+read as a disc at all; do not remove that ring thinking it does nothing.
 
 **Acadian Rewind's avatar is seasonal.** It is their real profile picture, but
 it is a Halloween version of their logo, taken in October 2026. `graph.facebook
