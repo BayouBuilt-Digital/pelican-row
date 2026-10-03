@@ -466,6 +466,15 @@ feeding *that* form to the page plugin returns an empty panel. Tested both.
 The partner cards reuse the `.vendors` / `.vendor` classes for layout only.
 There is no `data-vendor` attribute, so the vendor search ignores them.
 
+The list also carries **`.vendors-wide`**, which raises the grid's track floor
+from 255px to 300px. That is the whole of "three per row, not four": four
+columns would need 4 * 300 + 3 * 20 = 1260 against a 1120px wrap, so `auto-fit`
+settles on three, and every narrower width keeps collapsing by itself (2 up at
+900, 1 at 600). It is not a fixed column count, and it does not touch the
+vendor directory, whose cards carry half a line each and are fine four across.
+The floor is wrapped in `min(300px, 100%)` so a 320px phone gets a 280px card
+instead of one that pushes the page sideways.
+
 ### The partner's profile picture
 
 `assets/partners/total-estate-liquidators.jpg`, 72x72 (34px on screen at 2x),
@@ -484,11 +493,28 @@ Getting it is fiddly, so the route that works is worth recording:
   picture at up to 720x720, and downscale that. The URL expires, so it has to
   be re-read each time rather than kept.
 
+**Partner logos are not all this hard.** `graph.facebook.com/<name>/picture`
+returned the correct logo first try for **BayouBuilt Digital** and **Lafayette
+Town Planner** (480x480, downscaled to 72). It is the cheap thing to try first;
+only fall back to `og:image` when what comes back is the silhouette. Whichever
+route, look at the file before you commit it.
+
 ### Adding a partner
 
 Copy the `<li class="vendor">` block. Name, a one-line meta line, a sentence
 in their own words where possible, and their links. No avatar is needed — the
 card already handles one without.
+
+There are five, **alphabetical by name**, which is the same rule the vendor
+directory follows: a leading "The" and a trailing "LLC" are ignored, so Trust
+Acadiana files under T-r and The Vintage Trapper under V. The order is not tied
+to the feed above — that panel names its partner itself, so moving a card does
+not strand it. **BayouBuilt Digital
+built and maintains this site**, which its card says plainly rather than
+leaving a visitor to wonder why the agency is listed. **Lafayette Town
+Planner** has only a Facebook link here; their page also lists
+`townplanner.com`, but that is the national site rather than the Lafayette
+edition, so it was left off. Add it if the market would rather have it.
 
 ## Our Vendors page
 
@@ -631,10 +657,63 @@ photograph of a lamp they were selling. That is genuinely their picture, so
 it stays, but it identifies them poorly at 52px. Worth asking vendors for a
 logo if this page ever becomes a shop window rather than a directory.
 
+### Vendor links come from the vendors, not from searching
+
+Three of these cards were added from booth numbers alone, and no amount of
+searching turned up their pages: the names are too generic, and the market's
+own Facebook does not list them. The links arrived when the market asked the
+vendors, which is what the form further down the page is for.
+
+**Two near-misses are worth remembering.** `instagram.com/thevintagetrapper`
+is a live account with six posts and three thousand following, nothing to do
+with the vendor — whose real handle is `vintage.trapper`. And
+`facebook.com/StitchinMagician` is an embroidery page, but it is **not** the
+booth 141 vendor; theirs is `facebook.com/cajunstitchinmagician`, which does
+not respond to a logged-out visitor and so looks like it does not exist. The
+same trap caught `instagram.com/bayourouge`, a different business from the
+vendor Bayou Rouge. **Never match on name alone** — and a page that reads as
+missing may simply be one you cannot see.
+
+### Three links are invisible to a logged-out visitor
+
+**Tiffany Savoy** (booth TS 37) and **Brittany Clark** are **personal Facebook
+profiles**, not pages, and **Cajun Stitchin' Magician** (booth 141) is a page
+that is not visible when you are logged out. All three return "this content
+isn't available" to a signed-out visitor, and the page plugin returns an empty
+panel for the third — only the plugin shell comes back, with no page name and
+no image. So none of them has a public profile picture or intro to take, and a
+visitor who is not signed in to Facebook may hit that message when they click
+through. The links are still right; they just only open for signed-in users.
+
+Their pictures are therefore **not** Facebook avatars — they are photos of the
+booths, supplied by the market and cropped here, and the blurbs were written
+for us rather than lifted from a profile. `tools/fetch-vendor-avatars.py`
+never enters into either one, so do not try to "refresh" them with it. This is
+the route to prefer whenever a vendor's page will not give anything up: ask
+them.
+
+Cropping a booth photo is not the same job as cropping an avatar. These end up
+at **52px, round**, so a wide shot of a table turns to mush — pick one bold
+motif with its own contrast and let it fill the frame. Tiffany Savoy's crop is
+the single ghost whose black bow and eyes survive the shrink, not the pair;
+Cajun Stitchin' Magician's is the silver fleur-de-lis on the red towel, chosen
+over the crab, the chili and the peacock by rendering all four at 52px and
+looking at them; Brittany Clark's is the embossed brass plate, which is one
+round high-contrast object where the hutch behind it is forty small ones.
+
+**Acadian Rewind's avatar is seasonal.** It is their real profile picture, but
+it is a Halloween version of their logo, taken in October 2026. `graph.facebook
+.com/<id>/picture` gave the grey silhouette for them, so it came from `og:image`
+the usual way. Re-read it after the holiday if they change it back.
+
 ### Adding a vendor
 
 Copy one `<li class="vendor">` block and fill it in. Keep them alphabetical
-by name; the order on the page is the order in the file. Every field except
+by name; the order on the page is the order in the file. **Ignore a leading
+"The" and a trailing "LLC"** when you place one — The Raven's Nest files under
+R, The Vintage Trapper under V, Bayou Rouge, LLC under Bayou. A comment that
+explains one card belongs directly above that card, because it travels with it
+when the list is re-sorted. Every field except
 the name is optional, and a vendor with no links still belongs here, because
 the page also answers "who sells what, and which booth".
 

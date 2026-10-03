@@ -490,10 +490,52 @@
       '<button type="button" class="lightbox-close" aria-label="Close">' +
         '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
         '<path d="M6 6l12 12M18 6L6 18"/></svg></button>' +
+      '<button type="button" class="lightbox-nav lightbox-prev" aria-label="Previous image" hidden>' +
+        '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+        '<path d="M15 5l-8 7 8 7"/></svg></button>' +
+      '<button type="button" class="lightbox-nav lightbox-next" aria-label="Next image" hidden>' +
+        '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+        '<path d="M9 5l8 7-8 7"/></svg></button>' +
       '<img alt="">';
     document.body.appendChild(box);
 
     var boxImg = box.querySelector("img");
+    var prevBtn = box.querySelector(".lightbox-prev");
+    var nextBtn = box.querySelector(".lightbox-next");
+
+    /* The set the arrows walk, and where in it we are. An entry with one
+       image has a set of one and no arrows; the pair on the warehouse sale
+       entry is a set of two. Grouping is by the listing the image sits in,
+       so two entries' images never run into each other. */
+    var group = [];
+    var at = 0;
+
+    function show(i) {
+      var img = group[i];
+      if (!img) return;
+      at = i;
+      /* Clear first, then set. Without this the dialog can show the
+         previous flyer for a frame while the new one decodes. */
+      boxImg.removeAttribute("src");
+      boxImg.alt = img.alt || "";
+      boxImg.src = img.currentSrc || img.src;
+    }
+
+    function step(by) {
+      /* Wraps, so the arrows never dead-end on a set of two: one more tap
+         brings you back rather than leaving a button that does nothing. */
+      show((at + by + group.length) % group.length);
+    }
+
+    prevBtn.addEventListener("click", function () { step(-1); });
+    nextBtn.addEventListener("click", function () { step(1); });
+
+    /* Arrow keys as well as the buttons. The dialog already owns Escape. */
+    box.addEventListener("keydown", function (e) {
+      if (group.length < 2) return;
+      if (e.key === "ArrowLeft") { e.preventDefault(); step(-1); }
+      if (e.key === "ArrowRight") { e.preventDefault(); step(1); }
+    });
 
     Array.prototype.forEach.call(flyers, function (img) {
       var btn = document.createElement("button");
@@ -507,14 +549,20 @@
       btn.appendChild(img);
 
       btn.addEventListener("click", function () {
-        /* Clear first, then set. Without this the dialog can show the
-           previous flyer for a frame while the new one decodes. Done here
-           rather than on the dialog's close event, which is not reliably
-           delivered everywhere: the cleanup then depends on an event that
-           may never arrive, where this always runs. */
-        boxImg.removeAttribute("src");
-        boxImg.alt = img.alt || "";
-        boxImg.src = img.currentSrc || img.src;
+        /* The listing this image belongs to is the gallery. Falling back to
+           the image itself keeps a stray flyer outside an .event working as
+           a set of one rather than throwing. */
+        var entry = img.closest(".event");
+        group = entry
+          ? Array.prototype.slice.call(
+              entry.querySelectorAll(".event-flyer:not(.is-placeholder)"))
+          : [img];
+
+        /* hidden, not display: a display here would defeat the attribute,
+           the way it has on .carousel-nav and .vendor before. */
+        prevBtn.hidden = nextBtn.hidden = group.length < 2;
+
+        show(group.indexOf(img));
         box.showModal();
       });
     });

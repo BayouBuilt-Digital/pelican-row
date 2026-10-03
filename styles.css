@@ -1153,6 +1153,16 @@ main > :last-child {
 }
 .event:first-child { border-top: 0; padding-top: 0; }
 
+/* More air either side of the separators, for a list whose entries are tall
+   enough that 1.75rem leaves the rule sitting on the bottom of the one above
+   it. Used on Current & future events, where an entry carries two images.
+
+   The first child's exception is restated: both selectors are (0,2,0), so
+   without this the rule below would win on source order and put padding back
+   above the first entry, pushing it off the section heading. */
+.events-roomy .event { padding-block: 2.75rem; }
+.events-roomy .event:first-child { padding-top: 0; }
+
 .event-when {
   margin: 0 0 .35rem;
   font-family: var(--sans);
@@ -1189,6 +1199,27 @@ main > :last-child {
   border-radius: var(--radius);
   box-shadow: 0 0 0 1px var(--line), var(--shadow);
 }
+
+/* An entry with more than one image: the flyer and the parking map, side by
+   side. The wrapper becomes the grid child in place of the <img>, so it is
+   added to the mobile ordering rule below alongside the other two.
+
+   auto-fit with a 230px floor rather than a fixed pair of columns: the two
+   sit together while there is room and drop to one above each other when
+   there is not, without a second breakpoint to keep in step. */
+.event-flyers {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  align-items: start;
+}
+
+/* Two images side by side need more width than the 260px media column, so
+   this entry drops to a single column and carries the pair under its text.
+   The text is capped at a readable measure rather than running the full
+   width of the entry. */
+.event-upcoming.event-media { grid-template-columns: minmax(0, 1fr); }
+.event-upcoming .event-body { max-width: 62ch; }
 
 /* ── Flyer lightbox ───────────────────────────────────────
    script.js wraps each flyer in .flyer-zoom, so that button becomes the
@@ -1259,6 +1290,40 @@ main > :last-child {
   cursor: pointer;
   transition: background-color .18s;
 }
+/* Previous / next, for a listing with more than one image. Same disc as the
+   close button so the three read as one set of controls, but pinned to the
+   sides and vertically centred. script.js hides them with the hidden
+   attribute when there is only one image, so there is deliberately NO
+   display here that could defeat it — the guard below does that job. */
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(28, 21, 17, .72);
+  color: var(--paper);
+  cursor: pointer;
+  transition: background-color .18s;
+}
+.lightbox-nav:not([hidden]) { display: grid; }
+.lightbox-prev { left: .55rem; }
+.lightbox-next { right: .55rem; }
+.lightbox-nav:hover { background: rgba(28, 21, 17, .9); }
+.lightbox-nav svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 /* An SVG cross, not a "times" character. The glyph sits off-centre inside
    its own line box, so no amount of centring the box centres the mark. */
 .lightbox-close svg {
@@ -1338,6 +1403,19 @@ main > :last-child {
   text-wrap: balance;
 }
 
+/* An entry with more than one date: a chip each, rather than two dates in
+   one. They sit in a wrapper so the gap between them is set once, and the
+   chips themselves drop their own bottom margin — the wrapper now owns the
+   space under the pair. Flex-wrapped, so a narrow column stacks them and a
+   wide one can run them side by side. */
+.event-whens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-bottom: .7rem;
+}
+.event-whens .event-when { margin: 0; }
+
 .event-upcoming .fb-button { margin-top: 1.2rem; }
 
 /* Section heading for either events list. Tighter under-margin than a
@@ -1366,6 +1444,7 @@ main > :last-child {
   .event-media { grid-template-columns: minmax(0, 1fr); }
   .event-flyer,
   .event-flyer-slot,
+  .event-flyers,
   .flyer-zoom { order: -1; max-width: 340px; }
 }
 
@@ -1432,6 +1511,13 @@ main > :last-child {
   gap: 1.25rem;
   grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
 }
+
+/* Partner cards carry a full sentence of description where a vendor's is half
+   a line, and four to a row broke that into a column of two-word lines. A
+   wider track floor caps the grid at three across the 1120px wrap — four
+   columns would need 4 * 300 + 3 * 20 = 1260 — without pinning a column count,
+   so every narrower breakpoint still collapses on its own. */
+.vendors-wide { grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); }
 
 .vendor {
   position: relative;          /* so a hovered card sits above its neighbours */
