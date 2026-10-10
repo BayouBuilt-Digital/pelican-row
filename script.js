@@ -620,6 +620,12 @@
 
       if (vendorEmpty) vendorEmpty.hidden = shown !== 0;
 
+      /* Results are not grouped, so the bands would be labelling whatever
+         survived the filter. Queried at call time because script.js adds
+         them further down, after this function is defined. */
+      var bands = vendorList.querySelectorAll("[data-vendors-band]");
+      for (var b = 0; b < bands.length; b++) bands[b].hidden = !!q;
+
       if (vendorCount) {
         if (!q) {
           vendorCount.textContent =
@@ -649,6 +655,144 @@
     });
 
     runFilter();
+  }
+
+  /* ── "New" on a recently added vendor ────────────────────
+     Each card carries data-added="YYYY-MM-DD", the day its card went up.
+     The chip is written in here rather than typed into the HTML so the
+     week rolls forward by itself and nobody has to remember to take a
+     "New" off a card that has stopped being new.
+
+     Both dates go through Date.UTC. `new Date("2026-10-07")` is parsed as
+     UTC midnight while `new Date()` is local, so comparing the two drifts
+     by a day either side of midnight depending on the reader's timezone.
+     Building both from the same calendar fields removes the question.
+
+     With JavaScript off there are no chips, which is the right failure:
+     the cards themselves are all still there and in the same order. */
+  /* Puts a flag in one of the card's two flag strips, making that strip if
+     the card has not got it yet. "Featured" is written into the HTML and
+     sits in the left strip, because it is an editorial decision that must
+     survive JavaScript being off; "New" is added here, into the right one,
+     because it expires and nobody should have to remember to remove it.
+
+     Separate strips, not one: the two labels then never push each other
+     along as one appears or lapses. The strip goes in as the card's first
+     child so a screen reader reads the flags before the name rather than
+     after the booth number. */
+  function flagCard(card, kind, label, side) {
+    var place = "vendor-flags-" + side;
+    var strip = card.querySelector("." + place);
+    if (!strip) {
+      strip = document.createElement("ul");
+      strip.className = "vendor-flags " + place;
+      card.insertBefore(strip, card.firstChild);
+    }
+
+    var flag = document.createElement("li");
+    flag.className = "vendor-flag vendor-flag-" + kind;
+    flag.textContent = label;
+    strip.appendChild(flag);
+  }
+
+  var NEW_FOR_DAYS = 7;
+
+  /* Off until the market asks for it back. Everything else stays: the
+     data-added dates on the cards, flagCard(), and the .vendor-flag styles.
+     Flip this to true and the chips return, correct for whatever the date is
+     that day — which is the whole reason the window is computed rather than
+     typed in. Do not "clean up" the parts this switch currently makes
+     unreachable. */
+  var NEW_FLAGS_ON = false;
+
+  var dated = document.querySelectorAll("[data-vendor][data-added]");
+  if (NEW_FLAGS_ON && dated.length) {
+    var now = new Date();
+    var cutoff =
+      Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) -
+      NEW_FOR_DAYS * 86400000;
+
+    for (var n = 0; n < dated.length; n++) {
+      var parts = dated[n].getAttribute("data-added").split("-");
+      var added = Date.UTC(+parts[0], +parts[1] - 1, +parts[2]);
+      /* >= rather than >, and written this way round so a malformed date
+         gives NaN, fails the test and is simply left without a chip. */
+      if (!(added >= cutoff)) continue;
+
+      flagCard(dated[n], "new", "New", "end");
+    }
+  }
+
+  /* ── Featured vendors float to the top ──────────────────
+     The list in the HTML is alphabetical, one rule, easy to add to. The
+     featured few are marked with data-featured, lifted out of it here and
+     parked at the front, still alphabetical among themselves because they
+     are taken in document order and re-inserted back to front.
+
+     They are not labelled card by card. A "Featured" chip on each one said
+     the same word four times over, in the busiest corner of the card, and
+     the featured row ended up louder than the vendors in it. Instead a band
+     goes above each group and says it once.
+
+     The band is written here rather than in the HTML for the same reason
+     the hoist is: a heading that says "Featured" over whatever happens to
+     be alphabetically first would be wrong. With JavaScript off there is no
+     band and no reordering — just the plain alphabetical list.
+
+     The cap is real: four is what the row holds at full width, and a
+     featured group that is most of the list features nothing. Anything past
+     the fourth is left where alphabetical order puts it, and says so in the
+     console. */
+  var FEATURED_MAX = 4;
+
+  if (vendorList) {
+    var all = vendorList.querySelectorAll("[data-vendor]");
+    var picked = [];
+    for (var f = 0; f < all.length; f++) {
+      if (all[f].hasAttribute("data-featured")) picked.push(all[f]);
+    }
+
+    while (picked.length > FEATURED_MAX) {
+      var extra = picked.pop();
+      extra.removeAttribute("data-featured");
+      if (window.console && console.warn) {
+        console.warn(
+          "More than " + FEATURED_MAX + " featured vendors; ignoring " +
+          (extra.querySelector(".vendor-name") || {}).textContent
+        );
+      }
+    }
+
+    /* No bands unless there is something to band off. Nobody featured means
+       no "Featured" heading over an alphabetical list, and everybody
+       featured means no "More vendors" heading over nothing — both would be
+       labels that lie. The list simply renders as it stands. */
+    if (picked.length && picked.length < all.length) {
+      /* Back to front, each one to the head of the list, so they end up in
+         the order they were found. */
+      for (var g = picked.length - 1; g >= 0; g--) {
+        vendorList.insertBefore(picked[g], vendorList.firstChild);
+      }
+
+      vendorList.insertBefore(band("Featured"), vendorList.firstChild);
+      /* The first card that was not hoisted: the rest of the list starts
+         here, so the second band goes immediately before it. */
+      vendorList.insertBefore(
+        band("More vendors", "rest"),
+        picked[picked.length - 1].nextElementSibling
+      );
+    }
+  }
+
+  function band(label, kind) {
+    var row = document.createElement("li");
+    row.className = "vendors-band" + (kind ? " vendors-band-" + kind : "");
+    row.setAttribute("data-vendors-band", "");
+    /* Not a heading element: the vendor names are already h2s and the band
+       does not contain them, so adding a heading here would claim a nesting
+       that is not in the markup. */
+    row.textContent = label;
+    return row;
   }
 
   /* ── Linkable <details> ──────────────────────────────────

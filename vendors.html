@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=154">
+<link rel="stylesheet" href="styles.css?v=171">
 
 <!-- Breadcrumbs, so a search result can show Home > Our Vendors -->
 <script type="application/ld+json">
@@ -156,9 +156,14 @@
              hotlinked: Facebook's image URLs are signed and expire, so a
              linked one would break within weeks. A card with no avatar
              still lays out correctly, so leave the <img> off rather than
-             pointing at a file that isn't there. -->
+             pointing at a file that isn't there.
 
-        <li class="vendor" data-vendor>
+             data-added is the date the card went up here, not the date the
+             vendor joined the market. script.js reads it and adds a "New"
+             chip for a week; give a new card today's date and the chip
+             takes itself off. See the README. -->
+
+        <li class="vendor" data-vendor data-added="2026-10-03">
           <div class="vendor-head">
             <img class="vendor-avatar" src="assets/vendors/acadian-rewind.jpg"
                  alt="" width="144" height="144" loading="lazy">
@@ -174,7 +179,7 @@
           </ul>
         </li>
 
-        <li class="vendor" data-vendor>
+        <li class="vendor" data-vendor data-added="2026-09-28">
           <div class="vendor-head">
             <img class="vendor-avatar" src="assets/vendors/adams-trading-post.jpg"
                  alt="" width="144" height="144" loading="lazy">
@@ -183,13 +188,48 @@
           <p class="vendor-meta">
             Vintage treasures, farmhouse favorites, and handcrafted sourdough
             and baked goods.
+            <span class="vendor-booth">Booth BP08</span>
           </p>
           <ul class="vendor-links">
             <li><a href="https://www.facebook.com/adamstradingpost" target="_blank" rel="noopener">Facebook</a></li>
           </ul>
         </li>
 
-        <li class="vendor" data-vendor>
+        <li class="vendor" data-vendor data-added="2026-10-10">
+          <!-- Picture from the market, not from Facebook: a crop of one of
+               her canvases in the booth. See the README. -->
+          <div class="vendor-head">
+            <img class="vendor-avatar" src="assets/vendors/amelia-v-smith-art.jpg"
+                 alt="" width="144" height="144" loading="lazy">
+            <h2 class="vendor-name">Amelia V Smith Art</h2>
+          </div>
+          <p class="vendor-meta">
+            Louisiana artist creating one of a kind pieces and vintage antique
+            finds.
+            <span class="vendor-booth">Booth AS116</span>
+          </p>
+          <ul class="vendor-links">
+            <li><a href="https://www.facebook.com/amelialouise.vidrine/" target="_blank" rel="noopener">Facebook</a></li>
+          </ul>
+        </li>
+
+        <li class="vendor" data-vendor data-added="2026-10-10">
+          <div class="vendor-head">
+            <img class="vendor-avatar" src="assets/vendors/amelias-upscale-boutique.jpg"
+                 alt="" width="144" height="144" loading="lazy">
+            <h2 class="vendor-name">Amelia&rsquo;s Upscale Boutique</h2>
+          </div>
+          <p class="vendor-meta">
+            A little bit of everything, from clothing and dishes to everyday
+            treasures!
+            <span class="vendor-booth">Booth AA27</span>
+          </p>
+          <ul class="vendor-links">
+            <li><a href="https://www.facebook.com/profile.php?id=61587542116332" target="_blank" rel="noopener">Facebook</a></li>
+          </ul>
+        </li>
+
+        <li class="vendor" data-vendor data-added="2026-09-28">
           <div class="vendor-head">
             <img class="vendor-avatar" src="assets/vendors/bayou-rouge.jpg"
                  alt="" width="144" height="144" loading="lazy">
@@ -206,15 +246,15 @@
         <!-- Picture from the market, not from Facebook: this link is a
              personal profile and returns "content isn't available" when you
              are not logged in. See the README. -->
-        <li class="vendor" data-vendor>
+        <li class="vendor" data-vendor data-added="2026-10-03">
           <div class="vendor-head">
             <img class="vendor-avatar" src="assets/vendors/brittany-clark.jpg"
                  alt="" width="144" height="144" loading="lazy">
             <h2 class="vendor-name">Brittany Clark</h2>
           </div>
           <p class="vendor-meta">
-            If you love the warmth, character, and craftsmanship of wood,
-            come SHOP our collection.
+            If you love warmth, character, &amp; craftsmanship of wood, come
+            SHOP our collection.
           </p>
           <ul class="vendor-links">
             <li><a href="https://www.facebook.com/brittany.clark.3382" target="_blank" rel="noopener">Facebook</a></li>
@@ -225,7 +265,7 @@
              Facebook: facebook.com/cajunstitchinmagician is not viewable when
              you are logged out, and the page plugin returns an empty panel for
              it too. See the README. -->
-        <li class="vendor" data-vendor>
+        <li class="vendor" data-vendor data-added="2026-10-03">
           <div class="vendor-head">
             <img class="vendor-avatar" src="assets/vendors/cajun-stitchin-magician.jpg"
                  alt="" width="144" height="144" loading="lazy">
@@ -241,7 +281,23 @@
           </ul>
         </li>
 
-        <li class="vendor" data-vendor>
+        <li class="vendor" data-vendor data-added="2026-10-10">
+          <div class="vendor-head">
+            <img class="vendor-avatar" src="assets/vendors/dianas-treasures.jpg"
+                 alt="" width="144" height="144" loading="lazy">
+            <h2 class="vendor-name">Diana&rsquo;s Treasures</h2>
+          </div>
+          <p class="vendor-meta">
+            Vintage treasures, ceramics, glassware, collectible figurines,
+            &amp; nostalgic sports memorabilia.
+            <span class="vendor-booth">Booth DL07</span>
+          </p>
+          <ul class="vendor-links">
+            <li><a href="https://www.facebook.com/Dianatreasures" target="_blank" rel="noopener">Facebook</a></li>
+          </ul>
+        </li>
+
+        <li class="vendor" data-vendor data-added="2026-10-07">
           <div class="vendor-head">
             <img class="vendor-avatar" src="assets/vendors/faerybug-curios.jpg"
                  alt="" width="144" height="144" loading="lazy">
@@ -258,7 +314,135 @@
           </ul>
         </li>
 
-        <li class="vendor" data-vendor>
+        <li class="vendor" data-vendor data-added="2026-10-10">
+          <div class="vendor-head">
+            <img class="vendor-avatar" src="assets/vendors/forever-a-memory.jpg"
+                 alt="" width="144" height="144" loading="lazy">
+            <h2 class="vendor-name">Forever A Memory</h2>
+          </div>
+          <p class="vendor-meta">
+            Customizable crafts and gifts for the whole family. Hours will vary
+            due to work schedule.
+            <span class="vendor-booth">Booth DS30</span>
+          </p>
+          <ul class="vendor-links">
+            <li><a href="https://www.facebook.com/profile.php?id=61557592742424" target="_blank" rel="noopener">Facebook</a></li>
+          </ul>
+        </li>
+
+        <li class="vendor" data-vendor data-added="2026-10-10">
+          <div class="vendor-head">
+            <img class="vendor-avatar" src="assets/vendors/the-grand-edit-co.jpg"
+                 alt="" width="144" height="144" loading="lazy">
+            <h2 class="vendor-name">The Grand Edit Co</h2>
+          </div>
+          <p class="vendor-meta">
+            Timeless beauty, vintage treasures, and distinctive d&eacute;cor for
+            beautiful spaces.
+            <span class="vendor-booth">Booth JR68</span>
+          </p>
+          <ul class="vendor-links">
+            <li><a href="https://www.facebook.com/profile.php?id=61569263903916" target="_blank" rel="noopener">Facebook</a></li>
+          </ul>
+        </li>
+
+        <li class="vendor" data-vendor data-added="2026-10-10">
+          <div class="vendor-head">
+            <img class="vendor-avatar" src="assets/vendors/jacsincreations.jpg"
+                 alt="" width="144" height="144" loading="lazy">
+            <h2 class="vendor-name">JacSinCreations</h2>
+          </div>
+          <p class="vendor-meta">
+            Handbags, accessories, embroidery. Handbags and totes are made to
+            order.
+            <span class="vendor-booth">Booth PM38</span>
+          </p>
+          <ul class="vendor-links">
+            <li><a href="https://www.facebook.com/profile.php?id=61579855676133" target="_blank" rel="noopener">Facebook</a></li>
+          </ul>
+        </li>
+
+        <li class="vendor" data-vendor data-added="2026-10-10">
+          <div class="vendor-head">
+            <img class="vendor-avatar" src="assets/vendors/jj-and-b-bayou-boujee.jpg"
+                 alt="" width="144" height="144" loading="lazy">
+            <h2 class="vendor-name">JJ &amp; B Bayou Boujee</h2>
+          </div>
+          <p class="vendor-meta">
+            Inspired bags, non-inspired bags, PLK bags, authentic bags,
+            clothes, jewelry and more!
+            <span class="vendor-booth">Booth JG09</span>
+          </p>
+          <ul class="vendor-links">
+            <li><a href="https://www.facebook.com/profile.php?id=61573139854476" target="_blank" rel="noopener">Facebook</a></li>
+          </ul>
+        </li>
+
+        <li class="vendor" data-vendor data-added="2026-10-10">
+          <div class="vendor-head">
+            <img class="vendor-avatar" src="assets/vendors/joan-marie-rose.jpg"
+                 alt="" width="144" height="144" loading="lazy">
+            <h2 class="vendor-name">Joan Marie Rose</h2>
+          </div>
+          <p class="vendor-meta">
+            Step into a collection of thoughtfully curated antiques and
+            vintage decor.
+            <span class="vendor-booth">Booth JA145</span>
+          </p>
+          <ul class="vendor-links">
+            <li><a href="https://www.facebook.com/profile.php?id=61592688816844" target="_blank" rel="noopener">Facebook</a></li>
+          </ul>
+        </li>
+
+        <li class="vendor" data-vendor data-added="2026-10-10">
+          <div class="vendor-head">
+            <img class="vendor-avatar" src="assets/vendors/lolos-custom-creations.jpg"
+                 alt="" width="144" height="144" loading="lazy">
+            <h2 class="vendor-name">Lo Lo&rsquo;s Custom Creations</h2>
+          </div>
+          <p class="vendor-meta">
+            Unique gifts for all: monogramming, embroidery, wreaths, signs
+            and more!
+            <span class="vendor-booth">Booth LL20</span>
+          </p>
+          <ul class="vendor-links">
+            <li><a href="https://www.facebook.com/loloscustomcreations" target="_blank" rel="noopener">Facebook</a></li>
+          </ul>
+        </li>
+
+        <li class="vendor" data-vendor data-added="2026-10-10">
+          <div class="vendor-head">
+            <img class="vendor-avatar" src="assets/vendors/momas-girls.jpg"
+                 alt="" width="144" height="144" loading="lazy">
+            <h2 class="vendor-name">Moma&rsquo;s Girls</h2>
+          </div>
+          <p class="vendor-meta">
+            Three sisters sharing our love of vintage, antiques, home d&eacute;cor
+            &amp; hidden treasures.
+            <span class="vendor-booth">Booth ES134</span>
+          </p>
+          <ul class="vendor-links">
+            <li><a href="https://www.facebook.com/profile.php?id=61594651381945" target="_blank" rel="noopener">Facebook</a></li>
+          </ul>
+        </li>
+
+        <li class="vendor" data-vendor data-added="2026-10-10">
+          <div class="vendor-head">
+            <img class="vendor-avatar" src="assets/vendors/the-perfect-touch.jpg"
+                 alt="" width="144" height="144" loading="lazy">
+            <h2 class="vendor-name">The Perfect Touch</h2>
+          </div>
+          <p class="vendor-meta">
+            Seasonal decorations made with the perfect touch, by Lyndsay
+            Ducote.
+            <span class="vendor-booth">Booth LG36</span>
+          </p>
+          <ul class="vendor-links">
+            <li><a href="https://www.facebook.com/perfecttouchseasonaldecor" target="_blank" rel="noopener">Facebook</a></li>
+          </ul>
+        </li>
+
+        <li class="vendor" data-vendor data-added="2026-09-28">
           <div class="vendor-head">
             <img class="vendor-avatar" src="assets/vendors/the-ravens-nest.jpg"
                  alt="" width="144" height="144" loading="lazy">
@@ -279,7 +463,39 @@
              Facebook group (/groups/.../user/...), which asks anyone who
              clicks it to log in and join. Swapped for their own page, which
              opens for everyone. The booth number is from their Instagram. -->
-        <li class="vendor" data-vendor>
+
+        <li class="vendor" data-vendor data-added="2026-10-10">
+          <div class="vendor-head">
+            <img class="vendor-avatar" src="assets/vendors/sweet-lagniappe.jpg"
+                 alt="" width="144" height="144" loading="lazy">
+            <h2 class="vendor-name">Sweet Lagniappe</h2>
+          </div>
+          <p class="vendor-meta">
+            Clothing, small kitchen appliances, and festive holiday d&eacute;cor
+            for every season!
+            <span class="vendor-booth">Booth TG32</span>
+          </p>
+          <ul class="vendor-links">
+            <li><a href="https://www.facebook.com/profile.php?id=61573649287051" target="_blank" rel="noopener">Facebook</a></li>
+          </ul>
+        </li>
+
+        <li class="vendor" data-vendor data-added="2026-10-10">
+          <div class="vendor-head">
+            <img class="vendor-avatar" src="assets/vendors/thrifty-reed.jpg"
+                 alt="" width="144" height="144" loading="lazy">
+            <h2 class="vendor-name">Thrifty Reed</h2>
+          </div>
+          <p class="vendor-meta">
+            An eclectic mix of vintage finds full of character and charm.
+            <span class="vendor-booth">Booth KV29</span>
+          </p>
+          <ul class="vendor-links">
+            <li><a href="https://www.facebook.com/thrifty.reed" target="_blank" rel="noopener">Facebook</a></li>
+          </ul>
+        </li>
+
+        <li class="vendor" data-vendor data-added="2026-09-28">
           <div class="vendor-head">
             <img class="vendor-avatar" src="assets/vendors/tooties-thrift.jpg"
                  alt="" width="144" height="144" loading="lazy">
@@ -296,7 +512,7 @@
           </ul>
         </li>
 
-        <li class="vendor" data-vendor>
+        <li class="vendor" data-vendor data-added="2026-10-03">
           <div class="vendor-head">
             <img class="vendor-avatar" src="assets/vendors/the-vintage-trapper.jpg"
                  alt="" width="144" height="144" loading="lazy">
@@ -313,7 +529,7 @@
           </ul>
         </li>
 
-        <li class="vendor" data-vendor>
+        <li class="vendor" data-vendor data-added="2026-10-03">
           <div class="vendor-head">
             <img class="vendor-avatar" src="assets/vendors/winston-and-stella.jpg"
                  alt="" width="144" height="144" loading="lazy">
@@ -322,6 +538,7 @@
           <p class="vendor-meta">
             Hand stitched goods for the nostalgic minimalist.
             Made in Louisiana.
+            <span class="vendor-booth">Booth TS37</span>
           </p>
           <ul class="vendor-links">
             <li><a href="https://www.facebook.com/WinstonandStella" target="_blank" rel="noopener">Facebook</a></li>
@@ -445,6 +662,6 @@
   </div>
 </footer>
 
-<script src="script.js?v=154"></script>
+<script src="script.js?v=171"></script>
 </body>
 </html>

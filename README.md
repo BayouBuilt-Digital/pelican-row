@@ -664,6 +664,23 @@ searching turned up their pages: the names are too generic, and the market's
 own Facebook does not list them. The links arrived when the market asked the
 vendors, which is what the form further down the page is for.
 
+**A `facebook.com/share/...` link is not an address, it is a redirect** with a
+tracking parameter on it. Open it and record where it lands, because the share
+id can be revoked and `mibextid` tells Facebook where the click came from.
+Two of these cards arrived that way: `share/14qMGtpPF88` resolves to
+`facebook.com/Dianatreasures` and `share/1Du4WZanPV` to "Moma's Girls",
+recorded here as `profile.php?id=61594651381945` rather than the
+`/people/Momas-Girls/` form Facebook redirects to — see the note above about
+which form the page plugin can read.
+
+**Resolving them also settled what the cards are called.** Four of these
+vendors were first listed under the seller's own name and renamed to the
+business: Amelia Smith to **Amelia V Smith Art**, Diana Lindberg to **Diana's
+Treasures**, Rebecca Beene to **Moma's Girls**. A card names the booth, not the
+person behind it, and the name is the sort key, so Moma's Girls moved from R to
+M when it changed. Joan Marie Rose is still under her own name because that is
+what the market gave us; ask before assuming it is a mistake.
+
 **Two near-misses are worth remembering.** `instagram.com/thevintagetrapper`
 is a live account with six posts and three thousand following, nothing to do
 with the vendor — whose real handle is `vintage.trapper`. And
@@ -692,6 +709,20 @@ written for us rather than lifted from a profile.
 "refresh" it with that. This is the route to prefer whenever a vendor's page
 will not give anything up: ask them.
 
+**Nine avatars arrived as files, named to match the vendors.** They were
+centre-cropped square and resized to 144 — no hunting for a crop, because a
+profile picture is already framed. Two needed handling: `lolos-custom-creations`
+came as a PNG and was composited onto white before the JPEG conversion, or the
+transparency would have flattened to black, and `jj&b-bayou-boujee.jpg` lost
+the `&` on the way in (`jj-and-b-bayou-boujee.jpg`) because an ampersand in a
+path has to be escaped everywhere it is referenced. `jackie-sinclair-creations`
+is filed under the vendor's name, `jacsincreations.jpg`.
+
+**Amelia V Smith Art has no logo and no Facebook picture to take** — hers is
+a crop of one of her own canvases from a photo of the booth, the coral-ground
+oyster painting. Same reasoning as the crops below: it is one object with its
+own colour, where the booth around it is a wall of small bright things.
+
 Cropping a booth photo is not the same job as cropping an avatar. These end up
 at **52px, round**, so a wide shot of a table turns to mush — pick one bold
 motif with its own contrast and let it fill the frame. Cajun Stitchin'
@@ -699,6 +730,14 @@ Magician's crop is the silver fleur-de-lis on the red towel, chosen over the
 crab, the chili and the peacock by rendering all four at 52px and looking at
 them; Brittany Clark's is the embossed brass plate, which is one round
 high-contrast object where the hutch behind it is forty small ones.
+
+**A flat logo is the opposite case: frame it the way its owner does.** Diana's
+Treasures, Joan Marie Rose and Moma's Girls all arrived as square logo files,
+and all three keep their wordmark — Facebook shows them whole in a circle, and
+every tighter crop tried here clipped the name to "DIANA'" or "ARIE ROS".
+Diana's takes a 10% inset to match the scale Facebook renders at; the other two
+are used as they came. Let the round mask trim the corners; that is all
+Facebook is doing.
 
 A **logo** sent as a flat image needs the opposite care. Winston & Stella's
 arrived as a cream disc on a white square, so it is cropped 9% in on every side
@@ -711,6 +750,160 @@ read as a disc at all; do not remove that ring thinking it does nothing.
 it is a Halloween version of their logo, taken in October 2026. `graph.facebook
 .com/<id>/picture` gave the grey silhouette for them, so it came from `og:image`
 the usual way. Re-read it after the holiday if they change it back.
+
+### When each card went up, and the "New" chip
+
+Every `<li class="vendor">` carries **`data-added="YYYY-MM-DD"`**. `script.js`
+reads it on load and flags any card added in the last **7 days**
+(`NEW_FOR_DAYS`).
+
+> **The chips are switched off right now.** `NEW_FLAGS_ON = false` in
+> `script.js`, at the market's request and until they ask for them back.
+> Nothing else was removed — the dates, `flagCard()`, the `.vendor-flag`
+> styles and the strip positioning are all still here. Flip the switch and
+> the chips return, correct for whatever the date is that day, which is the
+> point of computing the window rather than typing it in. **Do not tidy away
+> the code this switch makes unreachable.** The window moves on its own, so
+a chip never has to be taken off by hand — the only upkeep is **giving a new
+card today's date when you add it**. The same attribute is what a future
+"newest arrivals" section would sort on.
+
+Two details in that code are deliberate. Both dates are built with `Date.UTC`
+from calendar fields, because `new Date("2026-10-07")` parses as UTC midnight
+while `new Date()` is local, and comparing the two moves the boundary by a day
+either side of midnight depending on the reader's clock. And the test is
+written `if (!(added >= cutoff)) continue;` so that a malformed date yields
+`NaN`, fails, and simply leaves the card without a chip instead of throwing.
+
+With JavaScript off there are no chips. That is the right failure: the cards
+are all still there, in the same order, saying the same things.
+
+### Card flags
+
+Flags live in `<ul class="vendor-flags">`, a strip positioned over the card's
+top border — half in, half out. Two reasons it is a layer rather than part of
+the card's content:
+
+- **Position is fixed.** The chip used to sit inline after the vendor's name,
+  which put it mid-line on "Brittany Clark" and on a second line under "Cajun
+  Stitchin' Magician". A label that moves is one you have to look for.
+- **Flags cannot push anything around.** The strip is absolutely positioned,
+  so a card with two flags is exactly as tall as a card with none, and adding
+  "Featured" to a card never reflows its name, blurb or booth line.
+
+**One strip per corner.** Featured goes top left, New top right, so a card
+wearing both reads as two different kinds of label rather than one run of
+chips — and neither shifts when the other appears or lapses. Nothing collides
+with the avatar: the strip is centred on the border, so its lower half stops
+about 12px in, where the card's 1.5rem top padding is still empty. The
+overhang above is about 10px into the grid's 20px row gap, which is the
+reason not to tighten that gap.
+
+**Only "New" is a flag.** It is written by `script.js` into the right-hand
+strip, because it expires and nobody should have to remember to delete it.
+First child, not last, so a screen reader reads it before the name rather
+than after the booth number.
+
+The strip **straddles the card's top border on the right**. All three
+alternatives were tried on screen: inside the top right corner (calm, but it
+brushed the longest name and needed a gutter that cost height), and straddling
+on the left, which crowded the avatar — two round things in the same corner.
+On the right the chip has the empty end of the head row to itself.
+
+Being absolutely positioned it costs no height and no margin wherever it goes:
+a flagged card measures the same as an unflagged one, 251/252px either way. It
+hangs about 10px into the grid's 20px row gap, which is the reason not to
+tighten that gap, and nothing collides with the avatar, which does not begin
+until the card's 1.5rem top padding ends.
+
+The chip is a **pill** (`border-radius: 999px`), not the site's 4px `--radius`.
+At this size a softened rectangle just looked like a small copy of the card's
+own corners; fully round reads as a tag. Side padding went up with the radius,
+or the letters crowd the curve.
+
+It carries a **1px ring a shade down from the fill**, `#2c5e63`. The pill sits
+across the card's own border, and a flat fill met that line in a way that read
+as a smudge; the ring gives the chip its own edge. Not `--line-strong` — a
+brown ring on a teal pill looks like dirt rather than an outline. It costs no
+size, because `box-sizing: border-box` is global.
+
+### Featured vendors come first, and a band says so
+
+A card marked **`data-featured`** is lifted to the head of the list by
+`script.js`, the four of them staying alphabetical among themselves because
+they are collected in document order and re-inserted back to front. Then two
+bands go in: **Featured** above them and **More vendors** before the rest.
+
+The second band had a full-width rule *above* it and a lot of space. Both came
+out: across four columns that rule cut the grid in half and pushed the rest of
+the vendors below the fold, so you could not see them next to the featured
+row.
+
+What replaced it is a rule running off the end of each word, on the same line,
+through `::after`. It carries the eye across the grid at no cost in height —
+the band is 19px tall either way — and it takes its colour from `currentColor`,
+so the Featured rule is brick and the More vendors rule is `--ink-faint`
+without a second declaration. Opacity .5: at .3 it was invisible at real pixel
+density, and above that it starts competing with the cards' own edge.
+
+**`display: flex` goes on `.vendors-band:not([hidden])`, never on
+`.vendors-band`.** The search hides the bands with the `hidden` attribute, and
+a bare `display` would outrank the UA's `[hidden] { display: none }` — the same
+trap the vendor cards carry a note about.
+
+**There is deliberately no per-card "Featured" chip.** There was one — a brick
+chip in the opposite top corner from "New" — and it was too much: the same
+word four times over, in the busiest part of each card, so the featured row
+read louder than the vendors in it, worst of all on a card wearing both. One
+band says it once and leaves the cards alone. The chip is in the git history
+if a per-card mark is ever wanted again.
+
+**The band is written by the same code that does the hoist.** It has to be: a
+line saying "Featured" above whatever happens to be alphabetically first
+would be a lie. So with JavaScript off there is no band *and* no reordering,
+just the plain alphabetical list — which is honest, and is why `data-featured`
+is a bare attribute now rather than visible markup.
+
+**The search hides both bands.** Results are not grouped, so a band over them
+would be labelling whatever survived the filter. `runFilter` queries them at
+call time, because they are created further down the file than it is defined.
+
+**The HTML stays alphabetical.** One sort rule for the file, and featuring a
+vendor is one attribute on their `<li>`, not moving a block of markup up the
+page.
+
+**`FEATURED_MAX = 4` is enforced, not just advised.** Four is what the row
+holds at full width, and a featured group that is most of the list features
+nothing. A fifth `data-featured` is stripped on load, that card stays where
+alphabetical order puts it, and the console names it.
+
+**Nobody is featured at the moment, so there are no bands.** That is the
+guard `if (picked.length && picked.length < all.length)`, and it cuts both
+ways: no `data-featured` anywhere means no "Featured" heading sitting over a
+plain alphabetical list, and *everybody* featured means no "More vendors"
+heading over nothing. Either way the list just renders as it stands. Add the
+attribute back to any card and the section reappears.
+
+One featured card is a legitimate state too, though it leaves three empty
+columns beside it at full width. If that ever reads as a gap rather than as
+emphasis, the answer is more featured vendors, not a layout change.
+
+**Mind how many cards qualify at once.** Five of these went up on the same day,
+so for that week six of ten cards wore a chip, which is close to meaning
+nothing. If a batch is ever added together, consider spreading the dates to
+the days the vendors actually signed, or dropping `NEW_FOR_DAYS`.
+
+The existing dates came from `git log -S"<a link or avatar filename from the
+card>" --date=short -- vendors.html`, taking the *last* line, which is the
+commit that introduced that card. That still works for any card added before
+this attribute existed.
+
+**It is the date the card went on the site, not the date the vendor joined the
+market.** Four of them share 2026-09-28 because that is when the directory was
+first built, not because those four arrived together, and a vendor who has had
+a booth for years gets today's date if their card goes up today. If "newest
+arrivals" is meant to say *new to Pelican Row*, the market has to supply the
+real move-in dates — do not present these as that.
 
 ### Adding a vendor
 
@@ -905,14 +1098,20 @@ It was tried as the border on every card and field and pulled back out. At
 that scale it stopped being an accent and became the house colour, which took
 the emphasis out of the two chips it is for.
 
-**Borders are `--ink`.** Cards at 2px, form fields and the search box at 1px.
-It is the darkest colour in the palette and the one the body text is set in,
-so it reads as black on cream without the glare of a true `#000`.
+**Borders are `--line-strong`**, a 1px edge in `--ink` at 55%. They were
+`--ink` at full strength and 1.5px, which looked heavy, and the first attempt
+at fixing it — taking the width to 1px — changed almost nothing visible,
+because half a pixel is below what anyone notices. **The weight was the
+colour.** 13:1 against the paper is the contrast of body text; an edge wants
+to be seen, not read. At 55% it is 3.4:1, which still clears WCAG 1.4.11's
+3:1 for a form field's border and still reads as a deliberate dark line
+rather than the hairline `--line` gives a non-interactive divider. One token,
+so cards, the reviews frame, the fields and the search box move together.
 
 **Focus is brick**, including on the fields, which therefore change colour
-when you click into them — near-black at rest, brick when focused. The error
-state is still distinguishable because it carries a pink fill that focus does
-not have.
+when you click into them — dark at rest, brick when focused. The error state
+is still distinguishable because it carries a pink fill that focus does not
+have.
 
 When adding something new, ask which of the two it is. If it is a surface or
 a container that is not interactive — a section divider, the header rule, the

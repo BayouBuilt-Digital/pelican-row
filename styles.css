@@ -29,9 +29,30 @@
   --navy:       #223e65;
   --navy-wash:  rgba(34, 62, 101, .08);   /* hover tint, as --brick-wash is for brick */
 
+  /* Teal, for the "New" chip on a vendor card and nothing else so far.
+     Near enough the complement of --brick to read as a deliberate second
+     accent rather than a stray colour. Lettered in white rather than --paper,
+     which the other chips use: cream on it is 3.5:1 and white 3.9:1.
+
+     Note that 3.9:1 is under the 4.5:1 AA asks for text this small — a
+     deliberate choice, made with the trade named. It clears the 3:1 that
+     applies to the chip as a UI component, and the word "New" is decoration
+     over information the card already carries. #3f7f86 was the previous value
+     and reaches 4.6:1 on white if that matters more later. */
+  --teal:       #528b90;
+
   /* Lines */
   --ink-wash:   rgba(51, 39, 31, .05);    /* hover tint for ink-lettered buttons */
 
+  /* The drawn edge on cards, the reviews frame and form fields. It used to
+     be --ink at full strength, which at 13:1 against the paper read as a
+     heavy black box once there were ten of them on a page; thinning the
+     border from 1.5px to 1px barely touched that, because the weight was
+     the colour and not the width. At .55 it still reads as a deliberate
+     dark edge and still clears WCAG 1.4.11's 3:1 for a form field's border
+     (3.4:1 against --paper, 3.5:1 against --paper-card). Darken it here if
+     the cards ever need to sit harder on the page; nothing else changes. */
+  --line-strong: rgba(51, 39, 31, 0.55);
   --line:       rgba(51, 39, 31, 0.14);
   --line-soft:  rgba(51, 39, 31, 0.08);
 
@@ -420,17 +441,17 @@ main > :last-child {
      image. If the screenshots are ever retaken against a different
      background, re-sample their edges and match this to it. */
   background: #fff;
-  /* A REAL BORDER, not a box-shadow ring. The ring was drawn with a 1.5px
-     spread, and a spread is not rounded to whole device pixels the way a
-     border width is — so with the frame landing on half pixels (left 72.5,
-     top 386.25) each edge antialiased differently: one side a solid line,
+  /* A REAL BORDER, not a box-shadow ring. The ring was drawn with a spread,
+     and a spread is not rounded to whole device pixels the way a border
+     width is — so with the frame landing on half pixels (left 72.5, top
+     386.25) each edge antialiased differently: one side a solid line,
      another a half-strength grey. Against the drop shadow underneath, that
      read as embossed.
 
      A border rounds per edge like the cards' do, so all four match. It costs
      no width either, because box-sizing is border-box: the frame stays the
      same size and the slides, at 100% of the content box, simply follow. */
-  border: 1.5px solid var(--ink);
+  border: 1px solid var(--line-strong);
   box-shadow: var(--shadow);
 }
 .reviews-track::-webkit-scrollbar { display: none; }
@@ -533,7 +554,7 @@ main > :last-child {
      the way up. The vendor cards hold theirs through the lift; these do the
      same. */
   .card-link:hover {
-    border-color: var(--ink);
+    border-color: var(--line-strong);
     box-shadow: 0 2px 4px rgba(51, 39, 31, .06), 0 22px 44px -22px rgba(51, 39, 31, .45);
     z-index: 1;
   }
@@ -557,10 +578,11 @@ main > :last-child {
      The base .card keeps its hairline, so a card that is only a card and
      not a link would still look different from one that goes somewhere.
 
-     1.5px, not 2: enough to read as a drawn edge, light enough that a grid
-     of them does not turn into a wall of boxes. The vendor cards and the
-     reviews frame use the same weight. */
-  border: 1.5px solid var(--ink);
+     1px, not 2: enough to read as a drawn edge, light enough that a grid
+     of them does not turn into a wall of boxes — 1.5px was tried first and
+     read as heavy once there were ten cards on a page. The vendor cards and
+     the reviews frame use the same weight. */
+  border: 1px solid var(--line-strong);
 }
 .card-link h3 a {
   color: inherit;
@@ -863,7 +885,7 @@ main > :last-child {
   /* --ink, like the cards: boxes on this site are outlined in the same
      near-black. 1px, not the cards' 2px — a form is a column of these and
      at 2px they would read as a stack of boxes rather than as a form. */
-  border: 1px solid var(--ink);
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius);
   padding: .68rem .8rem;
   width: 100%;
@@ -1533,7 +1555,7 @@ main > :last-child {
   flex-direction: column;
   gap: .5rem;
   background: var(--paper-card);
-  border: 1.5px solid var(--ink);   /* matches the home cards and the reviews frame */
+  border: 1px solid var(--line-strong);  /* matches the home cards and the reviews frame */
   border-radius: var(--radius);
   padding: 1.5rem 1.4rem;
   box-shadow: var(--shadow);
@@ -1594,6 +1616,120 @@ main > :last-child {
   margin: 0;
   color: var(--ink-soft);
   font-size: .95rem;
+}
+
+/* "New" on a card the market added in the last week. script.js writes it in
+   from data-added, so the window moves on its own and nothing here needs a
+   date in it. Lives inside the <h2> rather than beside it in .vendor-head:
+   as a third flex child it would sit a full gap away from a short name and
+   not wrap with a long one. A screen reader reads it as part of the
+   heading, "Faerybug Curios New", which is what it means. */
+/* Flags on a card — just "New" at the moment — in a strip pinned inside the
+   top right corner rather than inline after the name.
+
+   They land in the same place on every card. Inline, the chip followed the
+   name, so it sat mid-line on a short name and dropped to a second line on a
+   long one — a label that moves is a label you have to look for.
+
+   They are a layer, not content. The strip is absolutely positioned, so it
+   costs no height and no margin: a flagged card is exactly as tall as an
+   unflagged one, and a second flag could never reflow the name, the blurb or
+   the booth line.
+
+   Straddling the border says what it is: a tag ON the card, not a line IN it.
+   The half that hangs inside covers nothing, because the card's 1.5rem top
+   padding is empty there; the half that hangs outside reaches about 10px into
+   the grid's 20px row gap, which is why that gap is not tightened.
+
+   On the right. The left was tried, where a "Featured" chip once lived, and
+   it crowded the avatar — two round things in the same corner. On the right
+   the chip has the empty end of the head row to itself. Nothing collides
+   there either: straddling the border puts its lower edge about 12px in,
+   above the head row, which does not start until the 1.5rem padding ends. */
+.vendor-flags {
+  position: absolute;
+  top: 0;
+  transform: translateY(-50%);
+
+  display: flex;
+  flex-wrap: wrap-reverse;     /* a wrapped second flag stacks upward */
+  gap: .35rem;
+
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  /* Half the card, less the gutter, so a strip can never reach the far side. */
+  max-width: calc(50% - 1.1rem);
+}
+
+.vendor-flags-end { right: 1.1rem; justify-content: flex-end; }
+
+.vendor-flag {
+  /* Rounder than the site's 4px --radius: a pill reads as a tag pinned to the
+     card, where a softened rectangle just looked like a small version of the
+     card's own corners. The side padding goes up with it, or the letters
+     crowd the curve. The .1em tracking hangs after the last letter, so the
+     right padding is taken back by that much — same correction as the event
+     date chip. */
+  padding: .22rem calc(.62rem - .1em) .22rem .62rem;
+  border-radius: 999px;
+  /* A ring a shade or two down from the fill. It draws the pill's edge
+     against the card border it is sitting across, which the flat fill alone
+     left looking like a smudge where the two met. Not --line-strong: a brown
+     ring on a teal pill reads as dirt rather than as an outline. Inside the
+     box, because box-sizing is border-box, so the chip does not grow. */
+  border: 1px solid #3c686c;
+  color: var(--paper);
+  font-family: var(--sans);
+  font-size: .6rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Teal for "New", which is a fact about the card and states itself. White
+   letters, not --paper: see the note on --teal. */
+.vendor-flag-new { background: var(--teal); color: #fff; }
+
+/* A band across the grid, naming the run of cards under it. script.js writes
+   both of these in, because it is also what moves the featured cards up — the
+   label and the order it describes have to arrive together or the band is a
+   lie. (With JavaScript off, neither happens: a plain alphabetical list,
+   which is honest.)
+
+   This is the quiet way to say "featured". A chip on each card repeats the
+   same word four times in the busiest part of the card; one line above the
+   row says it once and leaves the cards alone. The band spans every column
+   so it reads as a divider rather than a short label stranded over the
+   first card. */
+.vendors-band {
+  grid-column: 1 / -1;
+  max-width: none;           /* .vendor's half-wrap cap is not wanted here */
+  margin: 0;
+  font-family: var(--sans);
+  font-size: .73rem;
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--brick);
+}
+
+/* One rule for the whole page, above the second band, and none trailing off
+   the words. A trailing rule on each band was tried: two lines where the job
+   needs one, and the Featured one in brick pulled more attention than the
+   group it was labelling.
+
+   Spacing is the thing to watch here. The first version of this separator
+   used 1.1rem + 1.6rem around it and pushed the rest of the vendors out of
+   sight below the featured row. This is deliberately tight — enough that the
+   rule is clearly dividing the two groups, not enough to make the second
+   group feel like another page. */
+.vendors-band-rest {
+  margin-top: .5rem;
+  padding-top: .9rem;
+  border-top: 1px solid var(--line);
+  color: var(--ink-faint);
 }
 
 .vendor-booth {
