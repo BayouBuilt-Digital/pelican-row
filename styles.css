@@ -1795,8 +1795,14 @@ main > :last-child {
    ink to match the ghost buttons and Instagram quietly went with it. A chip
    that states its colour only at rest will follow whatever the default
    becomes. */
-.vendor-links a[href*="instagram.com"] { color: var(--brick); }
-.vendor-links a[href*="instagram.com"]:hover {
+/* Etsy shares Instagram's brick rather than taking a third colour: with
+   Facebook in navy, the split a visitor needs is "their page" against
+   "somewhere to buy or browse", not one hue per platform. Grouped in one
+   selector so the two can never drift apart. */
+.vendor-links a[href*="instagram.com"],
+.vendor-links a[href*="etsy.com"] { color: var(--brick); }
+.vendor-links a[href*="instagram.com"]:hover,
+.vendor-links a[href*="etsy.com"]:hover {
   color: var(--brick);
   border-color: var(--brick);
   background: var(--brick-wash);
