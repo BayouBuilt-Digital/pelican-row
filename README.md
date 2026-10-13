@@ -352,6 +352,17 @@ on the calendar" reads like a dead page; underneath two real sales it reads
 as a page between events. **When a sale ends, move it down into the past list
 rather than deleting it.**
 
+**A run of dates can end one weekend at a time.** The October sale was one
+entry with two chips, 10th-11th mornings and 24th-25th evenings. Once the
+first weekend passed, that entry moved down to the past list keeping only the
+chip for the dates it actually covers, and the second weekend became its own
+upcoming entry with the flyer the market published for it. Do not leave a
+future date sitting in the past list, and do not leave a passed date on an
+upcoming entry: a chip is a promise about when to turn up.
+
+The parking map is deliberately the **same file** in both entries. The way in
+has not changed, so a second copy would be two things to keep correct.
+
 To announce one, replace the placeholder entry with a real one: drop
 `event-upcoming` and `is-placeholder`, remove the banner, and point the flyer
 at the real artwork. Entries with no `<time>` lay out the same way, because

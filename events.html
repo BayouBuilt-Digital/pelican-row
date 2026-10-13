@@ -136,23 +136,74 @@
 
         <li class="event event-media event-upcoming">
           <div class="event-body">
-            <!-- Every date is a real ISO value saying the same thing as the
-                 text beside it, so the markup and the words cannot drift.
-                 Two weekends, two different times: they are listed as two
-                 lines because reading them as one range would get somebody
-                 to the warehouse at the wrong hour. -->
-            <div class="event-whens">
-              <p class="event-when">
-                <time datetime="2026-10-10">Saturday 10</time> and
-                <time datetime="2026-10-11">Sunday 11 October 2026</time>
-                &middot; 9&ndash;11am
-              </p>
-              <p class="event-when">
-                <time datetime="2026-10-24">Saturday 24</time> and
-                <time datetime="2026-10-25">Sunday 25 October 2026</time>
-                &middot; 5&ndash;7pm
-              </p>
-            </div>
+            <!-- One weekend left of this sale, so one chip. The October
+                 10th-11th mornings moved to the past list with their own
+                 flyer when they were done; this entry carries the evening
+                 dates and the flyer the market published for them. -->
+            <p class="event-when">
+              <time datetime="2026-10-24">Saturday 24</time> and
+              <time datetime="2026-10-25">Sunday 25 October 2026</time>
+              &middot; 5&ndash;7pm
+            </p>
+            <h3>Pelican Row Warehouse Sale</h3>
+            <p>
+              Love a good find? Make an evening of it. Two evenings in the
+              warehouse at 6413 Johnston St, Ste&nbsp;500.
+            </p>
+            <p>
+              <strong>Park in the red box</strong> at the front of the lot,
+              then follow the red line around to the back of the warehouse.
+              The map shows the way in.
+            </p>
+            <a class="fb-button" href="https://www.facebook.com/p/Pelican-Row-Estate-Market-100091994943430/" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.25-1.5 1.55-1.5h1.65V3.6A22 22 0 0 0 14.3 3.5c-2.4 0-4 1.45-4 4.1v2.3H7.6V13h2.7v8z"/></svg>
+              <span>Follow on Facebook</span>
+            </a>
+          </div>
+
+          <!-- Two images, so the column is a wrapper rather than a bare
+               <img>. script.js wraps each flyer in its own zoom button and
+               gives the pair arrows in the lightbox. The parking map is the
+               same file the October 10th-11th entry uses: the way in has
+               not changed, so there is no second copy of it. -->
+          <div class="event-flyers">
+            <img class="event-flyer" src="assets/events/warehouse-sale-october-24-25.jpg"
+                 alt="Flyer: Pelican Row Warehouse Sale, October 24th and 25th, 5pm to 7pm, at 6413 Johnston St. 500."
+                 width="900" height="675" loading="lazy">
+            <img class="event-flyer" src="assets/events/warehouse-sale-october-parking.jpg"
+                 alt="Parking map: park in the red box at the front of the lot, follow the red line along the side of the building, and go to the warehouse sale entrance at the back."
+                 width="736" height="900" loading="lazy">
+          </div>
+        </li>
+
+      </ul>
+
+    </div>
+  </section>
+
+  <section class="section section-tint" id="past">
+    <div class="wrap">
+
+      <p class="eyebrow">Previously</p>
+      <h2 class="events-title">Past events</h2>
+      <p class="section-lede">
+        A sense of what we put on, so you know what to watch for.
+      </p>
+
+      <!--
+        Flyers are the market's own, resized by tools/make-event-flyers.py
+        and served from assets/events/. Each <time> is a real ISO date and
+        says the same thing as the text beside it.
+      -->
+      <ul class="events">
+
+        <li class="event event-media">
+          <div class="event-body">
+            <p class="event-when">
+              <time datetime="2026-10-10">Saturday 10</time> and
+              <time datetime="2026-10-11">Sunday 11 October 2026</time>
+              &middot; 9&ndash;11am
+            </p>
             <h3>Pelican Row Warehouse Sale</h3>
             <p>
               Love a good find? Make a morning of it. Two weekends in the
@@ -201,27 +252,6 @@
                alt="Flyer: We're now a Trust Acadiana member. Pelican Row Estate and Market accepts Trust Acadiana. Furniture, antiques, vintage, decor and more. 6413 Johnston St #500, Lafayette, LA. Wednesday to Sunday, 10am to 6pm."
                width="900" height="891" loading="lazy">
         </li>
-
-      </ul>
-
-    </div>
-  </section>
-
-  <section class="section section-tint" id="past">
-    <div class="wrap">
-
-      <p class="eyebrow">Previously</p>
-      <h2 class="events-title">Past events</h2>
-      <p class="section-lede">
-        A sense of what we put on, so you know what to watch for.
-      </p>
-
-      <!--
-        Flyers are the market's own, resized by tools/make-event-flyers.py
-        and served from assets/events/. Each <time> is a real ISO date and
-        says the same thing as the text beside it.
-      -->
-      <ul class="events">
 
         <li class="event event-media">
           <div class="event-body">
