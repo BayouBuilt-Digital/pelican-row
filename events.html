@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=172">
+<link rel="stylesheet" href="styles.css?v=179">
 
 <!-- Breadcrumbs, so a search result can show Home > News & Events -->
 <script type="application/ld+json">
@@ -132,7 +132,37 @@
       <p class="eyebrow">Latest</p>
       <h2 class="events-title">Current &amp; future events</h2>
 
-      <ul class="events events-roomy">
+      <ul class="events events-roomy" data-events-upcoming>
+
+        <!-- Nearest first. A new entry goes above the ones further out, not
+             at the top by default: the next thing a visitor can turn up to
+             should be the first thing they read. -->
+        <li class="event event-media event-upcoming">
+          <div class="event-body">
+            <p class="event-when">
+              <time datetime="2026-10-15">Thursday 15 October 2026</time>
+              &middot; 10am&ndash;6pm
+            </p>
+            <h3>One-day pop-up</h3>
+            <p>
+              A hand-painted vintage milk can with birds, fruit and flowers
+              on a mustard ground, at a pop-up price of $475, down from $500.
+              One day only, hosted by Catnip at Booth JS10.
+            </p>
+            <a class="fb-button" href="https://www.facebook.com/p/Pelican-Row-Estate-Market-100091994943430/" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.25-1.5 1.55-1.5h1.65V3.6A22 22 0 0 0 14.3 3.5c-2.4 0-4 1.45-4 4.1v2.3H7.6V13h2.7v8z"/></svg>
+              <span>Follow on Facebook</span>
+            </a>
+          </div>
+          <!-- In the pair wrapper even though there is one flyer, so it sits
+               under the text at the same size as the warehouse sale's below
+               it rather than in the narrow 260px column. -->
+          <div class="event-flyers">
+            <img class="event-flyer" src="assets/events/one-day-pop-up-october-15.jpg"
+                 alt="Flyer: One-day pop-up, tomorrow October 15, 10am to 6pm. A hand-painted vintage milk can, pop-up price $475, original price $500. Hosted by Catnip, Booth JS10, at Pelican Row Estate and Market, 6413 Johnston Street, Lafayette."
+                 width="900" height="900" loading="lazy">
+          </div>
+        </li>
 
         <li class="event event-media event-upcoming">
           <div class="event-body">
@@ -178,6 +208,16 @@
 
       </ul>
 
+      <!-- Shown by script.js only if every entry has expired into the past
+           list. With JavaScript off nothing moves, so nothing empties and
+           this stays hidden. -->
+      <p class="events-empty" data-events-empty hidden>
+        Nothing on the calendar right now. Sales are announced on
+        <a href="https://www.facebook.com/p/Pelican-Row-Estate-Market-100091994943430/"
+           target="_blank" rel="noopener">Facebook</a>
+        first, so follow us there.
+      </p>
+
     </div>
   </section>
 
@@ -195,7 +235,7 @@
         and served from assets/events/. Each <time> is a real ISO date and
         says the same thing as the text beside it.
       -->
-      <ul class="events">
+      <ul class="events" data-events-past>
 
         <li class="event event-media">
           <div class="event-body">
@@ -235,7 +275,7 @@
           </div>
         </li>
 
-        <li class="event event-media">
+        <li class="event event-media" data-posted="2026-09-28">
           <div class="event-body">
             <p class="event-when">News</p>
             <h3>We&rsquo;re now a Trust Acadiana member</h3>
@@ -326,6 +366,6 @@
   </div>
 </footer>
 
-<script src="script.js?v=172"></script>
+<script src="script.js?v=179"></script>
 </body>
 </html>

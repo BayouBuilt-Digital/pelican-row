@@ -349,8 +349,93 @@ because the words beside it already say there is nothing booked.
 
 The past list is what makes the coming-soon half work. On its own, "nothing
 on the calendar" reads like a dead page; underneath two real sales it reads
-as a page between events. **When a sale ends, move it down into the past list
-rather than deleting it.**
+as a page between events. **When a sale ends it moves down into the past list
+rather than being deleted** — and it moves itself.
+
+### Entries expire on their own
+
+An entry stops being current the day **after** its last date: a sale on the
+25th is still on all day on the 25th and belongs in the past list on the 26th.
+
+**That day is worked out from the entry's own `<time>` elements.** The latest
+`datetime` in the entry, plus one day — so a sale across a weekend expires
+after the Sunday, not the Saturday. On load `script.js` walks
+`[data-events-upcoming]` and moves anything whose expiry has arrived into
+`[data-events-past]`, stripping `event-upcoming` so it drops the navy chip
+and the full-width flyer layout on the way. **Nothing to remember when adding
+an event: put the real date in the `<time>` and the expiry follows.**
+
+It was briefly a `data-expires` attribute on every entry, typed by hand. That
+is a third copy of a date the markup already holds twice, and the copy nobody
+would notice had gone stale — the same reason the `datetime` and the words
+beside it have to agree.
+
+**A news item runs for a week.** It is not an event, so there is no date for
+it to be over: it carries **`data-posted="YYYY-MM-DD"`** and comes down
+`NEWS_FOR_DAYS` (7) later. Long enough that a regular visitor sees it, short
+enough that "now a Trust Acadiana member" is not still the market's latest
+news in March. That entry is the example: posted 2026-09-28, gone on
+2026-10-05.
+
+**`data-expires="YYYY-MM-DD"` overrides both**, for anything that should
+linger or come down early.
+
+So the order an entry is read in is: explicit date, then the event's own last
+date plus a day, then posted plus a week, then never.
+
+**Only `<time>` inside `.event-when` counts.** A date in the description, say
+"on sale until 1 June", would otherwise read as the entry's own date and hold
+a finished sale on the page for months.
+
+Everything here fails towards leaving the entry alone. Tested against the real
+script with the clock stubbed, at a date past all of them:
+
+| What the entry carries | Result |
+| --- | --- |
+| one `<time>` | expires the day after it |
+| two `<time>`s | expires the day after the **later** one |
+| `datetime="2026-11-05T17:00"` | fine, the clock part is ignored |
+| `datetime="Nov 2026"` (unparseable) | **stays put** |
+| no `<time>` and no attribute | **stays put** |
+| `<time>` only in the description | **stays put** |
+| a later `<time>` in the description | ignored; expires on its date line |
+| `data-posted`, 6 days ago | **stays put** |
+| `data-posted`, 7 days ago | expires that day |
+| `data-posted` **and** a `<time>` date | the date wins |
+| `data-expires` in the future | **stays put**, the attribute wins |
+
+The worst case is a stale entry somebody moves by hand, which is the situation
+this replaced. A live sale never disappears the morning it opens.
+
+Three details that are deliberate:
+
+- **Both sides of the comparison are UTC calendar days.** `new
+  Date("2026-10-26")` parses as UTC midnight while `new Date()` is local, so
+  mixing them moves the boundary by a day either side of midnight depending
+  on the reader's clock.
+- **The test is `if (!(todayUTC >= expires)) continue;`** so a malformed date
+  gives `NaN`, fails, and leaves the entry exactly where the markup put it.
+- **Entries are walked nearest-expiry first and each is inserted at the head
+  of the past list**, so several expiring at once still land newest first.
+
+If every entry expires, `[data-events-empty]` is revealed: a dashed card
+saying nothing is booked, matching the vendor search's no-results note. With
+JavaScript off nothing moves and nothing empties — the page shows a stale
+entry rather than a broken one, and it can still be moved by hand.
+
+**Order the upcoming list by what happens next.** The nearest date goes
+first, then the ones further out — a visitor reads the top of the list and
+sees the next thing they can turn up to. A new entry is not automatically a
+top entry.
+
+**One flyer sits beside the text; a pair sits under it.** `.event-media` puts
+the image in a 260px column on the right, which is right for a single flyer.
+An entry with a `.event-flyers` wrapper (two or more) drops to one column and
+runs them full width underneath, because two images cannot share 260px. That
+switch is keyed on `:has(.event-flyers)`, **not** on `.event-upcoming`: it was
+on `.event-upcoming` while there was only ever one upcoming entry, and the
+moment a second one arrived with a single flyer, that flyer blew up to the
+full 820px measure.
 
 **A run of dates can end one weekend at a time.** The October sale was one
 entry with two chips, 10th-11th mornings and 24th-25th evenings. Once the

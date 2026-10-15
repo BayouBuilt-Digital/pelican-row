@@ -1236,12 +1236,27 @@ main > :last-child {
   align-items: start;
 }
 
+/* A lone flyer in this wrapper would stretch across the whole entry, which
+   is a poster at 820px. Capped to the width one of a pair gets, so entries
+   stacked on the page show their flyers at the same size: the row less its
+   gap, halved. Derived rather than typed, so changing the gap cannot leave
+   the two out of step. */
+.event-flyers > :only-child { max-width: calc((100% - 1rem) / 2); }
+
 /* Two images side by side need more width than the 260px media column, so
-   this entry drops to a single column and carries the pair under its text.
-   The text is capped at a readable measure rather than running the full
-   width of the entry. */
-.event-upcoming.event-media { grid-template-columns: minmax(0, 1fr); }
-.event-upcoming .event-body { max-width: 62ch; }
+   an entry carrying a PAIR drops to a single column and runs them under its
+   text. The text is then capped at a readable measure rather than running
+   the full width of the entry.
+
+   Scoped with :has() to the entries that actually have a .event-flyers
+   wrapper. It used to apply to every .event-upcoming, which was fine while
+   only one upcoming entry existed and it had two flyers; a second upcoming
+   entry with a single flyer inherited the full-width layout and blew that
+   flyer up to 820px. One image still belongs in the 260px media column. */
+.event-upcoming.event-media:has(.event-flyers) {
+  grid-template-columns: minmax(0, 1fr);
+}
+.event-upcoming:has(.event-flyers) .event-body { max-width: 62ch; }
 
 /* ── Flyer lightbox ───────────────────────────────────────
    script.js wraps each flyer in .flyer-zoom, so that button becomes the
@@ -1440,6 +1455,19 @@ main > :last-child {
 
 .event-upcoming .fb-button { margin-top: 1.2rem; }
 
+/* Stands in for the upcoming list once everything in it has expired. Same
+   dashed card as the vendor search's no-results note: both say "there is
+   nothing here right now", and a visitor who has seen one recognises the
+   other. */
+.events-empty {
+  margin: 0;
+  padding: 1.5rem;
+  background: var(--paper-card);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  color: var(--ink-soft);
+}
+
 /* Section heading for either events list. Tighter under-margin than a
    default h2 because an eyebrow sits above it. */
 .events-title { margin-bottom: .6rem; }
@@ -1468,6 +1496,12 @@ main > :last-child {
   .event-flyer-slot,
   .event-flyers,
   .flyer-zoom { order: -1; max-width: 340px; }
+
+  /* The lone-flyer cap is for a pair sitting side by side. Down here the
+     pair is stacked, so halving the column would show a single flyer at
+     half the width of the stacked ones above it. The wrapper's own 340px
+     is the cap that matters now. */
+  .event-flyers > :only-child { max-width: none; }
 }
 
 /* ── Vendor directory ─────────────────────────────────────

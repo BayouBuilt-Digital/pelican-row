@@ -795,6 +795,105 @@
     return row;
   }
 
+  /* ── Events expire into the past list ────────────────────
+     An entry stops being current the day AFTER its last date: a sale on the
+     25th is still on all day on the 25th and belongs in the past list on the
+     26th.
+
+     That day is worked out from the <time> elements in the entry's own date
+     line rather than typed in beside them. The date is already in the markup
+     twice, as a real datetime and as the words next to it; a third copy in an
+     attribute is a third thing to keep in step, and the one nobody would
+     notice had gone stale. The latest <time> wins, so a sale spanning a
+     weekend expires after the Sunday, not after the Saturday.
+
+     Everything here fails towards leaving the entry alone: a date that will
+     not parse is skipped, and an entry with nothing to go on never expires.
+     The worst case is a stale entry somebody has to move by hand, which is
+     the situation this replaced, rather than a live sale vanishing off the
+     page the morning it opens.
+
+     data-expires overrides it, for an entry with no date to work from. The
+     Trust Acadiana announcement is the case: it is news, not an event, so it
+     carries an explicit date to come down.
+
+     Dates are compared as UTC calendar days on both sides. `new
+     Date("2026-10-26")` parses as UTC midnight while `new Date()` is local,
+     and mixing the two moves the boundary by a day either side of midnight
+     depending on the reader's clock.
+
+     With JavaScript off nothing moves. The entry stays in the upcoming list
+     with its date on it, which reads as a stale page rather than a broken
+     one, and the market can still move it by hand. */
+  function dayUTC(iso) {
+    var p = String(iso).slice(0, 10).split("-");
+    return Date.UTC(+p[0], +p[1] - 1, +p[2]);
+  }
+
+  /* A news item is not an event: there is no date to be over, so it runs for
+     a week from the day it went up. Long enough that a regular visitor sees
+     it, short enough that "now a Trust Acadiana member" is not still the
+     market's latest news in March. */
+  var NEWS_FOR_DAYS = 7;
+
+  function expiryOf(entry) {
+    /* 1. An explicit date always wins, for anything that should linger or
+          come down early. */
+    var stated = entry.getAttribute("data-expires");
+    if (stated) return dayUTC(stated);
+
+    /* 2. An event expires the day after its last date. Only the date line
+          counts, not every <time> in the entry: a date mentioned in the
+          description ("on sale until...") would otherwise read as the
+          entry's own and could hold it on the page for months. */
+    var times = entry.querySelectorAll(".event-when time[datetime]");
+    var last = null;
+    for (var t = 0; t < times.length; t++) {
+      var day = dayUTC(times[t].getAttribute("datetime"));
+      /* > is false against NaN, so a malformed datetime is skipped rather
+         than poisoning the result. */
+      if (last === null || day > last) last = day;
+    }
+    if (last !== null) return last + 86400000;
+
+    /* 3. No date, so it is news: a week from when it was posted. */
+    var posted = entry.getAttribute("data-posted");
+    if (posted) return dayUTC(posted) + NEWS_FOR_DAYS * 86400000;
+
+    /* 4. Nothing to go on. It never expires, which is the safe way round:
+          it stays put until somebody decides otherwise. */
+    return NaN;
+  }
+
+  var upcomingList = document.querySelector("[data-events-upcoming]");
+  var pastList = document.querySelector("[data-events-past]");
+
+  if (upcomingList && pastList) {
+    var stamp = new Date();
+    var todayUTC = Date.UTC(stamp.getFullYear(), stamp.getMonth(), stamp.getDate());
+
+    var entries = upcomingList.querySelectorAll(".event");
+    for (var e = 0; e < entries.length; e++) {
+      /* Written this way round so NaN fails the test and leaves the entry
+         exactly where the markup put it. */
+      if (!(todayUTC >= expiryOf(entries[e]))) continue;
+
+      /* The navy chip and the full-width flyer layout both belong to a
+         current entry. A past one takes the plain caption. */
+      entries[e].classList.remove("event-upcoming");
+
+      /* To the head of the past list, which runs newest first. Entries are
+         walked nearest-expiry first, so each one lands above the last and
+         the most recently finished ends up on top. */
+      pastList.insertBefore(entries[e], pastList.firstChild);
+    }
+
+    var emptyNote = document.querySelector("[data-events-empty]");
+    if (emptyNote) {
+      emptyNote.hidden = upcomingList.querySelectorAll(".event").length !== 0;
+    }
+  }
+
   /* ── Linkable <details> ──────────────────────────────────
      Makes #send-your-links on the Our Vendors page work as a shareable
      link: the form is inside a closed <details>, and a plain anchor jump
