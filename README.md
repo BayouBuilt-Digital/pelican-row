@@ -58,23 +58,31 @@ carries both classes.
 
 ## Pages and navigation
 
-- **Top menu (every page):** News & Events, Our Vendors, Become a Vendor,
-  About Us, Our Partners. Ordered by what a visitor is most likely to
-  want — what's on now, who's selling, how to join them — with the
-  background reading last. **Our Vendors and Become a Vendor must stay
-  adjacent**: they are browse-then-join, and anything inserted between them
-  breaks the pair.
-- **The menu breakpoint is tied to the link count.** Five links need 834px of
-  header, so the button takes over at 920px. Adding one means measuring
-  again — see the note above the media query in `styles.css`.
-- **Footer (every page):** address, phone, email, Facebook, then a legal nav
-  of **Return Policy, Terms & Conditions**, then the copyright and credit.
+- **Top menu (every page):** Events & News, Our Vendors, Gift Cards, Become
+  a Vendor, Our Partners. Ordered by what a visitor is most likely to want —
+  what's on now, who's selling, what to buy somebody, how to join them.
+  **Our Vendors and Become a Vendor must stay adjacent**: they are
+  browse-then-join, and anything inserted between them breaks the pair.
+- **The menu breakpoint is tied to the link count.** Five links need 870px of
+  header including the wordmark, so the button takes over at 920px and there
+  is now essentially no slack above it. Adding a link, or lengthening one,
+  means measuring again — see the note above the media query in `styles.css`.
+- **Footer (every page):** address, phone, email, Facebook, then a nav of
+  **About Us, Return Policy, Terms & Conditions**, then the copyright and
+  credit. Its `aria-label` is "More", not "Legal": two of the three are
+  legal pages and one is not.
 
 ### Why the policies live in the footer
 
 The footer is where people look for them. It is the convention across retail
 sites, and it keeps the top menu to the five things a visitor came for rather
 than the two they only check before buying.
+
+**About Us is down there with them**, which is a judgement about traffic
+rather than about importance: it is background reading, wanted once if at
+all, and it was costing a slot in a menu that had run out of room. The page
+is unchanged and still carries its own breadcrumb and canonical; only the
+link moved.
 
 **Return Policy comes before Terms & Conditions** in that row on purpose.
 The return policy is a pre-purchase question — "what if it doesn't fit, what
@@ -352,6 +360,169 @@ on the calendar" reads like a dead page; underneath two real sales it reads
 as a page between events. **When a sale ends it moves down into the past list
 rather than being deleted** — and it moves itself.
 
+### A listing with more than one flyer becomes a carousel
+
+Two flyers side by side in half a column are two small flyers; stacked, they
+push the words that explain them off the screen. `script.js` turns any
+`.event-flyers` holding two or more images into a one-at-a-time carousel with
+arrows and dots underneath.
+
+**It reuses the reviews carousel rather than being a second one.** That code
+was a single block bound to the first `[data-carousel-track]` on the page; it
+is now `initCarousel(track, nav)` and called twice, once for the reviews and
+once per flyer group. The dot styles were renamed `.carousel-dot(s)` to match,
+since they are no longer only the reviews'.
+
+**The flyer track is a scroller on touch devices and not on anything else.**
+It began as `overflow-x: auto` with scroll snap everywhere, which gives swipe
+and snap for free, and that was wrong on a desktop: it put a scroll container
+in the middle of a page people scroll past, so a trackpad gesture that
+drifted slightly sideways was captured by the flyer and the page stopped
+moving. Reading past a picture should never be interrupted by the picture.
+
+The first fix was `overflow: hidden` everywhere, which cost swipe on a phone.
+That trade was not necessary, because **the two inputs do not behave the
+same way.** A trackpad wheel latches onto a horizontal scroller and keeps
+feeding it; a touch pan is axis-locked by the browser as it starts, so a
+vertical swipe scrolls the page and a horizontal one pages the flyers and
+neither steals the other. Touch was never the problem.
+
+So the scroller is handed only to the input it works for:
+
+```css
+@media (hover: none) and (pointer: coarse) {
+  .event-flyers.is-carousel {
+    overflow-x: auto;
+    overflow-y: hidden;          /* has to be stated — see below */
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+  }
+}
+```
+
+- **`hover: none` and `pointer: coarse` together** mean a device whose main
+  pointer is a finger. A laptop with a touchscreen reports a fine pointer and
+  keeps the hidden overflow, which is the right way round: that is the
+  machine with the trackpad that caused this.
+- **`overflow-y: hidden` is not decoration.** Leaving it `visible` next to an
+  `overflow-x` that is not visible makes the browser compute it to `auto`,
+  and a vertically scrollable strip in the middle of the page is the whole
+  thing being avoided. One axis, stated explicitly.
+- **`overscroll-behavior-x: contain`** stops a swipe past the last flyer
+  chaining outward into the browser's back gesture.
+- **Snap and the arrow animation do not fight.** `goTo` already sets
+  `scrollSnapType: none` for the length of the animation and clears it after,
+  because it writes `scrollLeft` every frame and mandatory snap stutters
+  against that.
+
+Off touch the track still takes no focus: it is not scrollable there, so a
+tab stop would do nothing, and every slide and arrow is a button, so the
+keyboard reaches all of it either way. A tap still opens a flyer full size —
+a touch that turns into a pan does not fire a click.
+
+Three things about how it is wired:
+
+- **Built in script, not authored per entry.** The slides are the
+  `.flyer-zoom` buttons the lightbox wraps each image in, so a slide still
+  opens full size when clicked, and the carousel is built after that step for
+  exactly that reason. With JavaScript off the group stays the plain grid of
+  images in the HTML. Adding a second `<img>` is the whole job.
+- **The slot is a fixed 4:3 box** (square under 640px), so paging does not
+  change the height of the entry and shove the text underneath around. Every
+  flyer is sized to the slot's **height** and keeps its own proportions: the
+  landscape poster spans the full width, the portrait map is full height and
+  narrower. Letting the slot take the height of the tallest flyer instead
+  looked like a mistake, because whichever image was wider then sat in a band
+  of empty space half the height of the box.
+- **Sized with `max-width`/`max-height`, not `height: 100%` plus
+  `object-fit: contain`.** Both fit the picture in the slot, but `object-fit`
+  letterboxes it inside an element box that stays the full size of the slot,
+  and a flyer carries a 1px ring and a drop shadow, so the frame ended up
+  drawn around the empty space instead of the artwork. Nothing is ever
+  cropped: these are pictures with words on them.
+- **The slot is a visible frame, and that is what lets the flyers be
+  centred in it.** The slot is the full width of the column while the
+  flyers in it are different shapes: the 4:3 sale poster fills its 536px,
+  the portrait parking map is about 307px. Centred on bare paper, that map
+  began 115px in from the column's edge while every lone flyer on the page
+  starts at the edge, so it looked like one picture had been nudged out of
+  line with the others and with the text.
+
+  The fix is a frame, not a different alignment. `.event-flyers.is-carousel`
+  carries the same 1px hairline the flyers themselves have, plus `.85rem` of
+  inset: the *frame* now lines up with the lone flyers and the body copy,
+  and the picture is centred inside it. What is aligned is the viewer; the
+  spare width is the viewer's, not a gap.
+
+  **The frame has no fill.** A card-paper background was tried and is one
+  thing too many — the border alone is enough to make the viewer an object,
+  and leaving the page showing through keeps a flyer on the same paper as
+  everything around it.
+
+  **Flush left was tried first and was wrong.** It did line the pictures up,
+  but it left the slot's spare width hanging off one side with nothing to
+  explain it, which is the same problem wearing a different hat. The
+  arrows and dots were moved left to follow the slides in the same pass,
+  and that was wrong twice over: they steer the whole carousel, not the
+  slide showing at the time, so they belong on the centre line of the slot
+  and should hold still while the pictures change shape. Both are back.
+
+  The inset is on each **slide**, not on the track. A scroll container clips
+  at its padding edge, so padding on the track would have let the next slide
+  show through the gap between the frame and the picture — the poster is
+  exactly as wide as a slide, so a strip of it would have sat inside the
+  frame's right-hand margin.
+- **The controls inherit the track's `order`.** Where the flyers are pulled
+  above the text with `order: -1` — inside a column, and on a phone — the
+  arrows and dots have to come too, or they drop to the bottom of the entry
+  and steer a carousel three paragraphs away.
+
+A slide is also capped by `.event-flyers.is-carousel > .flyer-zoom`, with the
+class repeated, because `.events-split .flyer-zoom` caps a flyer at 340px and
+sits further down the file. A tie on specificity would have left slides
+narrower than the track, with the next one peeking in beside — the crowding
+this is meant to remove.
+
+**Note for testing in a preview pane:** `requestAnimationFrame` does not fire
+there, and the slide animation is driven frame by frame, so the arrows look
+dead. They are not. Stub `window.requestAnimationFrame` with a `setTimeout`
+and they work.
+
+**The dots and the arrow disabling look broken in the pane for the same
+reason**, and this correction is worth keeping: they hang off the `scroll`
+event, which the browser fires as part of the rendering steps, and a pane
+that is not producing frames does not produce those either. Setting
+`scrollLeft` from the console moves the track and leaves the dots behind.
+Dispatch a `scroll` event by hand afterwards and they catch up correctly —
+`sync()` is fine, the pane simply never called it. Do not "fix" this.
+
+### Two columns: events left, news right
+
+Both halves of the page are split the same way, `.events-split` holding an
+`.events-col` each for **Events** and **News**. One interleaved list made a
+sale and an announcement compete for the same slot, and somebody scanning for
+"when is the next sale" had to read past the news to find it.
+
+Inside a column an entry **stacks**: flyer on top, text under it. The
+side-by-side arrangement needs roughly 500px of text beside a 260px flyer and
+half the wrap does not have it, so the text would have come out as a column of
+three-word lines. It is the same arrangement the entries already take on a
+phone. Under 900px the split collapses to one column, events first, which is
+just the markup order.
+
+**An expired entry crosses into the past list of its own kind.** A finished
+sale lands under Previously > Events, a week-old announcement under
+Previously > News. Four lists, two pairs, in `script.js`.
+
+**An empty current column says so; an empty past column disappears.** There is
+no point in "Previously: News" sitting over a blank space, so the whole column
+including its heading is hidden and the other one takes the width. Tested by
+emptying it by hand.
+
+The nav link reads **Events & News** to match the column order, and so does
+the page title, the `h1` and the breadcrumb. A nav that says one thing and a
+heading that says the reverse reads as a mistake.
+
 ### Entries expire on their own
 
 An entry stops being current the day **after** its last date: a sale on the
@@ -374,14 +545,20 @@ beside it have to agree.
 it to be over: it carries **`data-posted="YYYY-MM-DD"`** and comes down
 `NEWS_FOR_DAYS` (7) later. Long enough that a regular visitor sees it, short
 enough that "now a Trust Acadiana member" is not still the market's latest
-news in March. That entry is the example: posted 2026-09-28, gone on
-2026-10-05.
+news in March.
+
+A news entry **shows that posting date** in its `.event-when` line, the same
+line an event shows its event date in, so both carry a `<time>`. That is why
+`data-posted` is checked **before** the `<time>`: read the other way round,
+"posted on the 13th" would be taken as "happens on the 13th" and the item
+would come down on the 14th instead of the 20th. `data-posted` is the thing
+that says which kind of entry it is.
 
 **`data-expires="YYYY-MM-DD"` overrides both**, for anything that should
 linger or come down early.
 
-So the order an entry is read in is: explicit date, then the event's own last
-date plus a day, then posted plus a week, then never.
+So the order an entry is read in is: explicit date, then posted plus a week,
+then the event's own last date plus a day, then never.
 
 **Only `<time>` inside `.event-when` counts.** A date in the description, say
 "on sale until 1 June", would otherwise read as the entry's own date and hold
@@ -401,7 +578,7 @@ script with the clock stubbed, at a date past all of them:
 | a later `<time>` in the description | ignored; expires on its date line |
 | `data-posted`, 6 days ago | **stays put** |
 | `data-posted`, 7 days ago | expires that day |
-| `data-posted` **and** a `<time>` date | the date wins |
+| `data-posted` **and** a `<time>` | treated as news; posted wins |
 | `data-expires` in the future | **stays put**, the attribute wins |
 
 The worst case is a stale entry somebody moves by hand, which is the situation
@@ -537,6 +714,54 @@ the nav can wrap. **Adding a sixth link means re-measuring and raising that
 
 ---
 
+## Gift cards page
+
+`gift-cards.html`. Amounts, and how to get one. The banner is the cards
+themselves, `assets/banner-gift-cards/01.jpg`.
+
+**That banner is 1800x600, not the 1400x788 the others use**, and it is the
+one place the shape matters. The photo is composed wide: the cards sit right
+of centre and the left half is empty slate, which is exactly where the
+heading plate lands. Cropping it to the usual 16:9 would have thrown away the
+empty half and put the heading on top of the cards. It is also the only
+banner carrying **`.page-head-right`**, which sets `object-position: 72%` so
+that when the banner goes squarer and `cover` has to trim, it trims the empty
+slate and keeps the cards. No effect at desktop, where nothing is trimmed
+horizontally at all.
+
+**There is no buy button and must not be one.** The site has no checkout, so
+a button would either go nowhere or go to a payment page nobody has built.
+
+One line under the amounts carries that fact: *“Gift cards are sold at Pelican
+Row, in person, not through this website.”* It replaced a whole “Where to get
+one” section repeating the address, hours and phone number — all three already
+in the footer of every page, and the address again behind the Get directions
+button. Say the limitation once, in the place where somebody is looking at the
+amounts and starting to wonder how to buy.
+
+**The page states no expiry, no fees and nothing about lost cards**, because
+the market has not said. Louisiana restricts expiry dates and dormancy fees
+on gift certificates, so those are not details to invent for a client. If
+terms are ever set they belong on this page *and* printed on the card: a term
+nobody saw before paying is not much of a term.
+
+Amounts live in `<ul class="amounts">`: $25, $50, $100, $150, $200, $500,
+straight from the market's own announcement. **They are also in the meta
+description**, so a change needs both.
+
+**They are set as plain figures, and that is the point.** They were bordered,
+rounded, filled plates at first, which is the visual language of a button, on
+a page where nothing can be pressed. An element that looks interactive and is
+not buys a failed click and costs a little trust in everything else on the
+page — the classic false affordance. Nothing here is buyable, so nothing here
+looks buyable.
+
+Hairline rules between the figures were the next attempt and the wrap broke
+them: `:first-child` clears the rule on the first figure, but CSS cannot tell
+which item begins a *wrapped* row, so on a phone the second row opened with a
+rule hanging off its left edge as though a figure were missing. Space alone
+has no failure mode at any width.
+
 ## Our Partners page
 
 `partners.html`. Businesses Pelican Row works with outside the market, as
@@ -558,6 +783,59 @@ there is only ever one feed per page.
 **The plugin href is the `profile.php?id=` form on purpose.** Facebook
 redirects that page to a `/people/Total-Estate-Liquidators-LLC/…` URL, but
 feeding *that* form to the page plugin returns an empty panel. Tested both.
+
+### The feeds run on likebox.php, not page.php
+
+**October 2026: `plugins/page.php` stopped returning posts.** It serves the
+page header, the follower count and a Follow button, and nothing underneath.
+Not this page, not our markup, not the href form: **facebook.com/meta renders
+empty through it too**, and `tabs=events` is as empty as `tabs=timeline`. The
+Page Plugin docs still describe the timeline tab as supported and Meta has
+announced nothing, so this reads as an unannounced regression on their side.
+
+**It is not us, and it is not the detection.** Two controls settle it. One:
+in the same tab, logged out, seconds apart, `page.php?tabs=timeline` for
+**nasa.gov** came back 132px tall carrying the header and nothing else, while
+`likebox.php?stream=true` for the same page came back 690px carrying real
+posts. The response genuinely has no timeline in it. Two: **lafayettela.gov**
+embeds the plugin the official way — `connect.facebook.net/sdk.js` and a
+`.fb-page` div with `data-tabs="timeline"` and `data-height="450"` — and
+Facebook's own SDK sizes it to **71px**. That number comes from Facebook
+measuring its own rendered content and posting the height back, on somebody
+else's domain, through the recommended integration. The panel on their home
+page shows the logo, the name, a Follow button and "29K followers", with
+nothing below it. Same symptom as ours.
+
+Both feeds now point at **`plugins/likebox.php` with `stream=true`**, the
+plugin page.php replaced. Meta announced its removal in 2015 and never
+finished the job, and it is still serving posts today. Same href values, same
+width and height, same sizing script, same crop. It is a stopgap and should
+be treated as one — but **do not move back to `page.php` just because it starts
+working again.** That is a decision the market has taken: the newer endpoint
+broke without warning once and can do it again, so the site stays on the one
+that is currently serving posts until there is a reason to move. Switching
+is a one-line change on each of two pages whenever that reason turns up.
+
+**If likebox goes dark as well, add `is-blocked` to
+`.feed-frame` on both pages** and the panel falls back to the card behind the
+iframe rather than showing a 740px hole.
+
+There is no way to make the page choose between them automatically. Tested,
+not assumed: Facebook sends no `Access-Control-Allow-Origin` on either
+endpoint, so a `fetch` gets an opaque response with no readable body or
+status; `contentDocument` is blocked; `contentWindow.length` reads 0 for both
+the working and the broken embed; and neither posts a message to the parent
+in seven seconds of listening. A page can detect that a request was
+*refused*, which is what the existing blocker fallback uses, and nothing
+else. Only something server-side could tell the difference.
+
+**The feed iframes keep `loading="lazy"`.** They were briefly stripped of it
+while this was being diagnosed, on the strength of a local preview showing a
+lazy iframe that never loaded. That was the preview pane, not the site: a
+**local** lazy iframe does not load there either, while an eager one does.
+Lazy iframes are fine in a real browser, and the feed is well below the fold
+on both pages, so it earns its place. Do not pull it again without a control
+test that proves the failure is not the tooling.
 
 The partner cards reuse the `.vendors` / `.vendor` classes for layout only.
 There is no `data-vendor` attribute, so the vendor search ignores them.

@@ -29,7 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=179">
+<link rel="stylesheet" href="styles.css?v=204">
 
 <!-- Breadcrumbs, so a search result can show Home > Our Partners -->
 <script type="application/ld+json">
@@ -82,10 +82,10 @@
     </button>
 
     <nav class="site-nav" id="siteNav" aria-label="Main">
-      <a href="events.html">News &amp; Events</a>
+      <a href="events.html">Events &amp; News</a>
       <a href="vendors.html">Our Vendors</a>
+      <a href="gift-cards.html">Gift Cards</a>
       <a href="become-a-vendor.html">Become a Vendor</a>
-      <a href="about.html">About Us</a>
       <a href="partners.html" aria-current="page">Our Partners</a>
 
     </nav>
@@ -165,11 +165,15 @@
             </div>
             <!-- script.js sizes the iframe and scales this wrapper. The href
                  is the profile.php form on purpose: the /people/ form of the
-                 same page returns an empty plugin. -->
+                 same page returns an empty plugin.
+
+                 likebox.php, not page.php: see the long note on the home
+                 page. page.php stopped returning posts for every page in
+                 October 2026, including Meta's own. -->
             <div class="feed-scale">
               <iframe
             title="Recent Facebook posts from Total Estate Liquidators, LLC"
-            src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D61550647719207&amp;tabs=timeline&amp;width=500&amp;height=690&amp;small_header=true&amp;hide_cover=true&amp;show_facepile=false"
+            src="https://www.facebook.com/plugins/likebox.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D61550647719207&amp;width=500&amp;height=690&amp;stream=true&amp;show_faces=false&amp;header=false"
             loading="lazy"
             scrolling="no"
             allowfullscreen
@@ -302,7 +306,8 @@
       <a href="mailto:james@pelicanrowmarket.com">james@pelicanrowmarket.com</a> &middot;
       <a href="https://www.facebook.com/p/Pelican-Row-Estate-Market-100091994943430/" target="_blank" rel="noopener">Facebook</a>
     </p>
-    <nav class="footer-links" aria-label="Legal">
+    <nav class="footer-links" aria-label="More">
+      <a href="about.html">About Us</a>
       <a href="return-policy.html">Return Policy</a>
       <a href="terms.html">Terms &amp; Conditions</a>
     </nav>
@@ -313,6 +318,6 @@
   </div>
 </footer>
 
-<script src="script.js?v=179"></script>
+<script src="script.js?v=204"></script>
 </body>
 </html>

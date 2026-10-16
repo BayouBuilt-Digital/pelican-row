@@ -470,7 +470,7 @@ main > :last-child {
 }
 .review-slide img { width: 100%; height: auto; }
 
-.reviews-controls {
+.carousel-controls {
   display: flex;
   align-items: center;
   gap: .75rem;
@@ -500,13 +500,201 @@ main > :last-child {
 }
 .carousel-btn:disabled { opacity: .35; cursor: default; }
 
-.reviews-dots { display: flex; margin-inline: auto; }
+.carousel-dots { display: flex; margin-inline: auto; }
+
+/* The flyer carousel. The group of images in the markup becomes the track:
+   a horizontal scroller one slide wide, so swipe and arrow keys work on
+   their own and the arrows and dots below just drive the same scroll.
+
+   Two flyers side by side in half a column are two small flyers; stacked,
+   they push the words that explain them off the screen. One at a time keeps
+   each at full size.
+
+   The slot is as tall as the tallest flyer and the shorter one sits centred
+   in it, so paging does not change the height of the entry and bump the text
+   under it around. */
+.event-flyers.is-carousel {
+  display: flex;
+  gap: 0;
+  max-width: none;
+  /* A fixed slot, so the height does not change as you page and the text
+     under it never moves. 4:3 is the shape of the flyers the market
+     publishes, so the common case fills the box exactly. */
+  aspect-ratio: 4 / 3;
+  /* NOT a user-scrollable strip on a pointer device. It was `overflow-x:
+     auto` with scroll snap, which gave swipe and arrow keys for free, but
+     it also made the slot a scroll container sitting in the middle of the
+     page: a trackpad gesture that drifted even slightly sideways got
+     captured by it, and the page stopped moving under the cursor. Reading
+     past a flyer should never be interrupted by the flyer.
+
+     Hidden on both axes on purpose. `overflow-x: auto` alone computes
+     overflow-y to auto as well, which is a second way for the same thing to
+     happen. scrollLeft still works from script, which is all the arrows and
+     the dots need.
+
+     Touch devices get the scroller back further down — see the coarse
+     pointer block. */
+  overflow: hidden;
+  align-items: center;
+
+  /* A visible slot, which is the whole reason a centred flyer reads as
+     centred. The slot is the full width of the column and the flyers in it
+     are different shapes, so a portrait one sits with 100px of nothing
+     either side. With no edge to that nothing, the picture looked
+     indented against the lone flyers above and below it, which start at
+     the column's edge. With an edge, the same picture is centred in a
+     frame and the spare width belongs to the frame.
+
+     A hairline and nothing else — no fill. The border is doing the whole
+     job on its own: it draws the viewer as an object, and once the object
+     is there the picture inside it is plainly centred rather than badly
+     left-aligned. A card-paper fill was tried and is one thing too many;
+     the frame does not need to be a surface, and leaving the page showing
+     through keeps a flyer sitting on the same paper as everything else.
+
+     The same hairline the flyers themselves carry, so the viewer and the
+     picture in it belong to one family. */
+  box-shadow: 0 0 0 1px var(--line);
+  border-radius: var(--radius);
+}
+/* Both selectors, and the second one on purpose: inside a column
+   `.events-split .flyer-zoom` caps a flyer at 340px, and it is further down
+   the file, so a slide needs the extra class to outrank it rather than tie
+   with it. A slide that is narrower than its track shows the next one
+   peeking in beside it, which is exactly the crowding this replaced. */
+/* Centred in the slide, and the frame on the track is what makes that read.
+   The flyers in a carousel are not all the same shape — the sale poster is
+   4:3 and fills the slot, the parking map is portrait and about 330px wide
+   — so a centred portrait has empty space either side of it. Against bare
+   paper that looked like a picture nudged off the left margin every other
+   image and every line of text on the page starts from. Inside a frame it
+   reads as a picture centred in a viewer, which is what it is.
+
+   Flush left was tried instead and is wrong: it lines the pictures up but
+   leaves the slot's spare width hanging off one side, and what was missing
+   was the frame, not the alignment.
+
+   The padding is on the SLIDE, not on the track. A scroll container clips
+   at its padding edge, so padding on the track would let the next slide
+   show through the gap between the frame and the picture — the poster is
+   exactly as wide as a slide, so a strip of it would sit inside the frame's
+   right-hand margin. On the slide the inset comes out of the slide's own
+   width and the clip still happens exactly at the frame. */
+.event-flyers.is-carousel > *,
+.event-flyers.is-carousel > .flyer-zoom {
+  flex: 0 0 100%;
+  max-width: 100%;
+  height: 100%;
+  padding: .85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Swipe, on touch devices only ─────────────────────────
+   The slot goes back to being a real scroller where the primary input is a
+   finger, which is the one place the original scroller was never the
+   problem. What broke was the trackpad: a wheel gesture with any sideways
+   drift in it latches onto a horizontal scroller and the page stops moving
+   under the cursor. Touch does not behave that way — the browser locks a
+   pan to one axis as it starts, so a vertical swipe scrolls the page and a
+   horizontal one pages the flyers, and neither steals the other.
+
+   So the fix is not to make one element behave for both inputs, it is to
+   give the scroller only to the input it works for. `hover: none` and
+   `pointer: coarse` together mean a device whose main pointer is a finger:
+   phones and tablets. A laptop with a touchscreen reports a fine pointer
+   and keeps the hidden overflow, which is the right way round — that is
+   the machine with the trackpad that caused this.
+
+   `overflow-y: hidden` is what keeps it to one axis. It has to be stated:
+   leaving it at `visible` beside an `overflow-x` that is not visible makes
+   the browser compute it to auto, and a vertically scrollable strip in the
+   middle of the page is the whole thing we are avoiding.
+
+   overscroll-behavior-x stops a swipe past the last flyer from chaining
+   outward and triggering the browser's back gesture. Snapping does the
+   paging; script.js already turns it off while an arrow animation is
+   running and back on after, so the two cannot fight.
+
+   Everything else still works on a phone: the arrows are 44px, the dots
+   are buttons, and a tap still opens the flyer full size — a touch that
+   turns into a pan does not fire a click. */
+@media (hover: none) and (pointer: coarse) {
+  .event-flyers.is-carousel {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+  .event-flyers.is-carousel::-webkit-scrollbar { display: none; }
+  .event-flyers.is-carousel > *,
+  .event-flyers.is-carousel > .flyer-zoom { scroll-snap-align: start; }
+}
+
+/* Every flyer is sized to the HEIGHT of the slot, not its width, and keeps
+   its own proportions. A poster and a portrait map do not share an aspect
+   ratio, so fitting both to the width left whichever was wider sitting in a
+   band of empty space half the height of the slot. Fitting to the height
+   fills it: the landscape flyer spans the full width, the portrait map is
+   full height and narrower, and neither is cropped — these are pictures with
+   words on them, so `cover` is not an option.
+
+   The same rule has to beat `.events-split .event-flyer`, which caps a flyer
+   at 340px for the stacked layout and is further down the file. That cap was
+   what kept these pictures at 340px inside a 536px slide.
+
+   Sized with max-width and max-height rather than height: 100% and
+   object-fit: contain. Both fit the picture inside the slot, but object-fit
+   letterboxes it INSIDE an element box that stays the full size of the slot,
+   and a flyer carries a 1px ring and a drop shadow — which would then have
+   been drawn around the empty space rather than around the picture. Letting
+   the element take its own proportions keeps the frame on the artwork. */
+.event-flyers.is-carousel .event-flyer {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* Controls under the flyers rather than over them: a flyer is a poster and
+   an arrow sitting on top of one covers the part somebody is reading.
+
+   Wherever the flyers are pulled above the text with order: -1, the
+   controls have to come with them, or they drop to the bottom of the entry
+   and end up steering a carousel three paragraphs away. They sit after the
+   track in the markup, so matching its order is enough to keep them
+   together. */
+/* The flyer controls sit together as one group rather than pushed to the
+   ends of the row. `.carousel-dots` has `margin-inline: auto`, which is what
+   throws the arrows to the edges on the reviews carousel: there the track is
+   a single wide card and the arrows mark its corners. A flyer slot is
+   narrower and changes width with the column, so arrows pinned to its edges
+   drifted away from the dots they belong with. Scoped to .flyers-controls,
+   so the reviews carousel keeps its own arrangement.
+
+   The group is centred on the SLOT, and stays centred even though the
+   slides themselves are flush left. It was briefly moved to the left edge
+   to follow them; that was wrong. The controls belong to the whole
+   carousel, not to whichever picture is showing, so they stay put on the
+   centre line of the box while the pictures inside it change shape. */
+.flyers-controls {
+  margin-top: .9rem;
+  justify-content: center;
+  gap: 1rem;
+}
+.flyers-controls .carousel-dots { margin-inline: 0; }
+
+.events-split .flyers-controls { order: -1; }
+
 
 /* The button IS the touch target (20x24), and the visible 8px dot is drawn
    by the pseudo-element inside it. An earlier version kept 8px buttons and
    overflowed a bigger ::before out of each one, but neighbouring dots then
    overlapped and stole each other's clicks. */
-.reviews-dot {
+.carousel-dot {
   width: 20px; height: 24px;
   padding: 0;
   border: 0;
@@ -515,15 +703,15 @@ main > :last-child {
   place-items: center;
   cursor: pointer;
 }
-.reviews-dot::before {
+.carousel-dot::before {
   content: "";
   width: 8px; height: 8px;
   border-radius: 50%;
   background: var(--line);
   transition: background-color .18s, transform .18s;
 }
-.reviews-dot:hover::before { background: var(--ink-faint); }
-.reviews-dot[aria-current="true"]::before { background: var(--brick); transform: scale(1.25); }
+.carousel-dot:hover::before { background: var(--ink-faint); }
+.carousel-dot[aria-current="true"]::before { background: var(--brick); transform: scale(1.25); }
 
 /* ── Cards ───────────────────────────────────────────────── */
 
@@ -797,6 +985,49 @@ main > :last-child {
 .hours dt { color: var(--ink-soft); }
 .hours dd { margin: 0; font-variant-numeric: tabular-nums; }
 
+/* The gift card denominations. A run of figures separated by hairlines, not
+   a bulleted list and NOT a row of bordered plates.
+
+   The plates were the first attempt and they were wrong: a bordered,
+   rounded, filled box at button size is a signifier for "press me", and
+   there is nothing here to press. An element that looks interactive and is
+   not earns a failed click, and a visitor who has made one trusts the rest
+   of the page a little less. Nothing on this page is buyable, so nothing on
+   it should look buyable.
+
+   Set in the serif at reading size, because these are prices rather than
+   labels, with tabular figures so the digits line up.
+
+   Separated by a bullet, the way the market writes the list. It hangs off
+   the END of each figure rather than sitting before the next one: a border
+   or a leading mark on the following item gets stranded at the start of a
+   wrapped row, reading as though a figure were missing from the line above.
+   A trailing one at the end of a wrapped row reads as "continues", which is
+   what it means.
+
+   `content: "\2022" / ""` gives the bullet an empty alternative text, so a
+   screen reader says six amounts rather than six amounts with "bullet"
+   between each. Browsers without that syntax read the character, which is
+   no worse than the markup it replaced. */
+.amounts {
+  list-style: none;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: .85rem;
+  row-gap: .3rem;
+  font-size: 1.2rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.amounts li { margin: 0; }
+.amounts li:not(:last-child)::after {
+  content: "\2022" / "";
+  margin-left: .85rem;
+  color: var(--ink-faint);
+}
+
 .link-arrow {
   display: inline-block;
   margin-top: .55rem;
@@ -1060,6 +1291,15 @@ main > :last-child {
   transition: opacity 1.4s ease;
 }
 .slide.is-active { opacity: 1; }
+
+/* Hold the right of the frame when the banner has to crop. object-fit:cover
+   trims from both sides evenly, which is right for a photo of a room and
+   wrong for one with its subject off to one side: the gift cards sit right
+   of centre in that picture and the left is empty slate, so an even crop
+   loses cards and keeps nothing. No effect at desktop, where that banner is
+   wider than it is cropped; it earns its place at the widths where the
+   banner goes squarer and would otherwise cut the cards in half. */
+.page-head-right .slide { object-position: 72% center; }
 
 /* A light wash only, enough to tie ten different photos into one band and
    to stop the brightest of them glaring. The text does not depend on it:
@@ -1468,6 +1708,59 @@ main > :last-child {
   color: var(--ink-soft);
 }
 
+/* Events on the left, news on the right, in both halves of the page. One
+   long interleaved list meant a sale and an announcement competed for the
+   same slot and a visitor scanning for "when is the next sale" had to read
+   past the news to find it. Two columns keep each kind findable without
+   either disappearing.
+
+   align-items: start so a short column does not stretch to match a tall
+   one, and minmax(0, 1fr) rather than 1fr because a grid track's default
+   min-width is auto: a wide flyer inside would otherwise push the column
+   past its share and overflow the page. */
+.events-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 2.5rem 3rem;
+  align-items: start;
+}
+
+.events-col-title {
+  margin: 0 0 1.1rem;
+  font-family: var(--sans);
+  font-size: .73rem;
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  padding-bottom: .7rem;
+  border-bottom: 1px solid var(--line);
+}
+
+/* Inside a column an entry stacks: the flyer on top, the text under it.
+   The side-by-side layout wants about 500px for the text beside a 260px
+   flyer, and half the wrap does not have it — the text would have been
+   squeezed into a column of three-word lines. This is the same arrangement
+   the entries already take on a phone, for the same reason. */
+.events-split .event-media { grid-template-columns: minmax(0, 1fr); }
+.events-split .event-body { max-width: none; }
+.events-split .event-flyer,
+.events-split .event-flyer-slot,
+.events-split .event-flyers,
+.events-split .flyer-zoom { order: -1; }
+.events-split .event-flyer,
+.events-split .event-flyer-slot,
+.events-split .flyer-zoom { max-width: 340px; }
+/* A pair fills the column instead of being capped: two flyers inside 340px
+   would be thumbnails. */
+.events-split .event-flyers { max-width: none; }
+
+@media (max-width: 900px) {
+  /* One column under the breakpoint, events first. The order is the order
+     in the markup, so nothing is needed to keep it. */
+  .events-split { grid-template-columns: minmax(0, 1fr); gap: 2.75rem; }
+}
+
 /* Section heading for either events list. Tighter under-margin than a
    default h2 because an eyebrow sits above it. */
 .events-title { margin-bottom: .6rem; }
@@ -1496,6 +1789,11 @@ main > :last-child {
   .event-flyer-slot,
   .event-flyers,
   .flyer-zoom { order: -1; max-width: 340px; }
+  /* The carousel's arrows and dots follow its track up the entry. */
+  .flyers-controls { order: -1; }
+  /* Squarer on a phone: at 340px across, a 4:3 slot leaves a portrait flyer
+     about 250px tall, which is too small to read anything on. */
+  .event-flyers.is-carousel { aspect-ratio: 1 / 1; }
 
   /* The lone-flyer cap is for a pair sitting side by side. Down here the
      pair is stacked, so halving the column would show a single flyer at
@@ -1829,14 +2127,16 @@ main > :last-child {
    ink to match the ghost buttons and Instagram quietly went with it. A chip
    that states its colour only at rest will follow whatever the default
    becomes. */
-/* Etsy shares Instagram's brick rather than taking a third colour: with
-   Facebook in navy, the split a visitor needs is "their page" against
+/* Etsy and eBay share Instagram's brick rather than taking a colour each:
+   with Facebook in navy, the split a visitor needs is "their page" against
    "somewhere to buy or browse", not one hue per platform. Grouped in one
-   selector so the two can never drift apart. */
+   selector so they can never drift apart. */
 .vendor-links a[href*="instagram.com"],
-.vendor-links a[href*="etsy.com"] { color: var(--brick); }
+.vendor-links a[href*="etsy.com"],
+.vendor-links a[href*="ebay.com"] { color: var(--brick); }
 .vendor-links a[href*="instagram.com"]:hover,
-.vendor-links a[href*="etsy.com"]:hover {
+.vendor-links a[href*="etsy.com"]:hover,
+.vendor-links a[href*="ebay.com"]:hover {
   color: var(--brick);
   border-color: var(--brick);
   background: var(--brick-wash);
@@ -1979,12 +2279,20 @@ main > :last-child {
    rules, and on its own breakpoint on purpose: otherwise the nav wraps onto
    a second row while the button is still hidden.
 
-   Measured, not guessed. Wordmark 167px + five links 667px = 834px, which
-   with the wrap's 40px of gutters runs out at about 874px. 920 leaves a
-   little room for a longer label. It was briefly 1020, when Return Policy
-   and Our Partners were both in the menu and six links needed 978px; moving
-   Return Policy to the footer took it back under. Re-measure if a link is
-   ever added. */
+   Measured, not guessed, and re-measured whenever the menu changes.
+   Wordmark 167px + 24px gap + five links 679px = 870px of content, which
+   with the wrap's gutters runs out at about 920px. At 921 the row still
+   fits with nothing to spare, so there is no headroom left: adding a link,
+   or lengthening one, means measuring again rather than assuming.
+
+   History, because both moves were for this reason. It was 1020 when
+   Return Policy and Our Partners were both in the menu and six links needed
+   978px; moving Return Policy to the footer took it back under. Gift Cards
+   later pushed it back to six, and with About Us also still there the
+   header was being squeezed between 920 and roughly 1020 — the links
+   compressed and the bar grew from 72px to 80px rather than wrapping, which
+   is why it was easy to miss. Moving About Us to the footer took it back to
+   five and the bar back to 72px. */
 @media (max-width: 920px) {
   .nav-toggle { display: inline-flex; }
 
@@ -2118,7 +2426,7 @@ main > :last-child {
   .feed-head-follow { padding: .6rem .85rem; }
 
   .carousel-btn { width: 44px; height: 44px; }
-  .reviews-dot { width: 26px; }
+  .carousel-dot { width: 26px; }
 
   .add-row {
     display: inline-flex;

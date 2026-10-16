@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>News &amp; Events | Pelican Row Estate &amp; Market</title>
+<title>Events &amp; News | Pelican Row Estate &amp; Market</title>
 <meta name="description" content="Warehouse sales, seasonal markets and news from Pelican Row Estate &amp; Market in Lafayette, Louisiana. See what we have put on, and what is coming up next.">
 <link rel="canonical" href="https://www.pelicanrowmarket.com/events.html">
 <link rel="icon" href="assets/favicon.ico" sizes="any">
@@ -14,7 +14,7 @@
 <meta property="og:site_name" content="Pelican Row Estate &amp; Market">
 <meta property="og:locale" content="en_US">
 <meta property="og:type" content="website">
-<meta property="og:title" content="News &amp; Events at Pelican Row">
+<meta property="og:title" content="Events &amp; News at Pelican Row">
 <meta property="og:description" content="Sales, seasonal markets and news from the market on Johnston Street.">
 <meta property="og:image" content="https://www.pelicanrowmarket.com/assets/og-image.jpg">
 <meta property="og:image:width" content="1200">
@@ -22,23 +22,23 @@
 <meta property="og:image:alt" content="The Pelican Row Estate &amp; Market storefront on Johnston Street in Lafayette">
 <meta property="og:url" content="https://www.pelicanrowmarket.com/events.html">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="News &amp; Events at Pelican Row">
+<meta name="twitter:title" content="Events &amp; News at Pelican Row">
 <meta name="twitter:description" content="Sales, seasonal markets and news from the market on Johnston Street.">
 <meta name="twitter:image" content="https://www.pelicanrowmarket.com/assets/og-image.jpg">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=179">
+<link rel="stylesheet" href="styles.css?v=204">
 
-<!-- Breadcrumbs, so a search result can show Home > News & Events -->
+<!-- Breadcrumbs, so a search result can show Home > Events & News -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   "itemListElement": [
     { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.pelicanrowmarket.com/" },
-    { "@type": "ListItem", "position": 2, "name": "News & Events", "item": "https://www.pelicanrowmarket.com/events.html" }
+    { "@type": "ListItem", "position": 2, "name": "Events & News", "item": "https://www.pelicanrowmarket.com/events.html" }
   ]
 }
 </script>
@@ -83,10 +83,10 @@
     </button>
 
     <nav class="site-nav" id="siteNav" aria-label="Main">
-      <a href="events.html" aria-current="page">News &amp; Events</a>
+      <a href="events.html" aria-current="page">Events &amp; News</a>
       <a href="vendors.html">Our Vendors</a>
+      <a href="gift-cards.html">Gift Cards</a>
       <a href="become-a-vendor.html">Become a Vendor</a>
-      <a href="about.html">About Us</a>
       <a href="partners.html">Our Partners</a>
 
     </nav>
@@ -114,7 +114,7 @@
     <div class="wrap page-head-inner">
       <div class="page-head-plate">
         <p class="eyebrow">What&rsquo;s happening</p>
-        <h1>News &amp; Events</h1>
+        <h1>Events &amp; News</h1>
         <p class="page-lede">
           Sales, seasonal markets, new vendors and anything else worth a trip
           out to Johnston Street.
@@ -126,14 +126,17 @@
   <section class="section" id="upcoming">
     <div class="wrap">
 
-      <!-- WHEN AN EVENT IS OVER: move it into the past list rather than
-           deleting it. That list is what shows a first-time visitor this
-           place actually runs events. -->
+      <!-- WHEN AN EVENT IS OVER it moves itself: see the expiry note in
+           script.js. Entries are authored in the column they belong to, and
+           an expired one crosses to the matching column under Previously,
+           never to the other kind. -->
       <p class="eyebrow">Latest</p>
-      <h2 class="events-title">Current &amp; future events</h2>
+      <h2 class="events-title">Current &amp; future</h2>
 
-      <ul class="events events-roomy" data-events-upcoming>
-
+      <div class="events-split">
+        <div class="events-col">
+          <h3 class="events-col-title">Events</h3>
+          <ul class="events events-roomy" data-events-upcoming>
         <!-- Nearest first. A new entry goes above the ones further out, not
              at the top by default: the next thing a visitor can turn up to
              should be the first thing they read. -->
@@ -205,18 +208,51 @@
                  width="736" height="900" loading="lazy">
           </div>
         </li>
+          </ul>
+          <p class="events-empty" data-events-empty hidden>
+            Nothing on the calendar right now. Sales are announced on
+            <a href="https://www.facebook.com/p/Pelican-Row-Estate-Market-100091994943430/"
+               target="_blank" rel="noopener">Facebook</a>
+            first, so follow us there.
+          </p>
+        </div>
 
-      </ul>
-
-      <!-- Shown by script.js only if every entry has expired into the past
-           list. With JavaScript off nothing moves, so nothing empties and
-           this stays hidden. -->
-      <p class="events-empty" data-events-empty hidden>
-        Nothing on the calendar right now. Sales are announced on
-        <a href="https://www.facebook.com/p/Pelican-Row-Estate-Market-100091994943430/"
-           target="_blank" rel="noopener">Facebook</a>
-        first, so follow us there.
-      </p>
+        <div class="events-col">
+          <h3 class="events-col-title">News</h3>
+          <ul class="events" data-news-upcoming>
+        <!-- News. The date shown is the day it was posted, and data-posted
+             says the same thing in machine-readable form: script.js reads
+             that one and moves the entry to the past column a week later.
+             The <time> here is the posting date, NOT an event date, which
+             is why data-posted is checked first when the expiry is worked
+             out. -->
+        <li class="event event-media" data-posted="2026-10-13">
+          <div class="event-body">
+            <p class="event-when">
+              <time datetime="2026-10-13">Tuesday 13 October 2026</time>
+            </p>
+            <h3>Gift cards are here</h3>
+            <p>
+              Not sure what to get someone? Let them choose their own
+              treasure. Cards come in $25, $50, $100, $150, $200 and $500,
+              and they are good with every vendor under our roof.
+            </p>
+            <p>
+              <a href="gift-cards.html">More about gift cards</a>, or stop by
+              and pick one up.
+            </p>
+          </div>
+          <img class="event-flyer" src="assets/events/gift-cards.jpg"
+               alt="A fan of Pelican Row Estate and Market gift cards in $25, $50, $100, $150, $200 and $500, each printed with a pelican, magnolias and marsh grass."
+               width="900" height="543" loading="lazy">
+        </li>
+          </ul>
+          <p class="events-empty" data-news-empty hidden>
+            No news at the moment. Come and see what has just reached the
+            floor.
+          </p>
+        </div>
+      </div>
 
     </div>
   </section>
@@ -224,8 +260,8 @@
   <section class="section section-tint" id="past">
     <div class="wrap">
 
-      <p class="eyebrow">Previously</p>
-      <h2 class="events-title">Past events</h2>
+      <p class="eyebrow">Past</p>
+      <h2 class="events-title">Previously</h2>
       <p class="section-lede">
         A sense of what we put on, so you know what to watch for.
       </p>
@@ -234,9 +270,15 @@
         Flyers are the market's own, resized by tools/make-event-flyers.py
         and served from assets/events/. Each <time> is a real ISO date and
         says the same thing as the text beside it.
-      -->
-      <ul class="events" data-events-past>
 
+        A column with nothing in it is hidden outright by script.js, heading
+        and all: an empty "News" heading under Previously says less than
+        nothing.
+      -->
+      <div class="events-split">
+        <div class="events-col" data-events-past-col>
+          <h3 class="events-col-title">Events</h3>
+          <ul class="events" data-events-past>
         <li class="event event-media">
           <div class="event-body">
             <p class="event-when">
@@ -275,24 +317,6 @@
           </div>
         </li>
 
-        <li class="event event-media" data-posted="2026-09-28">
-          <div class="event-body">
-            <p class="event-when">News</p>
-            <h3>We&rsquo;re now a Trust Acadiana member</h3>
-            <p>
-              Pelican Row has joined
-              <a href="https://members.trustacadiana.com/members/Advertising%20%26%20Marketing/Embroidery/Pelican%20Row%20Estate%20%26%20Market/directory_listing_1187"
-                 target="_blank" rel="noopener">Trust Acadiana</a>,
-              the member-owned trade exchange that connects local businesses
-              across Acadiana. If you&rsquo;re a member, you can spend your
-              trade dollars with us at the register.
-            </p>
-          </div>
-          <img class="event-flyer" src="assets/events/trust-acadiana.jpg"
-               alt="Flyer: We're now a Trust Acadiana member. Pelican Row Estate and Market accepts Trust Acadiana. Furniture, antiques, vintage, decor and more. 6413 Johnston St #500, Lafayette, LA. Wednesday to Sunday, 10am to 6pm."
-               width="900" height="891" loading="lazy">
-        </li>
-
         <li class="event event-media">
           <div class="event-body">
             <p class="event-when">
@@ -327,8 +351,34 @@
                alt="Flyer: Warehouse Sale Sneak Peek, Friday 25th and Saturday 26th September, 6pm to 8pm, with home goods and decor, kitchenware, tools, furniture and vintage finds"
                width="750" height="900" loading="lazy">
         </li>
+          </ul>
+        </div>
 
-      </ul>
+        <div class="events-col" data-news-past-col>
+          <h3 class="events-col-title">News</h3>
+          <ul class="events" data-news-past>
+        <li class="event event-media" data-posted="2026-09-25">
+          <div class="event-body">
+            <p class="event-when">
+              <time datetime="2026-09-25">Friday 25 September 2026</time>
+            </p>
+            <h3>We&rsquo;re now a Trust Acadiana member</h3>
+            <p>
+              Pelican Row has joined
+              <a href="https://members.trustacadiana.com/members/Advertising%20%26%20Marketing/Embroidery/Pelican%20Row%20Estate%20%26%20Market/directory_listing_1187"
+                 target="_blank" rel="noopener">Trust Acadiana</a>,
+              the member-owned trade exchange that connects local businesses
+              across Acadiana. If you&rsquo;re a member, you can spend your
+              trade dollars with us at the register.
+            </p>
+          </div>
+          <img class="event-flyer" src="assets/events/trust-acadiana.jpg"
+               alt="Flyer: We're now a Trust Acadiana member. Pelican Row Estate and Market accepts Trust Acadiana. Furniture, antiques, vintage, decor and more. 6413 Johnston St #500, Lafayette, LA. Wednesday to Sunday, 10am to 6pm."
+               width="900" height="891" loading="lazy">
+        </li>
+          </ul>
+        </div>
+      </div>
 
       <div class="prose vendor-cta">
         <h3>Planning a visit?</h3>
@@ -355,7 +405,8 @@
       <a href="mailto:james@pelicanrowmarket.com">james@pelicanrowmarket.com</a> &middot;
       <a href="https://www.facebook.com/p/Pelican-Row-Estate-Market-100091994943430/" target="_blank" rel="noopener">Facebook</a>
     </p>
-    <nav class="footer-links" aria-label="Legal">
+    <nav class="footer-links" aria-label="More">
+      <a href="about.html">About Us</a>
       <a href="return-policy.html">Return Policy</a>
       <a href="terms.html">Terms &amp; Conditions</a>
     </nav>
@@ -366,6 +417,6 @@
   </div>
 </footer>
 
-<script src="script.js?v=179"></script>
+<script src="script.js?v=204"></script>
 </body>
 </html>

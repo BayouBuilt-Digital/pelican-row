@@ -215,20 +215,27 @@
     }
   }
 
-  /* ── Reviews carousel ─────────────────────
-     One review on screen at a time. The track is an ordinary horizontal
-     scroller, so touch swipe, trackpad and arrow keys already work with
-     no help from us. This adds the arrows and the dots, and keeps all
-     three in step with wherever the track has actually been scrolled to,
-     however it got there. */
+  /* ── Carousels ───────────────────────────────────────────
+     One slide on screen at a time. Where the track is a real scroller —
+     the reviews always, the flyers on touch devices — swipe and snap come
+     from the browser for free. This adds the arrows and the dots, and
+     keeps all three in step with wherever the track has actually been
+     scrolled to, however it got there.
 
-  var track = document.querySelector("[data-carousel-track]");
-  var carouselNav = document.querySelector("[data-carousel-nav]");
+     That "however it got there" is why everything here reads scrollLeft
+     rather than tracking an index of its own: a finger can move the track
+     without this code hearing about it until the scroll event lands.
 
-  if (track && carouselNav) {
-    var prevBtn = carouselNav.querySelector("[data-carousel-prev]");
-    var nextBtn = carouselNav.querySelector("[data-carousel-next]");
-    var dots = carouselNav.querySelectorAll("[data-carousel-dots] button");
+     Written as a function because there is now more than one: the Google
+     reviews on the home page, and any events listing carrying more than
+     one flyer. The second kind is built further down, after the lightbox
+     has wrapped each flyer in its zoom button, so the slides are those
+     buttons and clicking one still opens it full size. */
+
+  function initCarousel(track, nav) {
+    var prevBtn = nav.querySelector("[data-carousel-prev]");
+    var nextBtn = nav.querySelector("[data-carousel-next]");
+    var dots = nav.querySelectorAll("[data-carousel-dots] button");
     var slides = track.children;
     var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -360,6 +367,10 @@
     for (var s = 0; s < shots.length; s++) shots[s].addEventListener("load", sync);
     sync();
   }
+
+  var reviewsTrack = document.querySelector("[data-carousel-track]");
+  var reviewsNav = document.querySelector("[data-carousel-nav]");
+  if (reviewsTrack && reviewsNav) initCarousel(reviewsTrack, reviewsNav);
 
   /* ── Banner slideshow ────────────────────────────────────
      Crossfades photos of the shop behind a page heading.
@@ -578,6 +589,58 @@
       if (e.target === box) box.close();
     });
   }
+
+  /* ── A listing with more than one flyer gets a carousel ──
+     Two flyers side by side in half a column are two small flyers, and
+     stacked they push the text that explains them off the screen. One at
+     a time keeps each at full size in a slot that does not change height
+     as you page through it.
+
+     Built here rather than written into the markup: the slides are the
+     .flyer-zoom buttons the lightbox put in above, so a slide is still
+     clickable to open full size, and with JavaScript off the group stays
+     the plain grid of images it is in the HTML. Nothing to author per
+     entry beyond the second <img>. */
+
+  var groups = document.querySelectorAll(".event-flyers");
+
+  Array.prototype.forEach.call(groups, function (group) {
+    var slides = group.children;
+    if (slides.length < 2) return;
+
+    group.classList.add("is-carousel");
+    group.setAttribute("data-carousel-track", "");
+    /* Announced as a region, but NOT focusable. The reviews track takes
+       focus because it is user-scrollable and arrow keys need somewhere to
+       land; this one is not, so a focus stop here would be a tab stop that
+       does nothing. Each slide is a button, so the keyboard still reaches
+       every flyer, and the arrows below are buttons too. */
+    group.setAttribute("role", "region");
+    group.setAttribute("aria-label", "Flyers for this listing");
+
+    var nav = document.createElement("div");
+    nav.className = "carousel-controls flyers-controls";
+    nav.setAttribute("data-carousel-nav", "");
+
+    var dots = "";
+    for (var i = 0; i < slides.length; i++) {
+      dots += '<button type="button" class="carousel-dot" aria-label="Flyer ' +
+              (i + 1) + ' of ' + slides.length + '"' +
+              (i === 0 ? ' aria-current="true"' : "") + "></button>";
+    }
+
+    nav.innerHTML =
+      '<button type="button" class="carousel-btn" data-carousel-prev aria-label="Previous flyer">' +
+      '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 4l-8 8 8 8"/></svg>' +
+      "</button>" +
+      '<div class="carousel-dots" data-carousel-dots>' + dots + "</div>" +
+      '<button type="button" class="carousel-btn" data-carousel-next aria-label="Next flyer">' +
+      '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4l8 8-8 8"/></svg>' +
+      "</button>";
+
+    group.parentNode.insertBefore(nav, group.nextSibling);
+    initCarousel(group, nav);
+  });
 
   /* ── Vendor search ───────────────────────────────────────
      Filters the vendor list that is already in the page. No index and
@@ -842,7 +905,19 @@
     var stated = entry.getAttribute("data-expires");
     if (stated) return dayUTC(stated);
 
-    /* 2. An event expires the day after its last date. Only the date line
+    /* 2. data-posted marks the entry as news, and news runs for a week from
+          the day it went up.
+
+          This is checked BEFORE the <time> below, and the order matters: a
+          news entry shows its posting date in the same .event-when line an
+          event shows its event date in, so both now have a <time>. Read the
+          other way round, "posted on the 13th" would be treated as "happens
+          on the 13th" and the item would come down on the 14th instead of
+          the 20th. data-posted is the thing that says which kind it is. */
+    var posted = entry.getAttribute("data-posted");
+    if (posted) return dayUTC(posted) + NEWS_FOR_DAYS * 86400000;
+
+    /* 3. An event expires the day after its last date. Only the date line
           counts, not every <time> in the entry: a date mentioned in the
           description ("on sale until...") would otherwise read as the
           entry's own and could hold it on the page for months. */
@@ -856,23 +931,39 @@
     }
     if (last !== null) return last + 86400000;
 
-    /* 3. No date, so it is news: a week from when it was posted. */
-    var posted = entry.getAttribute("data-posted");
-    if (posted) return dayUTC(posted) + NEWS_FOR_DAYS * 86400000;
-
     /* 4. Nothing to go on. It never expires, which is the safe way round:
           it stays put until somebody decides otherwise. */
     return NaN;
   }
 
-  var upcomingList = document.querySelector("[data-events-upcoming]");
-  var pastList = document.querySelector("[data-events-past]");
+  /* Two columns, two pairs of lists. An expired entry crosses into the
+     past list of its OWN kind: a finished sale belongs under Previously >
+     Events, a week-old announcement under Previously > News. Moving one
+     into the other column would be the quickest way to make both columns
+     untrustworthy. */
+  var columns = [
+    {
+      from:  document.querySelector("[data-events-upcoming]"),
+      to:    document.querySelector("[data-events-past]"),
+      note:  document.querySelector("[data-events-empty]"),
+      toCol: document.querySelector("[data-events-past-col]")
+    },
+    {
+      from:  document.querySelector("[data-news-upcoming]"),
+      to:    document.querySelector("[data-news-past]"),
+      note:  document.querySelector("[data-news-empty]"),
+      toCol: document.querySelector("[data-news-past-col]")
+    }
+  ];
 
-  if (upcomingList && pastList) {
-    var stamp = new Date();
-    var todayUTC = Date.UTC(stamp.getFullYear(), stamp.getMonth(), stamp.getDate());
+  var stamp = new Date();
+  var todayUTC = Date.UTC(stamp.getFullYear(), stamp.getMonth(), stamp.getDate());
 
-    var entries = upcomingList.querySelectorAll(".event");
+  for (var c = 0; c < columns.length; c++) {
+    var col = columns[c];
+    if (!col.from || !col.to) continue;
+
+    var entries = col.from.querySelectorAll(".event");
     for (var e = 0; e < entries.length; e++) {
       /* Written this way round so NaN fails the test and leaves the entry
          exactly where the markup put it. */
@@ -885,13 +976,14 @@
       /* To the head of the past list, which runs newest first. Entries are
          walked nearest-expiry first, so each one lands above the last and
          the most recently finished ends up on top. */
-      pastList.insertBefore(entries[e], pastList.firstChild);
+      col.to.insertBefore(entries[e], col.to.firstChild);
     }
 
-    var emptyNote = document.querySelector("[data-events-empty]");
-    if (emptyNote) {
-      emptyNote.hidden = upcomingList.querySelectorAll(".event").length !== 0;
-    }
+    /* A current column with nothing left says so. A past one is hidden
+       outright, heading and all, because "Previously: News" over an empty
+       space is worse than no column. */
+    if (col.note) col.note.hidden = col.from.querySelectorAll(".event").length !== 0;
+    if (col.toCol) col.toCol.hidden = col.to.querySelectorAll(".event").length === 0;
   }
 
   /* ── Linkable <details> ──────────────────────────────────
