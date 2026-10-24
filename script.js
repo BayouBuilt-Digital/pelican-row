@@ -899,6 +899,37 @@
      market's latest news in March. */
   var NEWS_FOR_DAYS = 7;
 
+  /* The floor under that week: this many of the most recently posted news
+     items stay in the current column even once their week is up. News is
+     occasional, and an empty "News" column reads as a market with nothing
+     going on, which is worse than last week's news still being there. So
+     the latest post holds its place until a newer one is posted, and then
+     it ages out on its own schedule like everything else.
+
+     Only for news. An event that is over is over: showing last Saturday's
+     sale as current would send somebody to a car park with nobody in it.
+
+     0 turns it off. The newest are picked by data-posted, so an item with
+     no posting date can never be kept by this. */
+  var NEWS_ALWAYS_SHOW = 1;
+
+  function postedDay(entry) {
+    var posted = entry.getAttribute("data-posted");
+    return posted ? dayUTC(posted) : NaN;
+  }
+
+  /* The n most recently posted entries in a list. Ties keep the order of
+     the markup, which runs newest first, because sort is stable. */
+  function newest(list, n) {
+    if (!n) return [];
+    var dated = [];
+    for (var i = 0; i < list.length; i++) {
+      if (!isNaN(postedDay(list[i]))) dated.push(list[i]);
+    }
+    dated.sort(function (a, b) { return postedDay(b) - postedDay(a); });
+    return dated.slice(0, n);
+  }
+
   function expiryOf(entry) {
     /* 1. An explicit date always wins, for anything that should linger or
           come down early. */
@@ -946,13 +977,15 @@
       from:  document.querySelector("[data-events-upcoming]"),
       to:    document.querySelector("[data-events-past]"),
       note:  document.querySelector("[data-events-empty]"),
-      toCol: document.querySelector("[data-events-past-col]")
+      toCol: document.querySelector("[data-events-past-col]"),
+      keep:  0
     },
     {
       from:  document.querySelector("[data-news-upcoming]"),
       to:    document.querySelector("[data-news-past]"),
       note:  document.querySelector("[data-news-empty]"),
-      toCol: document.querySelector("[data-news-past-col]")
+      toCol: document.querySelector("[data-news-past-col]"),
+      keep:  NEWS_ALWAYS_SHOW
     }
   ];
 
@@ -964,10 +997,13 @@
     if (!col.from || !col.to) continue;
 
     var entries = col.from.querySelectorAll(".event");
+    /* Chosen before anything moves, from everything authored as current. */
+    var kept = newest(entries, col.keep);
     for (var e = 0; e < entries.length; e++) {
       /* Written this way round so NaN fails the test and leaves the entry
          exactly where the markup put it. */
       if (!(todayUTC >= expiryOf(entries[e]))) continue;
+      if (kept.indexOf(entries[e]) !== -1) continue;
 
       /* The navy chip and the full-width flyer layout both belong to a
          current entry. A past one takes the plain caption. */

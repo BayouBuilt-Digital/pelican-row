@@ -547,6 +547,32 @@ it to be over: it carries **`data-posted="YYYY-MM-DD"`** and comes down
 enough that "now a Trust Acadiana member" is not still the market's latest
 news in March.
 
+**But the latest news post never leaves.** `NEWS_ALWAYS_SHOW` (1) is a floor
+under the week: that many of the most recently posted items in the current
+News column stay there even after their week is up. News is occasional, and
+an empty News column reads as a market with nothing going on, which is worse
+than last week's news still showing. The kept post holds its place only
+until a newer one is posted; then it ages out on its normal schedule.
+
+- Picked by `data-posted`, newest first, from what is **authored in the
+  current list**. An item placed by hand under Previously is not pulled back
+  up, however recent it is.
+- **News only.** Events have `keep: 0`. An event that is over is over, and
+  showing last Saturday's sale as current would send somebody to an empty
+  car park.
+- Set it to `0` to turn the floor off, or raise it to keep more.
+
+Checked against the real script with the clock stubbed:
+
+| Date | Current News | Under Previously |
+| --- | --- | --- |
+| Oct 16, gift cards inside its week | Gift cards | Trust Acadiana |
+| Oct 24, gift cards expired but latest | **Gift cards** | Trust Acadiana |
+| March 2027, nothing newer posted | **Gift cards** | Trust Acadiana |
+| Nov 2, a newer post from Nov 1 | the newer post | Gift cards, Trust Acadiana |
+| Nov 9, the newer post also expired | **the newer post** | Gift cards, Trust Acadiana |
+| Oct 24 with `NEWS_ALWAYS_SHOW = 0` | *empty, note shown* | Gift cards, Trust Acadiana |
+
 A news entry **shows that posting date** in its `.event-when` line, the same
 line an event shows its event date in, so both carry a `<time>`. That is why
 `data-posted` is checked **before** the `<time>`: read the other way round,
