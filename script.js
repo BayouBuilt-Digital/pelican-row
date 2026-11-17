@@ -149,9 +149,21 @@
      Three numbers have to agree, which is why they are worked out
      here rather than written down in two places:
        w = panel width / scale, capped at Facebook's 500
-       h = visible height / scale, plus Facebook's 70px header
+       h = visible height / scale, plus the header crop on top and the
+           corner crop underneath
        the wrapper is shifted up by crop * scale to hide that header
-     Set --feed-scale to 1 in styles.css to turn magnification off. */
+     Set --feed-scale to 1 in styles.css to turn magnification off.
+
+     The header crop depends on the width. Facebook's header is the cover,
+     the page name, the description, the category line and a Follow button;
+     the panel already has its own name and Follow above it, so all of that
+     is hidden and the panel opens on the first post. It is 336px tall at
+     500px wide, but under about 420px the page name wraps to a second line
+     and it grows to 343px. One number cannot cover both: 344 hides the
+     divider at both widths but leaves the first avatar 4px from the top on
+     a desktop, and 337 is right on a desktop but leaves Facebook's divider
+     line showing on a phone. So it is two numbers and a width to switch
+     at, all in styles.css. */
   var feed = document.getElementById("fbFeed");
   var feedBody = feed && feed.querySelector(".feed-body");
   var feedWrap = feed && feed.querySelector(".feed-scale");
@@ -169,10 +181,14 @@
     var fitFeed = function (minChange) {
       var scale = cssNum(feedBody, "--feed-scale", 1) || 1;
       var visibleH = cssNum(feedBody, "--feed-height", 620);
-      var crop = cssNum(feedBody, "--feed-crop", 70);
+      var crop = cssNum(feedBody, "--feed-crop", 0);
+      var cropBottom = cssNum(feedBody, "--feed-crop-bottom", 0);
 
       var w = Math.round(Math.max(180, Math.min(500, feed.clientWidth / scale)));
-      var h = Math.round(visibleH / scale + crop);
+      if (w < cssNum(feedBody, "--feed-crop-narrow-below", 0)) {
+        crop = cssNum(feedBody, "--feed-crop-narrow", crop);
+      }
+      var h = Math.round(visibleH / scale + crop + cropBottom);
 
       // Setting src always reloads the feed, even to the same URL,
       // so leave it alone unless the width is really off.

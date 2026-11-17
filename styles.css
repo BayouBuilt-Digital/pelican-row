@@ -936,10 +936,33 @@ main > :last-child {
 /* The window the feed shows through.
    --feed-scale > 1 magnifies the feed past Facebook's 500px ceiling: the
    iframe is rendered narrow and scaled up, so everything inside grows.
-   --feed-crop hides Facebook's own 70px header (fixed at every width). */
+
+   --feed-crop hides Facebook's whole header (cover, name, description,
+   category line, Follow button and the divider under them), so the panel
+   opens on the first post. The strip above already carries the name and a
+   Follow link, so nothing is lost. It was 70px while Facebook honoured
+   small_header and hide_cover; it ignores both now. Measured at 4x zoom in
+   November 2026, the same for both pages:
+     500px wide: divider at 336, first avatar at 348  -> crop 337
+     335px wide: name wraps, divider at 343, avatar at 355 -> crop 344
+   script.js uses the narrow value when the iframe is narrower than
+   --feed-crop-narrow-below (a plain number). The name wraps somewhere
+   around 400-415px, so the switch sits a little above that.
+
+   --feed-crop-bottom hides the plugin's own rounded bottom corners. The
+   top pair already goes with the header, and keeping the bottom pair made
+   the feed square at the top and rounded at the bottom, inside a frame
+   that is square at both. 12px is the radius plus its 1px border, with a
+   few pixels spare.
+
+   Re-measure these if a grey line or the bottom of a Follow button shows
+   at the top of the panel: that means Facebook's header has changed. */
 .feed-body {
   --feed-height: 740px;
-  --feed-crop: 70px;
+  --feed-crop: 337px;
+  --feed-crop-narrow: 344px;
+  --feed-crop-narrow-below: 440;
+  --feed-crop-bottom: 12px;
 
   position: relative;
   height: var(--feed-height);

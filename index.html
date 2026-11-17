@@ -37,7 +37,7 @@
      this HTML but can keep an old styles.css / script.js from cache, leaving
      new HTML running with an old script. Bump the number whenever either
      file changes (both tags, same number). -->
-<link rel="stylesheet" href="styles.css?v=205">
+<link rel="stylesheet" href="styles.css?v=206">
 
 <!-- Local business structured data, so Google shows the right info -->
 <script type="application/ld+json">
@@ -298,20 +298,20 @@
             </div>
             <!-- script.js sizes the iframe and scales this wrapper.
 
-                 likebox.php, NOT the current page.php Page Plugin. In
-                 October 2026 page.php started returning a page header and
-                 no posts at all: not this page, not our markup, not the
-                 href form. Meta's own facebook.com/meta renders empty
-                 through it too, and every tab does, so it is theirs to fix.
-                 likebox.php is the plugin page.php replaced, announced for
-                 removal in 2015 and still serving posts. A stopgap, with
-                 the matching risk: if it goes dark as well, add is-blocked
-                 to .feed-frame and the panel falls back to the card behind
-                 this iframe. -->
+                 page.php, the current Page Plugin. For about a month in
+                 October-November 2026 it served the header and no posts,
+                 for every page including Meta's own, and the feed ran on
+                 the old likebox.php instead. By 17 November the two had
+                 swapped: page.php shows posts again, and likebox.php now
+                 draws the new-style header and an empty stream. If posts
+                 vanish again, test BOTH endpoints side by side before
+                 changing anything (README, "The feeds"), and if neither
+                 works add is-blocked to .feed-frame so the panel falls back
+                 to the card behind this iframe. -->
             <div class="feed-scale">
               <iframe
             title="Recent Facebook posts from Pelican Row Estate &amp; Market"
-            src="https://www.facebook.com/plugins/likebox.php?href=https%3A%2F%2Fwww.facebook.com%2Fp%2FPelican-Row-Estate-Market-100091994943430%2F&amp;width=500&amp;height=690&amp;stream=true&amp;show_faces=false&amp;header=false"
+            src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fp%2FPelican-Row-Estate-Market-100091994943430%2F&amp;tabs=timeline&amp;width=500&amp;height=690&amp;small_header=true&amp;hide_cover=true&amp;show_facepile=false"
             loading="lazy"
             scrolling="no"
             allowfullscreen
@@ -475,6 +475,6 @@
   </div>
 </footer>
 
-<script src="script.js?v=205"></script>
+<script src="script.js?v=206"></script>
 </body>
 </html>

@@ -810,7 +810,18 @@ there is only ever one feed per page.
 redirects that page to a `/people/Total-Estate-Liquidators-LLC/…` URL, but
 feeding *that* form to the page plugin returns an empty panel. Tested both.
 
-### The feeds run on likebox.php, not page.php
+### The feeds: page.php, with a month on likebox.php
+
+**Current state (17 November 2026): both feeds are on `plugins/page.php`**,
+the Page Plugin, with the same URLs they had before the outage below. The
+history matters because the two endpoints have now failed in turn, and the
+next person to see an empty or odd-looking panel should test, not guess.
+
+**If the feed looks wrong, test both endpoints side by side first.** Put a
+`page.php?...&tabs=timeline` iframe and a `likebox.php?...&stream=true`
+iframe for the same href next to each other in one tab and look. It takes a
+minute and it is how both switches below were decided.
+
 
 **October 2026: `plugins/page.php` stopped returning posts.** It serves the
 page header, the follower count and a Follow button, and nothing underneath.
@@ -832,19 +843,90 @@ else's domain, through the recommended integration. The panel on their home
 page shows the logo, the name, a Follow button and "29K followers", with
 nothing below it. Same symptom as ours.
 
-Both feeds now point at **`plugins/likebox.php` with `stream=true`**, the
-plugin page.php replaced. Meta announced its removal in 2015 and never
-finished the job, and it is still serving posts today. Same href values, same
-width and height, same sizing script, same crop. It is a stopgap and should
-be treated as one — but **do not move back to `page.php` just because it starts
-working again.** That is a decision the market has taken: the newer endpoint
-broke without warning once and can do it again, so the site stays on the one
-that is currently serving posts until there is a reason to move. Switching
-is a one-line change on each of two pages whenever that reason turns up.
+So in October both feeds moved to **`plugins/likebox.php` with
+`stream=true`**, the plugin page.php replaced, announced for removal in 2015
+and still serving posts at the time. The market's decision then was to stay
+on it until there was a reason to move, rather than switching back the
+moment page.php recovered.
 
-**If likebox goes dark as well, add `is-blocked` to
-`.feed-frame` on both pages** and the panel falls back to the card behind the
-iframe rather than showing a 740px hole.
+**17 November 2026: the reason turned up, and the two had swapped.** Tested
+side by side in one tab, for both our page and Total Estate Liquidators:
+
+| | Pelican Row | Total Estate Liquidators |
+| --- | --- | --- |
+| `page.php?tabs=timeline` | header **and posts** (3 hours old) | header **and posts** (1 and 3 days old) |
+| `likebox.php?stream=true` | new-style header, **empty below** | new-style header, **empty below** |
+
+likebox.php had started drawing page.php's newer header — cover, description,
+category, phone, big Follow button — ignoring `header=false`, with no stream
+under it. That is the "weirdly formatted" panel the market noticed, and it
+reads as Meta finally routing the old endpoint through the new renderer.
+Both feeds went back to page.php with their original URLs restored from git
+(`tabs=timeline`, `small_header`, `hide_cover`, `show_facepile=false`).
+
+**`small_header=true` and `hide_cover=true` are now ignored**: Facebook draws
+the cover and its full header either way. The panel used to crop Facebook's
+70px small header and show its own strip instead; with the full header that
+70px only clipped the top of the cover, so the panel showed our strip, half
+a cover, Facebook's name block, description and a second Follow button
+before any post.
+
+**So the crop now hides Facebook's whole header**, and the panel goes from
+our strip straight to the first post. Measured at 4x zoom, the same for both
+pages because Facebook clamps the description to two lines:
+
+| iframe width | divider under Facebook's header | first post's avatar | crop used |
+| --- | --- | --- | --- |
+| 500px (desktop, tablet) | 336px | 348px | **337** (`--feed-crop`) |
+| 335px (phone; the name wraps) | 343px | 355px | **344** (`--feed-crop-narrow`) |
+
+One number can't serve both. 344 at desktop width leaves the first avatar
+4px from the top; 337 on a phone leaves Facebook's grey divider showing
+under our strip. `script.js` switches to the narrow value when the iframe is
+narrower than `--feed-crop-narrow-below` (440). The name wraps somewhere
+around 400–415px, so the switch sits a little above that.
+
+**`--feed-crop-bottom` (12px) hides the plugin's rounded bottom corners.**
+The top pair already go with the header. Keeping the bottom pair made the
+feed square at the top and rounded at the bottom, inside a frame that is
+square at both. Now both ends meet the panel's own 4px corners.
+
+All four values live on `.feed-body` in `styles.css`, with the measurements.
+**If a grey line or the bottom of a Follow button appears at the top of the
+panel, Facebook's header has changed height** and the crops need measuring
+again: put the plugin on a magenta page, scale it 4x, and read where the
+divider and the first avatar sit.
+
+**The feed scrolls, but shows no scrollbar, and that is Facebook's doing,
+not ours.** Investigated in November 2026 because a scrollbar was
+remembered from before. Three tests, on a bare page with no site CSS:
+
+| Test | Scrollbar? |
+| --- | --- |
+| `page.php` uncropped, `scrolling="no"` | none, at rest or while scrolling |
+| `page.php` uncropped, no `scrolling` attribute | none, at rest or while scrolling |
+| control: a local scrolling box in an iframe with `scrolling="no"` | **yes**, a normal scrollbar |
+
+So the browser does draw scrollbars inside iframes, `scrolling="no"` does
+not suppress an inner scroller's bar, and our crop is not covering one:
+Facebook's own stylesheet hides it. Both feeds scroll fine with the wheel
+or a swipe; while the pointer is over the feed the wheel moves the feed
+rather than the page, which is also Facebook's behaviour.
+
+The scrollbar that was remembered most likely came from the old
+`likebox.php` widget, which the site used from 16 October to 17 November
+and which drew an old-style scrolling box. That could not be checked
+afterwards, because likebox.php had stopped showing posts by then. A
+logged-in Facebook viewer could also see different styling from the
+logged-out test browser.
+
+A real scrollbar cannot be added from our side. The frame is cross-origin,
+so the page cannot read how far the feed has scrolled, and a fake bar that
+does not track the content would be worse than none.
+
+**If neither endpoint works, add `is-blocked` to `.feed-frame` on both
+pages** and the panel falls back to the card behind the iframe rather than
+showing a 740px hole.
 
 There is no way to make the page choose between them automatically. Tested,
 not assumed: Facebook sends no `Access-Control-Allow-Origin` on either
