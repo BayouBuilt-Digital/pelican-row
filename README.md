@@ -626,10 +626,31 @@ saying nothing is booked, matching the vendor search's no-results note. With
 JavaScript off nothing moves and nothing empties — the page shows a stale
 entry rather than a broken one, and it can still be moved by hand.
 
-**Order the upcoming list by what happens next.** The nearest date goes
-first, then the ones further out — a visitor reads the top of the list and
-sees the next thing they can turn up to. A new entry is not automatically a
-top entry.
+**Current events are sorted soonest first by the script**, so a sale three
+weeks out can never sit above one this Saturday, whatever order the markup
+is in. A visitor who reads only the top entry has read the next thing they
+can turn up to. This is the only list that is sorted:
+**Previously** runs newest first, and the News column is left as written.
+
+- Keyed on each entry's **first** `<time>` in its date line, so a weekend
+  sale on its Sunday stays above a one-day event that same Sunday.
+- **Undated entries go to the top**: with no date, an event is happening
+  now, which is sooner than anything dated.
+- Ties keep the markup order.
+- **It runs before expiry, not after.** Expiry sends finished entries to
+  the head of the past list one at a time, so it has to meet them soonest
+  first for the most recent to end up on top. Sorting first makes the past
+  list come out newest first even when the markup is out of order.
+
+Still author the list nearest first: with JavaScript off, the markup order
+is what people see. Checked against the real script with the clock stubbed:
+
+| Scenario | Current, top to bottom |
+| --- | --- |
+| Oct 1, markup reversed | pop-up (Oct 15), Warehouse (Oct 24), Yard Sale (Nov 14), BYOB (Dec 5) |
+| Nov 23, a Dec 20 event typed at the very top, plus an undated one | undated, BYOB (Dec 5), Dec 20 |
+| Dec 6, BYOB weekend under way, plus a Dec 6 one-day event | BYOB (began Dec 5), the Dec 6 event |
+| Dec 1, markup reversed: the **past** list | Yard Sale, Warehouse Oct 24, pop-up, ... newest first |
 
 **One flyer sits beside the text; a pair sits under it.** `.event-media` puts
 the image in a 260px column on the right, which is right for a single flyer.

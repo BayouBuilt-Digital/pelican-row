@@ -983,6 +983,42 @@
     return NaN;
   }
 
+  /* Current events run SOONEST FIRST, put in that order here rather than
+     trusted to the order they were typed in. Somebody who reads the top
+     entry and stops should have read the next thing they can turn up to,
+     not a sale three weeks out sitting above one this Saturday.
+
+     Keyed on an entry's FIRST date, so an event already under way (a
+     weekend sale on its Sunday) stays above one that has not started.
+     Undated entries go to the top: an event with no date is happening now,
+     which is sooner than anything with one. Ties keep the order of the
+     markup, because sort is stable.
+
+     Only current events. Past lists run newest first and the News column
+     is a handful of posts that do not need it. */
+  function startOf(entry) {
+    var times = entry.querySelectorAll(".event-when time[datetime]");
+    var first = NaN;
+    for (var t = 0; t < times.length; t++) {
+      var day = dayUTC(times[t].getAttribute("datetime"));
+      if (isNaN(day)) continue;
+      if (isNaN(first) || day < first) first = day;
+    }
+    return first;
+  }
+
+  function sortSoonest(list) {
+    var items = Array.prototype.slice.call(list.querySelectorAll(":scope > .event"));
+    var rank = function (el) {
+      var d = startOf(el);
+      return isNaN(d) ? -Infinity : d;
+    };
+    items.sort(function (a, b) { return rank(a) - rank(b); });
+    /* Re-appending moves each one to the end, so after the loop they sit
+       in sorted order. Comments in the list stay where they are. */
+    for (var i = 0; i < items.length; i++) list.appendChild(items[i]);
+  }
+
   /* Two columns, two pairs of lists. An expired entry crosses into the
      past list of its OWN kind: a finished sale belongs under Previously >
      Events, a week-old announcement under Previously > News. Moving one
@@ -994,7 +1030,8 @@
       to:    document.querySelector("[data-events-past]"),
       note:  document.querySelector("[data-events-empty]"),
       toCol: document.querySelector("[data-events-past-col]"),
-      keep:  0
+      keep:  0,
+      soonestFirst: true
     },
     {
       from:  document.querySelector("[data-news-upcoming]"),
@@ -1011,6 +1048,13 @@
   for (var c = 0; c < columns.length; c++) {
     var col = columns[c];
     if (!col.from || !col.to) continue;
+
+    /* Sorted BEFORE anything expires, not after. The walk below sends
+       finished entries to the head of the past list one at a time, so it
+       has to meet them soonest first for the most recent to end on top.
+       Sorting here means that holds even when the markup is out of order,
+       and the past list stays newest first without being sorted itself. */
+    if (col.soonestFirst) sortSoonest(col.from);
 
     var entries = col.from.querySelectorAll(".event");
     /* Chosen before anything moves, from everything authored as current. */
